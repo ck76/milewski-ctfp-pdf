@@ -1,273 +1,140 @@
 % !TEX root = ../../ctfp-print.tex
 
-\lettrine[lhang=0.17]{A}{category} is an embarrassingly simple concept.
-A category consists of \newterm{objects} and \newterm{arrows} that go between them. That's
-why categories are so easy to represent pictorially. An object can be
-drawn as a circle or a point, and an arrow\ldots{} is an arrow. (Just
-for variety, I will occasionally draw objects as piggies and arrows as
-fireworks.) But the essence of a category is \emph{composition}. Or, if you
-prefer, the essence of composition is a category. Arrows compose, so
-if you have an arrow from object $A$ to object $B$, and another arrow from
-object $B$ to object $C$, then there must be an arrow --- their composition
---- that goes from $A$ to $C$.
+\lettrine[lhang=0.17]{范畴}{category} 是一个令人难以置信的简单概念。
+一个范畴由\newterm{对象}（objects）和在它们之间的\newterm{箭头}（arrows）组成。因此，范畴非常容易用图形表示。一个对象可以画成一个圆或一个点，而一个箭头\ldots{} 就是一个箭头。（为了增加一些变化，我偶尔会把对象画成小猪，把箭头画成烟火。）但范畴的本质是\emph{组合}（composition）。或者，如果你愿意，组合的本质就是一个范畴。箭头是可以组合的，所以如果你有一个从对象 $A$ 到对象 $B$ 的箭头，以及另一个从对象 $B$ 到对象 $C$ 的箭头，那么一定存在一个箭头——它们的组合——从 $A$ 到 $C$。
 
 \begin{figure}
   \centering
   \includegraphics[width=0.8\textwidth]{images/img_1330.jpg}
-  \caption{In a category, if there is an arrow going from $A$ to $B$ and an arrow going from $B$ to $C$
-    then there must also be a direct arrow from $A$ to $C$ that is their composition. This diagram is not a full
-    category because it’s missing identity morphisms (see later).}
+  \caption{在一个范畴中，如果有一个箭头从 $A$ 到 $B$，并且有另一个箭头从 $B$ 到 $C$，那么必然存在一个直接从 $A$ 到 $C$ 的箭头，这就是它们的组合。这个图示并不是一个完整的范畴，因为它缺少了恒等态射（identity morphisms），稍后会提到。}
 \end{figure}
 
-\section{Arrows as Functions}
+\section{箭头作为函数 (Arrows as Functions)}
 
-Is this already too much abstract nonsense? Do not despair. Let's talk
-concretes. Think of arrows, which are also called \newterm{morphisms}, as
-functions. You have a function $f$ that takes an argument of type $A$ and
-returns a $B$. You have another function $g$ that takes a $B$ and returns a $C$.
-You can compose them by passing the result of $f$ to $g$. You have just
-defined a new function that takes an $A$ and returns a $C$.
+这是不是已经太过抽象了？别灰心。我们来谈些具体的内容。将箭头（arrows），也称为\newterm{态射}（morphisms），视为函数。你有一个函数 $f$，它接受一个类型为 $A$ 的参数，并返回一个类型为 $B$ 的值。你还有另一个函数 $g$，它接受一个 $B$ 并返回一个 $C$。你可以通过将 $f$ 的结果传递给 $g$ 来组合它们。这样你就定义了一个新函数，它接受一个 $A$ 并返回一个 $C$。
 
-In math, such composition is denoted by a small circle between
-functions: $g \circ f$. Notice the right to left order of composition. For some
-people this is confusing. You may be familiar with the pipe notation in
-Unix, as in:
+在数学中，这样的组合用函数之间的一个小圆圈来表示：$g \circ f$。请注意，组合的顺序是从右到左的。对于某些人来说，这可能有些令人困惑。你可能熟悉 Unix 中的管道符号，如：
 
 \begin{snip}{text}
-lsof | grep Chrome
+  lsof | grep Chrome
 \end{snip}
-or the chevron \code{>>} in F\#, which both
-go from left to right. But in mathematics and in Haskell functions
-compose right to left. It helps if you read $g \circ f$ as ``g \emph{after} f.''
+或者在 F\# 中的尖括号 \code{>>}，它们都是从左到右进行操作的。但是在数学和 Haskell 中，函数的组合是从右到左的。如果你将 $g \circ f$ 理解为“f 之后的 g”，这会有所帮助。
 
-Let's make this even more explicit by writing some C code. We have one
-function \code{f} that takes an argument of type \code{A} and
-returns a value of type \code{B}:
+让我们通过写一些 C 代码来使这一点更加明确。我们有一个函数 \code{f}，它接受一个类型为 \code{A} 的参数，并返回一个类型为 \code{B} 的值：
 
 \begin{snip}{text}
-B f(A a);
+  B f(A a);
 \end{snip}
-and another:
+还有另一个函数：
 
 \begin{snip}{text}
-C g(B b);
+  C g(B b);
 \end{snip}
-Their composition is:
+它们的组合是：
 
 \begin{snip}{text}
-C g_after_f(A a)
-{
+  C g_after_f(A a)
+    {
     return g(f(a));
-}
+  }
 \end{snip}
-Here, again, you see right-to-left composition: \code{g(f(a))}; this
-time in C.
+这里，你再次看到从右到左的组合：\code{g(f(a))}；这次是在 C 语言中。
 
-I wish I could tell you that there is a template in the C++ Standard
-Library that takes two functions and returns their composition, but
-there isn't one. So let's try some Haskell for a change. Here's the
-declaration of a function from A to B:
+我希望我能告诉你，在 C++ 标准库中有一个模板可以接受两个函数并返回它们的组合，但实际上没有。所以我们来试试 Haskell。以下是从 A 到 B 的函数声明：
 
 \src{snippet01}
-Similarly:
+类似地：
 
 \src{snippet02}
-Their composition is:
+它们的组合是：
 
 \src{snippet03}
-Once you see how simple things are in Haskell, the inability to express
-straightforward functional concepts in C++ is a little embarrassing. In
-fact, Haskell will let you use Unicode characters so you can write
-composition as:
-% don't 'mathify' this block
+一旦你看到 Haskell 中的这些东西有多么简单，无法在 C++ 中表达简单的函数概念就有点尴尬了。事实上，Haskell 允许你使用 Unicode 字符，所以你可以这样写组合：
+% 不要“数学化”此代码块
 \begin{snip}{text}
-g ◦ f
+  g ◦ f
 \end{snip}
 
-You can even use Unicode double colons and arrows:
-% don't 'mathify' this block
+你甚至可以使用 Unicode 的双冒号和箭头：
+% 不要“数学化”此代码块
 \begin{snipv}
-f \ensuremath{\Colon} A → B
+  f \ensuremath{\Colon} A → B
 \end{snipv}
-So here's the first Haskell lesson: Double colon means ``has the type
-of\ldots{}'' A function type is created by inserting an arrow between
-two types. You compose two functions by inserting a period between them
-(or a Unicode circle).
+所以这是第一课 Haskell：双冒号表示“类型为\ldots{}”。一个函数类型是通过在两个类型之间插入一个箭头创建的。你通过在两个函数之间插入一个点（或 Unicode 圆圈）来组合它们。
 
-\section{Properties of Composition}
+\section{组合的性质 (Properties of Composition)}
 
-There are two extremely important properties that the composition in any
-category must satisfy.
+在任何范畴中，组合必须满足两个极为重要的性质。
 
 \begin{enumerate}
   \item
-        Composition is associative. If you have three morphisms, $f$, $g$, and $h$,
-        that can be composed (that is, their objects match end-to-end), you
-        don't need parentheses to compose them. In math notation this is
-        expressed as:
-        \[h \circ (g \circ f) = (h \circ g) \circ f = h \circ g \circ f\]
-        In (pseudo) Haskell:
+  组合是结合的。如果你有三个可以组合的态射，$f$，$g$ 和 $h$，（即它们的对象端对端匹配），你在组合它们时不需要括号。在数学符号中，这表示为：
+  \[h \circ (g \circ f) = (h \circ g) \circ f = h \circ g \circ f\]
+  在（伪）Haskell 中：
 
-        \src{snippet04}[b]
-        (I said ``pseudo,'' because equality is not defined for functions.)
+  \src{snippet04}[b]
+  （我说“伪”，因为函数的等号并没有定义。）
 
-        Associativity is pretty obvious when dealing with functions, but it may
-        be not as obvious in other categories.
+  当处理函数时，结合性是显而易见的，但在其他范畴中可能并不明显。
 
   \item
-        For every object $A$ there is an arrow which is a unit of composition.
-        This arrow loops from the object to itself. Being a unit of composition
-        means that, when composed with any arrow that either starts at $A$ or ends
-        at $A$, respectively, it gives back the same arrow. The unit arrow for
-        object A is called $\idarrow[A]$ (\newterm{identity} on $A$). In math
-        notation, if $f$ goes from $A$ to $B$ then
-        \[f \circ \idarrow[A] = f\]
-        and
-        \[\idarrow[B] \circ f = f\]
+  对于每个对象 $A$，都有一个箭头，它是组合的单位。这个箭头从对象自身回到自身。作为组合的单位意味着，当与任何从 $A$ 开始或结束于 $A$ 的箭头组合时，它分别返回相同的箭头。对象 $A$ 的单位箭头被称为 $\idarrow[A]$（$A$ 的\newterm{恒等}（identity））。在数学符号中，如果 $f$ 从 $A$ 到 $B$，那么
+  \[f \circ \idarrow[A] = f\]
+  并且
+  \[\idarrow[B] \circ f = f\]
 \end{enumerate}
-When dealing with functions, the identity arrow is implemented as the
-identity function that just returns back its argument. The
-implementation is the same for every type, which means this function is
-universally polymorphic. In C++ we could define it as a template:
+在处理函数时，恒等箭头实现为恒等函数（identity function），它仅返回其参数。这个实现对于每种类型都是相同的，这意味着该函数是普遍多态的。在 C++ 中，我们可以将其定义为一个模板：
 
 \begin{snip}{cpp}
-template<class T> T id(T x) { return x; }
+  template<class T> T id(T x) { return x; }
 \end{snip}
-Of course, in C++ nothing is that simple, because you have to take into
-account not only what you're passing but also how (that is, by value, by
-reference, by const reference, by move, and so on).
+当然，在 C++ 中，事情没有那么简单，因为你不仅要考虑你传递的是什么，还要考虑如何传递（即按值、按引用、按 const 引用、按移动等）。
 
-In Haskell, the identity function is part of the standard library
-(called Prelude). Here's its declaration and definition:
+在 Haskell 中，恒等函数是标准库（Prelude）的一部分。以下是其声明和定义：
 
 \src{snippet05}
-As you can see, polymorphic functions in Haskell are a piece of cake. In
-the declaration, you just replace the type with a type variable. Here's
-the trick: names of concrete types always start with a capital letter,
-names of type variables start with a lowercase letter. So here
-\code{a} stands for all types.
+正如你所见，在 Haskell 中，多态函数非常简单。在声明中，你只需用类型变量替换类型。诀窍在于：具体类型的名称总是以大写字母开头，类型变量的名称以小写字母开头。所以这里的 \code{a} 代表所有类型。
 
-Haskell function definitions consist of the name of the function
-followed by formal parameters --- here just one, \code{x}. The body of
-the function follows the equal sign. This terseness is often shocking to
-newcomers but you will quickly see that it makes perfect sense. Function
-definition and function call are the bread and butter of functional
-programming so their syntax is reduced to the bare minimum. Not only are
-there no parentheses around the argument list but there are no commas
-between arguments (you'll see that later, when we define functions of
-multiple arguments).
+Haskell 函数定义由函数名和形式参数组成——这里只是一个 \code{x}。函数体在等号后面。对于新手来说，这种简洁性常常令人震惊，但你很快就会发现它是非常合理的。函数定义和函数调用是函数式编程的基础，因此它们的语法被简化到最小。不仅参数列表没有括号，参数之间也没有逗号（稍后你会看到，当我们定义多参数函数时）。
 
-The body of a function is always an expression --- there are no
-statements in functions. The result of a function is this expression ---
-here, just \code{x}.
+函数体总是一个表达式——函数中没有语句。函数的结果就是这个表达式——这里只是 \code{x}。
 
-This concludes our second Haskell lesson.
+这就是我们的第二课 Haskell。
 
-The identity conditions can be written (again, in pseudo-Haskell) as:
+恒等条件可以写成（再次在伪 Haskell 中）：
 
 \src{snippet06}
-You might be asking yourself the question: Why would anyone bother with
-the identity function --- a function that does nothing? Then again, why
-do we bother with the number zero? Zero is a symbol for nothing. Ancient
-Romans had a number system without a zero and they were able to build
-excellent roads and aqueducts, some of which survive to this day.
+你可能会问自己：为什么有人会在意恒等函数——一个什么都不做的函数？再想想，为什么我们要在意数字零？零是无的符号。古罗马人的数字系统中没有零，他们依然能够建造出卓越的道路和水渠，其中一些至今仍在使用。
 
-Neutral values like zero or $\id$ are extremely useful when
-working with symbolic variables. That's why Romans were not very good at
-algebra, whereas the Arabs and the Persians, who were familiar with the
-concept of zero, were. So the identity function becomes very handy as an
-argument to, or a return from, a higher-order function. Higher order
-functions are what make symbolic manipulation of functions possible.
-They are the algebra of functions.
+像零或 $\id$ 这样的中立值在处理符号变量时非常有用。这就是为什么古罗马人在代数方面并不擅长，而阿拉伯人和波斯人，由于熟悉零的概念，则擅长代数。所以恒等函数在作为高阶函数的参数或返回值时非常方便。高阶函数使得函数的符号操作成为可能。它们是函数的代数。
 
-To summarize: A category consists of objects and arrows (morphisms).
-Arrows can be composed, and the composition is associative. Every object
-has an identity arrow that serves as a unit under composition.
+总结：一个范畴由对象和箭头（态射）组成。箭头可以组合，组合是结合的。每个对象都有一个恒等箭头，作为组合下的单位。
 
-\section{Composition is the Essence of Programming}
+\section{组合是编程的本质 (Composition is the Essence of Programming)}
 
-Functional programmers have a peculiar way of approaching problems. They
-start by asking very Zen-like questions. For instance, when designing an
-interactive program, they would ask: What is interaction? When
-implementing Conway's Game of Life, they would probably ponder about the
-meaning of life. In this spirit, I'm going to ask: What is programming?
-At the most basic level, programming is about telling the computer what
-to do. ``Take the contents of memory address x and add it to the
-contents of the register EAX.'' But even when we program in assembly,
-the instructions we give the computer are an expression of something
-more meaningful. We are solving a non-trivial problem (if it were
-trivial, we wouldn't need the help of the computer). And how do we solve
-problems? We decompose bigger problems into smaller problems. If the
-smaller problems are still too big, we decompose them further, and so
-on. Finally, we write code that solves all the small problems. And then
-comes the essence of programming: we compose those pieces of code to
-create solutions to larger problems. Decomposition wouldn't make sense
-if we weren't able to put the pieces back together.
+函数式程序员有一种独特的方式来处理问题。他们首先会问一些非常禅宗式的问题。例如，当设计一个交互式程序时，他们会问：什么是交互？当实现康威的生命游戏时，他们可能会思考生命的意义。在这种精神下，我要问：什么是编程？在最基本的层面上，编程是告诉计算机该做什么。“取内存地址 x 的内容，并将其添加到寄存器 EAX 的内容中。”但即使我们用汇编语言编程，我们给计算机的指令也是更有意义的表达。我们正在解决一个非平凡的问题（如果是平凡的问题，我们就不需要计算机的帮助了）。我们如何解决问题？我们将大问题分解为小问题。如果小问题仍然太大，我们进一步分解它们，依此类推。最后，我们编写代码来解决所有的小问题。然后，编程的本质就来了：我们将这些代码片段组合起来，形成解决更大问题的方案。如果不能将这些部分重新组合在一起，分解就毫无意义。
 
-This process of hierarchical decomposition and recomposition is not
-imposed on us by computers. It reflects the limitations of the human
-mind. Our brains can only deal with a small number of concepts at a
-time. One of the most cited papers in psychology,
-\urlref{http://en.wikipedia.org/wiki/The_Magical_Number_Seven,_Plus_or_Minus_Two}{The
-  Magical Number Seven, Plus or Minus Two}, postulated that we can only
-keep $7 \pm 2$ ``chunks'' of information in our minds. The details of our
-understanding of the human short-term memory might be changing, but we
-know for sure that it's limited. The bottom line is that we are unable
-to deal with the soup of objects or the spaghetti of code. We need
-structure not because well-structured programs are pleasant to look at,
-but because otherwise our brains can't process them efficiently. We
-often describe some piece of code as elegant or beautiful, but what we
-really mean is that it's easy to process by our limited human minds.
-Elegant code creates chunks that are just the right size and come in
-just the right number for our mental digestive system to assimilate
-them.
+这种分层分解和重组的过程并不是计算机强加给我们的。它反映了人类思维的局限性。我们的大脑一次只能处理少量的概念。心理学中被引用最多的论文之一，
+\urlref{http://en.wikipedia.org/wiki/The_Magical_Number_Seven,_Plus_or_Minus_Two}{《神奇的七，正负二》}，假设我们的大脑只能容纳 $7 \pm 2$ 个“块”信息。我们对人类短期记忆的理解细节可能在变化，但我们可以肯定的是，它是有限的。关键是我们无法处理一锅杂物或代码拼盘。我们需要结构，不是因为结构良好的程序看起来赏心悦目，而是因为否则我们的大脑无法有效地处理它们。我们经常形容某段代码优雅或美丽，但我们真正的意思是它易于我们有限的人类大脑处理。优雅的代码创造了正好大小的块，数量正好适合我们的精神消化系统来吸收它们。
 
-So what are the right chunks for the composition of programs? Their
-surface area has to increase slower than their volume. (I like this
-analogy because of the intuition that the surface area of a geometric
-object grows with the square of its size --- slower than the volume,
-which grows with the cube of its size.) The surface area is the
-information we need in order to compose chunks. The volume is the
-information we need in order to implement them. The idea is that, once a
-chunk is implemented, we can forget about the details of its
-implementation and concentrate on how it interacts with other chunks. In
-object-oriented programming, the surface is the class declaration of the
-object, or its abstract interface. In functional programming, it's the
-declaration of a function. (I'm simplifying things a bit, but that's the
-gist of it.)
+那么，程序组合的合适块是什么？它们的表面积必须比它们的体积增长得慢。（我喜欢这个类比，因为几何物体的表面积随着其大小的平方增长——比体积增长得慢，体积随着其大小的立方增长。）表面积是我们需要的信息，用以组合块。体积是我们需要的信息，用以实现它们。这个想法是，一旦实现了一个块，我们就可以忘记其实现的细节，并专注于它如何与其他块交互。在面向对象编程中，表面就是对象的类声明或其抽象接口。在函数式编程中，它就是函数的声明。（我稍微简化了一些，但这就是要点。）
 
-Category theory is extreme in the sense that it actively discourages us
-from looking inside the objects. An object in category theory is an
-abstract nebulous entity. All you can ever know about it is how it
-relates to other objects --- how it connects with them using arrows. This
-is how internet search engines rank web sites by analyzing incoming and
-outgoing links (except when they cheat). In object-oriented programming,
-an idealized object is only visible through its abstract interface (pure
-surface, no volume), with methods playing the role of arrows. The moment
-you have to dig into the implementation of the object in order to
-understand how to compose it with other objects, you've lost the
-advantages of your programming paradigm.
+范畴论在这一点上是极端的，因为它积极地阻止我们查看对象的内部。范畴论中的一个对象是一个抽象的朦胧实体。你唯一能知道的就是它如何与其他对象关联——如何用箭头连接它们。这就是互联网搜索引擎通过分析进出链接来对网站进行排名的方式（除非它们作弊）。在面向对象编程中，一个理想化的对象只能通过其抽象接口可见（纯表面，无体积），方法扮演箭头的角色。当你必须深入研究对象的实现以理解如何将其与其他对象组合时，你就失去了编程范式的优势。
 
-\section{Challenges}
+\section{挑战 (Challenges)}
 
 \begin{enumerate}
   \tightlist
   \item
-        Implement, as best as you can, the identity function in your favorite
-        language (or the second favorite, if your favorite language happens to
-        be Haskell).
+  尽你所能，在你最喜欢的语言中实现恒等函数（identity function）（如果你最喜欢的语言是 Haskell，请在你第二喜欢的语言中实现）。
   \item
-        Implement the composition function in your favorite language. It takes
-        two functions as arguments and returns a function that is their
-        composition.
+  在你最喜欢的语言中实现组合函数（composition function）。它接受两个函数作为参数，并返回它们的组合。
   \item
-        Write a program that tries to test that your composition function
-        respects identity.
+  编写一个程序，尝试测试你的组合函数是否遵守恒等性。
   \item
-        Is the world-wide web a category in any sense? Are links morphisms?
+  在任何意义上，万维网（world-wide web）是一个范畴吗？链接是态射吗？
   \item
-        Is Facebook a category, with people as objects and friendships as
-        morphisms?
+  Facebook 是一个范畴吗？人是对象，友谊是态射？
   \item
-        When is a directed graph a category?
+  何时一个有向图是一个范畴？
 \end{enumerate}

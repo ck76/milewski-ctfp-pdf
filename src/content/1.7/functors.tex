@@ -1,38 +1,20 @@
 % !TEX root = ../../ctfp-print.tex
 
-\lettrine[lhang=0.17]{A}{t the risk of sounding} like a broken record, I will say this about
-functors: A functor is a very simple but powerful idea. Category theory
-is just full of those simple but powerful ideas. A functor is a mapping
-between categories. Given two categories, $\cat{C}$ and $\cat{D}$, a functor $F$ maps
-objects in $\cat{C}$ to objects in $\cat{D}$ --- it's a function on objects. If $a$
-is an object in $\cat{C}$, we'll write its image in $\cat{D}$ as $F a$ (no
-parentheses). But a category is not just objects --- it's objects and
-morphisms that connect them. A functor also maps morphisms --- it's a
-function on morphisms. But it doesn't map morphisms willy-nilly --- it
-preserves connections. So if a morphism $f$ in $\cat{C}$ connects object
-$a$ to object $b$,
+\lettrine[lhang=0.17]{尽}{管可能会让人觉得我像在重复自己}，我还是要说关于函子（functor）的事情：函子是一个非常简单但非常强大的概念。范畴论（category theory）中充满了这些简单而强大的思想。函子是范畴之间的映射。给定两个范畴，$\cat{C}$ 和 $\cat{D}$，一个函子 $F$ 将 $\cat{C}$ 中的对象映射到 $\cat{D}$ 中的对象——它是一个对象上的函数。如果 $a$ 是 $\cat{C}$ 中的一个对象，我们将它在 $\cat{D}$ 中的像写作 $F a$（不加括号）。但范畴不仅仅是对象——它还包括连接它们的态射（morphisms）。函子也映射态射——它是一个态射上的函数。但它不会随意映射态射——它保留了连接性。因此，如果在范畴 $\cat{C}$ 中有一个态射 $f$ 连接对象 $a$ 和对象 $b$，
 \[f \Colon a \to b\]
-the image of $f$ in $\cat{D}$, $F f$, will connect the image of
-$a$ to the image of $b$:
+则 $f$ 在范畴 $\cat{D}$ 中的像 $F f$ 将连接 $a$ 的像和 $b$ 的像：
 \[F f \Colon F a \to F b\]
 
-(This is a mixture of mathematical and Haskell notation that hopefully
-makes sense by now. I won't use parentheses when applying functors to
-objects or morphisms.)
+（这是一种数学和 Haskell 符号的混合，希望现在能够理解。我不会在将函子应用于对象或态射时使用括号。）
 
 \begin{figure}[H]
   \centering\includegraphics[width=0.3\textwidth]{images/functor.jpg}
 \end{figure}
 
 \noindent
-As you can see, a
-functor preserves the structure of a category: what's connected in one
-category will be connected in the other category. But there's something
-more to the structure of a category: there's also the composition of
-morphisms. If $h$ is a composition of $f$ and $g$:
+如你所见，函子保留了范畴的结构：一个范畴中连接的东西将在另一个范畴中保持连接。但范畴的结构还有其他方面：还包括态射的复合。如果 $h$ 是 $f$ 和 $g$ 的复合：
 \[h = g \circ f\]
-we want its image under $F$ to be a composition of the images of $f$
-and $g$:
+我们希望 $F$ 下的 $h$ 的像是 $f$ 和 $g$ 的像的复合：
 \[F h = F g \circ F f\]
 
 \begin{figure}[H]
@@ -41,13 +23,8 @@ and $g$:
 \end{figure}
 
 \noindent
-Finally, we want all identity morphisms in $\cat{C}$ to be mapped to identity morphisms in
-$\cat{D}$:
+最后，我们希望 $\cat{C}$ 中的所有恒等态射（identity morphisms）都被映射为 $\cat{D}$ 中的恒等态射：
 \[F \idarrow[a] = \idarrow[F a]\]
-
-\noindent
-Here, $\idarrow[a]$ is the identity at the object $a$,
-and $\idarrow[F a]$ the identity at $F a$.
 
 \begin{figure}[H]
   \centering
@@ -55,71 +32,24 @@ and $\idarrow[F a]$ the identity at $F a$.
 \end{figure}
 
 \noindent
-Note that these conditions make functors much more restrictive than regular functions.
-Functors must preserve the structure of a category. If you picture a
-category as a collection of objects held together by a network of
-morphisms, a functor is not allowed to introduce any tears into this
-fabric. It may smash objects together, it may glue multiple morphisms
-into one, but it may never break things apart. This no-tearing
-constraint is similar to the continuity condition you might know from
-calculus. In this sense functors are ``continuous'' (although there
-exists an even more restrictive notion of continuity for functors). Just
-like functions, functors may do both collapsing and embedding. The
-embedding aspect is more prominent when the source category is much
-smaller than the target category. In the extreme, the source can be the
-trivial singleton category --- a category with one object and one
-morphism (the identity). A functor from the singleton category to any
-other category simply selects an object in that category. This is fully
-analogous to the property of morphisms from singleton sets selecting
-elements in target sets. The maximally collapsing functor is called the
-constant functor $\Delta_c$. It maps every object in the source
-category to one selected object $c$ in the target category. It also
-maps every morphism in the source category to the identity morphism
-$\idarrow[c]$. It acts like a black hole, compacting
-everything into one singularity. We'll see more of this functor when we
-discuss limits and colimits.
+注意，这些条件使得函子比普通的函数更加严格。函子必须保留范畴的结构。如果你将范畴想象为由一张态射网络连接在一起的一组对象，函子不允许在这个网络中引入任何裂缝。它可以将对象合并在一起，它可以将多个态射粘合为一个，但它不能将它们分开。这种不撕裂的约束类似于你在微积分中可能知道的连续性条件。从这个意义上说，函子是“连续的”（虽然实际上存在更严格的连续性概念）。就像函数一样，函子可以进行折叠和嵌入。当源范畴比目标范畴小得多时，嵌入的方面更为突出。在极端情况下，源可以是平凡的单对象范畴（singleton category）——一个只有一个对象和一个态射（恒等态射）的范畴。从单对象范畴到任何其他范畴的函子只选择该范畴中的一个对象。这完全类似于从单元素集到目标集合中选择元素的态射的性质。最大程度折叠的函子称为常量函子（constant functor）$\Delta_c$。它将源范畴中的每个对象映射到目标范畴中选定的某个对象 $c$。它还将源范畴中的每个态射映射到恒等态射 $\idarrow[c]$。它的作用就像一个黑洞，将所有事物压缩成一个奇点。当我们讨论极限和余极限时，我们会看到更多的这种函子。
 
-\section{Functors in Programming}
+\section{编程中的函子（Functors in Programming）}
 
-Let's get down to earth and talk about programming. We have our category
-of types and functions. We can talk about functors that map this
-category into itself --- such functors are called endofunctors. So
-what's an endofunctor in the category of types? First of all, it maps
-types to types. We've seen examples of such mappings, maybe without
-realizing that they were just that. I'm talking about definitions of
-types that were parameterized by other types. Let's see a few examples.
+让我们回到实际，谈谈编程。我们有一个类型和函数的范畴。我们可以讨论将这个范畴映射到自身的函子——这样的函子称为自函子（endofunctors）。那么，在类型范畴中的自函子是什么？首先，它将类型映射到类型。我们已经看到了一些这样的映射的例子，也许我们还没有意识到它们就是这种映射。我指的是那些由其他类型参数化的类型定义。让我们来看几个例子。
 
-\subsection{The Maybe Functor}
+\subsection{Maybe 函子}
 
-The definition of \code{Maybe} is a mapping from type \code{a} to
-type \code{Maybe a}:
+\code{Maybe} 的定义是将类型 \code{a} 映射到类型 \code{Maybe a}：
 
 \src{snippet01}
-Here's an important subtlety: \code{Maybe} itself is not a type, it's
-a \emph{type constructor}. You have to give it a type argument, like
-\code{Int} or \code{Bool}, in order to turn it into a type.
-\code{Maybe} without any argument represents a function on types. But
-can we turn \code{Maybe} into a functor? (From now on, when I speak of
-functors in the context of programming, I will almost always mean
-endofunctors.) A functor is not only a mapping of objects (here, types)
-but also a mapping of morphisms (here, functions). For any function from
-\code{a} to \code{b}:
+这里有一个重要的细微差别：\code{Maybe} 本身不是一种类型，它是一个类型构造器（type constructor）。你必须给它一个类型参数，比如 \code{Int} 或 \code{Bool}，才能将其转换为一种类型。\code{Maybe} 没有任何参数表示它是一个作用于类型的函数。但是我们能将 \code{Maybe} 转换成一个函子吗？（从现在起，当我在编程的上下文中谈到函子时，我几乎总是指自函子。）一个函子不仅是一个对象（在这里是类型）的映射，而且也是一个态射（在这里是函数）的映射。对于从 \code{a} 到 \code{b} 的任意函数：
 
 \src{snippet02}
-we would like to produce a function from \code{Maybe a} to
-\code{Maybe b}. To define such a function, we'll have two cases to
-consider, corresponding to the two constructors of \code{Maybe}. The
-\code{Nothing} case is simple: we'll just return \code{Nothing}
-back. And if the argument is \code{Just}, we'll apply the function
-\code{f} to its contents. So the image of \code{f} under
-\code{Maybe} is the function:
+我们希望生成一个从 \code{Maybe a} 到 \code{Maybe b} 的函数。为了定义这样的函数，我们将要考虑 \code{Maybe} 的两个构造器对应的两种情况。\code{Nothing} 的情况很简单：我们只需返回 \code{Nothing}。如果参数是 \code{Just}，我们将把函数 \code{f} 应用于其内容。因此，\code{Maybe} 下的 $f$ 的像是函数：
 
 \src{snippet03}
-(By the way, in Haskell you can use apostrophes in variables names,
-which is very handy in cases like these.) In Haskell, we implement the
-morphism-mapping part of a functor as a higher order function called
-\code{fmap}. In the case of \code{Maybe}, it has the following
-signature:
+（顺便说一句，在 Haskell 中，你可以在变量名中使用撇号，这在这种情况下非常方便。）在 Haskell 中，我们将函子的态射映射部分实现为一个高阶函数，称为 \code{fmap}。对于 \code{Maybe}，它具有以下签名：
 
 \src{snippet04}
 
@@ -129,601 +59,319 @@ signature:
 \end{figure}
 
 \noindent
-We often say
-that \code{fmap} \emph{lifts} a function. The lifted function acts on
-\code{Maybe} values. As usual, because of currying, this signature may
-be interpreted in two ways: as a function of one argument --- which
-itself is a function \code{(a -> b)} --- returning a
-function \code{(Maybe a -> Maybe b)}; or as a
-function of two arguments returning \code{Maybe b}:
+我们通常会说 \code{fmap} “提升”了一个函数。提升的函数作用于 \code{Maybe} 值上。与往常一样，由于柯里化，这个签名可以从两种方式解释：作为一个参数的函数——它本身是一个函数 \code{(a -> b)}——返回一个函数 \code{(Maybe a -> Maybe b)}；或者作为两个参数的函数，返回 \code{Maybe b}：
 
 \src{snippet05}
-Based on our previous discussion, this is how we implement \code{fmap}
-for \code{Maybe}:
+基于我们之前的讨论，这就是我们如何为 \code{Maybe} 实现 \code{fmap}：
 
 \src{snippet06}
-To show that the type constructor \code{Maybe} together with the
-function \code{fmap} form a functor, we have to prove that
-\code{fmap} preserves identity and composition. These are called ``the
-functor laws,'' but they simply ensure the preservation of the structure
-of the category.
+要证明类型构造器 \code{Maybe} 和函数 \code{fmap} 形成了一个函子，我们必须证明 \code{fmap} 保持恒等性和复合性。这些被称为“函子定律”，它们只是确保了范畴结构的保存。
 
-\subsection{Equational Reasoning}
+\subsection{等式推理（Equational Reasoning）}
 
-To prove the functor laws, I will use \newterm{equational reasoning}, which
-is a common proof technique in Haskell. It takes advantage of the fact
-that Haskell functions are defined as equalities: the left hand side
-equals the right hand side. You can always substitute one for another,
-possibly renaming variables to avoid name conflicts. Think of this as
-either inlining a function, or the other way around, refactoring an
-expression into a function. Let's take the identity function as an
-example:
+为了证明函子定律，我将使用\newterm{等式推理}，这是一种在 Haskell 中常见的证明技巧。它利用了 Haskell 函数被定义为等式这一事实：左边等于右边。你总是可以将一个替换为另一个，可能会重命名变量以避免名称冲突。把这想象成内联一个函数，或者反过来，重构一个表达式为一个函数。让我们以恒等函数为例：
 
 \src{snippet07}
-If you see, for instance, \code{id y} in some expression, you can
-replace it with \code{y} (inlining). Further, if you see \code{id}
-applied to an expression, say \code{id (y + 2)}, you can replace it
-with the expression itself \code{(y + 2)}. And this substitution
-works both ways: you can replace any expression \code{e} with
-\code{id e} (refactoring). If a function is defined by pattern
-matching, you can use each sub-definition independently. For instance,
-given the above definition of \code{fmap} you can replace
-\code{fmap f Nothing} with \code{Nothing}, or the other way
-around. Let's see how this works in practice. Let's start with the
-preservation of identity:
+例如，如果你在某个表达式中看到 \code{id y}，你可以将它替换为 \code{y}（内联）。进一步说，如果你看到 \code{id} 应用于一个表达式，例如 \code{id (y + 2)}，你可以将它替换为表达式本身 \code{(y + 2)}。而且这种替换是双向的：你可以将任意表达式 \code{e} 替换为 \code{id e}（重构）。如果一个函数通过模式匹配定义，你可以独立使用每个子定义。例如，给定上面 \code{fmap} 的定义，你可以将 \code{fmap f Nothing} 替换为 \code{Nothing}，反之亦然。让我们看看这在实际中的应用。让我们从保持恒等性开始：
 
 \src{snippet08}
-There are two cases to consider: \code{Nothing} and \code{Just}.
-Here's the first case (I'm using Haskell pseudo-code to transform the
-left hand side to the right hand side):
+有两种情况需要考虑：\code{Nothing} 和 \code{Just}。这是第一种情况（我使用 Haskell 伪代码将左边转换为右边）：
 
 \begin{snip}{haskell}
   fmap id Nothing
-= { definition of fmap }
+  = { definition of fmap }
   Nothing
-= { definition of id }
+  = { definition of id }
   id Nothing
 \end{snip}
-Notice that in the last step I used the definition of \code{id}
-backwards. I replaced the expression \code{Nothing} with
-\code{id\ Nothing}. In practice, you carry out such proofs by
-``burning the candle at both ends,'' until you hit the same expression
-in the middle --- here it was \code{Nothing}. The second case is also
-easy:
+注意，在最后一步我反向使用了 \code{id} 的定义。我用 \code{id\ Nothing} 替换了表达式 \code{Nothing}。实际上，你通过“从两端烧蜡烛”来进行这样的证明，直到在中间遇到相同的表达式——在这里是 \code{Nothing}。第二种情况也很简单：
 
 \begin{snip}{haskell}
   fmap id (Just x)
-= { definition of fmap }
+  = { definition of fmap }
   Just (id x)
-= { definition of id }
+  = { definition of id }
   Just x
-= { definition of id }
+  = { definition of id }
   id (Just x)
 \end{snip}
-Now, let's show that \code{fmap} preserves composition:
+现在，让我们展示 \code{fmap} 保持复合性：
 
 \src{snippet09}
-First the \code{Nothing} case:
+首先是 \code{Nothing} 情况：
 
 \begin{snip}{haskell}
   fmap (g . f) Nothing
-= { definition of fmap }
+  = { definition of fmap }
   Nothing
-= { definition of fmap }
+  = { definition of fmap }
   fmap g Nothing
-= { definition of fmap }
+  = { definition of fmap }
   fmap g (fmap f Nothing)
 \end{snip}
-And then the \code{Just} case:
+然后是 \code{Just} 情况：
 
 \begin{snip}{haskell}
   fmap (g . f) (Just x)
-= { definition of fmap }
+  = { definition of fmap }
   Just ((g . f) x)
-= { definition of composition }
+  = { definition of composition }
   Just (g (f x))
-= { definition of fmap }
+  = { definition of fmap }
   fmap g (Just (f x))
-= { definition of fmap }
+  = { definition of fmap }
   fmap g (fmap f (Just x))
-= { definition of composition }
+  = { definition of composition }
   (fmap g . fmap f) (Just x)
 \end{snip}
-It's worth stressing that equational reasoning doesn't work for C++
-style ``functions'' with side effects. Consider this code:
+值得强调的是，等式推理不适用于具有副作用的 C++ 风格的“函数”。考虑以下代码：
 
 \begin{snip}{cpp}
-int square(int x) {
+  int square(int x) {
     return x * x;
-}
+  }
 
-int counter() {
+  int counter() {
     static int c = 0;
     return c++;
-}
+  }
 
-double y = square(counter());
+  double y = square(counter());
 \end{snip}
-Using equational reasoning, you would be able to inline \code{square}
-to get:
+使用等式推理，你会将 \code{square} 内联为：
 
 \begin{snip}{cpp}
-double y = counter() * counter();
+  double y = counter() * counter();
 \end{snip}
-This is definitely not a valid transformation, and it will not produce
-the same result. Despite that, the C++ compiler will try to use
-equational reasoning if you implement \code{square} as a macro, with
-disastrous results.
+这显然不是一个有效的转换，也不会产生相同的结果。尽管如此，如果你将 \code{square} 实现为宏，C++ 编译器仍然会尝试使用等式推理，结果可能会灾难性地错误。
 
 \subsection{Optional}
 
-Functors are easily expressed in Haskell, but they can be defined in any
-language that supports generic programming and higher-order functions.
-Let's consider the C++ analog of \code{Maybe}, the template type
-\code{optional}. Here's a sketch of the implementation (the actual
-implementation is much more complex, dealing with various ways the
-argument may be passed, with copy semantics, and with the resource
-management issues characteristic of C++):
+函子在 Haskell 中很容易表达，但它们可以在任何支持泛型编程和高阶函数的语言中定义。让我们考虑 C++ 中 \code{Maybe} 的类似物，模板类型 \code{optional}。这是实现的一个简要示意图（实际实现要复杂得多，涉及参数传递的各种方式，复制语义，以及 C++ 特有的资源管理问题）：
 
 \begin{snip}{cpp}
-template<class T>
-class optional {
-    bool _isValid; // the tag
+  template<class T>
+  class optional {
+    bool _isValid; // 标志
     T _v;
-public:
+    public:
     optional()    : _isValid(false) {}        // Nothing
     optional(T x) : _isValid(true) , _v(x) {} // Just
     bool isValid() const { return _isValid; }
     T val() const { return _v; } };
 \end{snip}
-This template provides one part of the definition of a functor: the
-mapping of types. It maps any type \code{T} to a new type
-\code{optional<T>}. Let's define its action on
-functions:
+此模板提供了函子定义的一部分：类型映射。它将任何类型 \code{T} 映射到新的类型 \code{optional<T>}。让我们定义它在函数上的作用：
 
 \begin{snip}{cpp}
-template<class A, class B>
-std::function<optional<B>(optional<A>)>
-fmap(std::function<B(A)> f) {
+  template<class A, class B>
+  std::function<optional<B>(optional<A>)>
+  fmap(std::function<B(A)> f) {
     return [f](optional<A> opt) {
-        if (!opt.isValid())
-            return optional<B>{};
-        else
-            return optional<B>{ f(opt.val()) };
+      if (!opt.isValid())
+      return optional<B>{};
+      else
+      return optional<B>{ f(opt.val()) };
     };
-}
+  }
 \end{snip}
-This is a higher order function, taking a function as an argument and
-returning a function. Here's the uncurried version of it:
+这是一个高阶函数，将一个函数作为参数并返回一个函数。下面是它的非柯里化版本：
 
 \begin{snip}{cpp}
-template<class A, class B>
-optional<B> fmap(std::function<B(A)> f, optional<A> opt) {
+  template<class A, class B>
+  optional<B> fmap(std::function<B(A)> f, optional<A> opt) {
     if (!opt.isValid())
-        return optional<B>{};
+    return optional<B>{};
     else
-        return optional<B>{ f(opt.val()) };
-}
+    return optional<B>{ f(opt.val()) };
+  }
 \end{snip}
-There is also an option of making \code{fmap} a template method of
-\code{optional}. This embarrassment of choices makes abstracting the
-functor pattern in C++ a problem. Should functor be an interface to
-inherit from (unfortunately, you can't have template virtual functions)?
-Should it be a curried or an uncurried free template function? Can the
-C++ compiler correctly infer the missing types, or should they be
-specified explicitly? Consider a situation where the input function
-\code{f} takes an \code{int} to a \code{bool}. How will the
-compiler figure out the type of \code{g}:
+还有一种选择是将 \code{fmap} 作为 \code{optional} 的模板方法。这种选择的尴尬之处在于，在 C++ 中抽象出函子模式是一个问题。函子是否应该是一个接口供继承（不幸的是，你不能有模板虚函数）？它应该是一个柯里化还是非柯里化的自由模板函数？C++ 编译器是否能够正确推断出缺失的类型，还是应该明确指定它们？考虑一种情况，输入函数 \code{f} 将 \code{int} 转换为 \code{bool}。编译器如何确定 \code{g} 的类型：
 
 \begin{snip}{cpp}
-auto g = fmap(f);
+  auto g = fmap(f);
 \end{snip}
-especially if, in the future, there are multiple functors overloading
-\code{fmap}? (We'll see more functors soon.)
+特别是，如果将来有多个函子重载 \code{fmap}？
 
-\subsection{Typeclasses}
+\subsection{类型类（Typeclasses）}
 
-So how does Haskell deal with abstracting the functor? It uses the
-typeclass mechanism. A typeclass defines a family of types that support
-a common interface. For instance, the class of objects that support
-equality is defined as follows:
+那么 Haskell 是如何抽象出函子的呢？它使用了类型类（typeclass）机制。类型类定义了支持共同接口的类型族。例如，支持相等运算的对象类定义如下：
 
 \src{snippet10}
-This definition states that type \code{a} is of the class \code{Eq}
-if it supports the operator \code{(==)} that takes two arguments of
-type \code{a} and returns a \code{Bool}. If you want to tell Haskell
-that a particular type is \code{Eq}, you have to declare it an
-\newterm{instance} of this class and provide the implementation of
-\code{(==)}. For example, given the definition of a 2D \code{Point}
-(a product type of two \code{Float}s):
+此定义说明类型 \code{a} 是 \code{Eq} 类的一部分，如果它支持操作符 \code{(==)}，该操作符接受两个类型为 \code{a} 的参数并返回 \code{Bool}。如果你想告诉 Haskell 某个特定类型是 \code{Eq}，你必须声明它是这个类的一个实例并提供 \code{(==)} 的实现。例如，给定二维 \code{Point}（两个 \code{Float} 的积类型）的定义：
 
 \src{snippet11}
-you can define the equality of points:
+你可以定义点的相等性：
 
 \src{snippet12}
-Here I used the operator \code{(==)} (the one I'm defining) in the
-infix position between the two patterns \code{(Pt x y)} and
-\code{(Pt x' y')}. The body of the function follows the
-single equal sign. Once \code{Point} is declared an instance of
-\code{Eq}, you can directly compare points for equality. Notice that,
-unlike in C++ or Java, you don't have to specify the \code{Eq} class
-(or interface) when defining \code{Point} --- you can do it later in
-client code. Typeclasses are also Haskell's only mechanism for
-overloading functions (and operators). We will need that for overloading
-\code{fmap} for different functors. There is one complication, though:
-a functor is not defined as a type but as a mapping of types, a type
-constructor. We need a typeclass that's not a family of types, as was
-the case with \code{Eq}, but a family of type constructors.
-Fortunately a Haskell typeclass works with type constructors as well as
-with types. So here's the definition of the \code{Functor} class:
+在这里，我使用了操作符 \code{(==)}（即我正在定义的那个）在两个模式 \code{(Pt x y)} 和 \code{(Pt x' y')} 之间的中缀位置。函数体位于单个等号之后。一旦 \code{Point} 被声明为 \code{Eq} 的实例，你就可以直接比较点的相等性。注意，与 C++ 或 Java 不同，你不必在定义 \code{Point} 时指定 \code{Eq} 类（或接口）——你可以稍后在客户端代码中进行指定。类型类也是 Haskell 唯一的函数（和操作符）重载机制。我们将需要它来重载不同函子的 \code{fmap}。不过这里有一个复杂的情况：函子并不是定义为一种类型，而是定义为类型的映射，即类型构造器。我们需要一个类型类，它不是类型的族，而是类型构造器的族。幸运的是，Haskell 的类型类既适用于类型构造器，也适用于类型。所以，这里是 \code{Functor} 类的定义：
 
 \src{snippet13}
-It stipulates that \code{f} is a \code{Functor} if there exists a
-function \code{fmap} with the specified type signature. The lowercase
-\code{f} is a type variable, similar to type variables \code{a} and
-\code{b}. The compiler, however, is able to deduce that it represents
-a type constructor rather than a type by looking at its usage: acting on
-other types, as in \code{f a} and \code{f b}. Accordingly, when
-declaring an instance of \code{Functor}, you have to give it a type
-constructor, as is the case with \code{Maybe}:
+它规定 \code{f} 是一个 \code{Functor}，如果存在一个具有指定类型签名的函数 \code{fmap}。小写的 \code{f} 是一个类型变量，类似于类型变量 \code{a} 和 \code{b}。不过，编译器能够通过查看其用法推断出它表示的是类型构造器而不是类型：作用于其他类型上，如 \code{f a} 和 \code{f b}。因此，当声明 \code{Functor} 的实例时，你必须给出一个类型构造器，就像 \code{Maybe} 一样：
 
 \src{snippet14}
-By the way, the \code{Functor} class, as well as its instance
-definitions for a lot of simple data types, including \code{Maybe},
-are part of the standard Prelude library.
+顺便说一下，\code{Functor} 类以及很多简单数据类型（包括 \code{Maybe}）的实例定义都是标准 Prelude 库的一部分。
 
-\subsection{Functor in C++}
+\subsection{C++ 中的函子（Functor in C++）}
 
-Can we try the same approach in C++? A type constructor corresponds to a
-template class, like \code{optional}, so by analogy, we would
-parameterize \code{fmap} with a \newterm{template template parameter}
-\code{F}. This is the syntax for it:
+我们可以在 C++ 中尝试相同的方法吗？类型构造器对应于模板类，如 \code{optional}，因此通过类比，我们可以用\newterm{模板模板参数} \code{F} 来参数化 \code{fmap}。这是它的语法：
 
 \begin{snip}{cpp}
-template<template<class> F, class A, class B>
-F<B> fmap(std::function<B(A)>, F<A>);
+  template<template<class> F, class A, class B>
+  F<B> fmap(std::function<B(A)>, F<A>);
 \end{snip}
-We would like to be able to specialize this template for different
-functors. Unfortunately, there is a prohibition against partial
-specialization of template functions in C++. You can't write:
+我们希望能够为不同的函子专门化这个模板。不幸的是，C++ 中禁止部分专门化模板函数。你不能写：
 
 \begin{snip}{cpp}
-template<class A, class B>
-optional<B> fmap<optional>(std::function<B(A)> f, optional<A> opt)
+  template<class A, class B>
+  optional<B> fmap<optional>(std::function<B(A)> f, optional<A> opt)
 \end{snip}
-Instead, we have to fall back on function overloading, which brings us
-back to the original definition of the uncurried \code{fmap}:
+相反，我们不得不依赖函数重载，这使我们回到了原始的非柯里化 \code{fmap} 定义：
 
 \begin{snip}{cpp}
-template<class A, class B>
-optional<B> fmap(std::function<B(A)> f, optional<A> opt) {
+  template<class A, class B>
+  optional<B> fmap(std::function<B(A)> f, optional<A> opt) {
     if (!opt.isValid())
-        return optional<B>{};
+    return optional<B>{};
     else
-        return optional<B>{ f(opt.val()) };
-}
+    return optional<B>{ f(opt.val()) };
+  }
 \end{snip}
-This definition works, but only because the second argument of
-\code{fmap} selects the overload. It totally ignores the more generic
-definition of \code{fmap}.
+这个定义是有效的，但仅仅是因为 \code{fmap} 的第二个参数选择了重载。它完全忽略了更通用的 \code{fmap} 定义。
 
-\subsection{The List Functor}
+\subsection{列表函子（The List Functor）}
 
-To get some intuition as to the role of functors in programming, we need
-to look at more examples. Any type that is parameterized by another type
-is a candidate for a functor. Generic containers are parameterized by
-the type of the elements they store, so let's look at a very simple
-container, the list:
+为了对编程中函子的作用有一些直观认识，我们需要看更多的例子。任何由另一种类型参数化的类型都是函子的候选对象。泛型容器是由它们存储的元素类型参数化的，所以让我们看看一个非常简单的容器——列表：
 
 \src{snippet15}
-We have the type constructor \code{List}, which is a mapping from any
-type \code{a} to the type \code{List a}. To show that \code{List}
-is a functor we have to define the lifting of functions: Given a
-function \code{a -> b} define a function
-\code{List a -> List b}:
+我们有类型构造器 \code{List}，它将任何类型 \code{a} 映射到类型 \code{List a}。要证明 \code{List} 是一个函子，我们必须定义函数的提升：给定一个函数 \code{a -> b}，定义一个函数 \code{List a -> List b}：
 
 \src{snippet16}
-A function acting on \code{List a} must consider two cases
-corresponding to the two list constructors. The \code{Nil} case is
-trivial --- just return \code{Nil} --- there isn't much you can do
-with an empty list. The \code{Cons} case is a bit tricky, because it
-involves recursion. So let's step back for a moment and consider what we
-are trying to do. We have a list of \code{a}, a function \code{f}
-that turns \code{a} to \code{b}, and we want to generate a list of
-\code{b}. The obvious thing is to use \code{f} to turn each element
-of the list from \code{a} to \code{b}. How do we do this in
-practice, given that a (non-empty) list is defined as the \code{Cons}
-of a head and a tail? We apply \code{f} to the head and apply the
-lifted (\code{fmap}ped) \code{f} to the tail. This is a recursive
-definition, because we are defining lifted \code{f} in terms of lifted
-\code{f}:
+作用于 \code{List a} 的函数必须考虑两种情况，对应于列表的两个构造器。\code{Nil} 的情况很简单——只需返回 \code{Nil}，因为对一个空列表你无能为力。\code{Cons} 的情况有点复杂，因为它涉及递归。所以让我们退一步，考虑我们想要做什么。我们有一个 \code{a} 列表，一个将 \code{a} 转换为 \code{b} 的函数 \code{f}，我们想要生成一个 \code{b} 列表。显而易见的做法是使用 \code{f} 将列表中的每个元素从 \code{a} 转换为 \code{b}。在实践中，如何实现这一点，给定一个（非空的）列表定义为头部和尾部的 \code{Cons}？我们将 \code{f} 应用于头部，并将提升后的（\code{fmap} 后的）\code{f} 应用于尾部。这是一个递归定义，因为我们正在用提升后的 \code{f} 定义提升后的 \code{f}：
 
 \src{snippet17}
-Notice that, on the right hand side, \code{fmap f} is applied to a
-list that's shorter than the list for which we are defining it --- it's
-applied to its tail. We recurse towards shorter and shorter lists, so we
-are bound to eventually reach the empty list, or \code{Nil}. But as
-we've decided earlier, \code{fmap f} acting on \code{Nil} returns
-\code{Nil}, thus terminating the recursion. To get the final result,
-we combine the new head \code{(f x)} with the new tail
-\code{(fmap f t)} using the \code{Cons} constructor. Putting it
-all together, here's the instance declaration for the list functor:
+注意，在右边 \code{fmap f} 应用于的列表比我们定义的列表要短——它作用于尾部。我们递归地处理越来越短的列表，因此我们必然最终到达空列表或 \code{Nil}。但正如我们之前决定的那样，\code{fmap f} 作用于 \code{Nil} 返回 \code{Nil}，从而终止递归。要得到最终结果，我们将新的头部 \code{(f x)} 和新的尾部 \code{(fmap f t)} 用 \code{Cons} 构造器组合起来。将这一切整合在一起，这是列表函子的实例声明：
 
 \src{snippet18}
-If you are more comfortable with C++, consider the case of a
-\code{std::vector}, which could be considered the most generic C++
-container. The implementation of \code{fmap} for \code{std::vector}
-is just a thin encapsulation of \code{std::transform}:
+如果你对 C++ 更熟悉，可以考虑 \code{std::vector}，它可能是最通用的 C++ 容器。\code{std::vector} 的 \code{fmap} 实现只是 \code{std::transform} 的一个薄包装：
 
 \begin{snip}{cpp}
-template<class A, class B>
-std::vector<B> fmap(std::function<B(A)> f, std::vector<A> v) {
+  template<class A, class B>
+  std::vector<B> fmap(std::function<B(A)> f, std::vector<A> v) {
     std::vector<B> w;
     std::transform( std::begin(v)
-                  , std::end(v)
-                  , std::back_inserter(w)
-                  , f);
+    , std::end(v)
+    , std::back_inserter(w)
+    , f);
     return w;
-}
+  }
 \end{snip}
-We can use it, for instance, to square the elements of a sequence of
-numbers:
+我们可以用它来对一系列数字的元素进行平方：
 
 \begin{snip}{cpp}
-std::vector<int> v{ 1, 2, 3, 4 };
-auto w = fmap([](int i) { return i*i; }, v);
-std::copy( std::begin(w)
-         , std::end(w)
-         , std::ostream_iterator(std::cout, ", "));
+  std::vector<int> v{ 1, 2, 3, 4 };
+  auto w = fmap([](int i) { return i*i; }, v);
+  std::copy( std::begin(w)
+  , std::end(w)
+  , std::ostream_iterator(std::cout, ", "));
 \end{snip}
-Most C++ containers are functors by virtue of implementing iterators
-that can be passed to \code{std::transform}, which is the more
-primitive cousin of \code{fmap}. Unfortunately, the simplicity of a
-functor is lost under the usual clutter of iterators and temporaries
-(see the implementation of \code{fmap} above). I'm happy to say that
-the new proposed C++ range library makes the functorial nature of ranges
-much more pronounced.
+大多数 C++ 容器通过实现可传递给 \code{std::transform} 的迭代器而成为函子，这些迭代器是 \code{fmap} 的较原始版本。不幸的是，函子的简单性在通常的迭代器和临时变量的杂乱中丢失了（参见上面的 \code{fmap} 实现）。我很高兴地说，新的提议的 C++ range 库使得范围的函子性质更加明显。
 
-\subsection{The Reader Functor}
+\subsection{Reader 函子（The Reader Functor）}
 
-Now that you might have developed some intuitions --- for instance,
-functors being some kind of containers --- let me show you an example
-which at first sight looks very different. Consider a mapping of type
-\code{a} to the type of a function returning \code{a}. We haven't
-really talked about function types in depth --- the full categorical
-treatment is coming --- but we have some understanding of those as
-programmers. In Haskell, a function type is constructed using the arrow
-type constructor \code{(->)} which takes two types: the
-argument type and the result type. You've already seen it in infix form,
-\code{a -> b}, but it can equally well be used in prefix
-form, when parenthesized:
+现在你可能已经形成了一些直觉——例如，函子是某种类型的容器——让我向你展示一个看起来完全不同的例子。考虑将类型 \code{a} 映射到返回 \code{a} 的函数类型。我们还没有深入讨论函数类型——完整的范畴论处理即将到来——但我们对这些作为程序员有一些理解。在 Haskell 中，函数类型是使用箭头类型构造器 \code{(->)} 构造的，它接受两个类型：参数类型和结果类型。你已经看到它的中缀形式 \code{a -> b}，但它同样可以在前缀形式中使用，当它被括号包围时：
 
 \src{snippet19}
-Just like with regular functions, type functions of more than one
-argument can be partially applied. So when we provide just one type
-argument to the arrow, it still expects another one. That's why:
+就像普通函数一样，多参数类型函数也可以部分应用。因此，当我们只提供一个类型参数给箭头时，它仍然期待另一个参数。这就是为什么：
 
 \src{snippet20}
-is a type constructor. It needs one more type \code{b} to produce a
-complete type \code{a -> b}. As it stands, it defines a
-whole family of type constructors parameterized by \code{a}. Let's see
-if this is also a family of functors. Dealing with two type parameters
-can get a bit confusing, so let's do some renaming. Let's call the
-argument type \code{r} and the result type \code{a}, in line with
-our previous functor definitions. So our type constructor takes any type
-\code{a} and maps it into the type \code{r -> a}. To show
-that it's a functor, we want to lift a function
-\code{a -> b} to a function that takes
-\code{r -> a} and returns \code{r -> b}. These
-are the types that are formed using the type constructor
-\code{(->) r} acting on, respectively, \code{a} and
-\code{b}. Here's the type signature of \code{fmap} applied to this
-case:
+是一个类型构造器。它还需要另一个类型 \code{b} 才能生成一个完整的类型 \code{a -> b}。就其本质而言，它定义了一整套类型构造器，参数化于 \code{a}。让我们看看这是否也是一套函子。处理两个类型参数可能有点混乱，所以让我们重命名一下。我们称参数类型为 \code{r}，结果类型为 \code{a}，与我们之前的函子定义一致。因此，我们的类型构造器接受任何类型 \code{a} 并将其映射为类型 \code{r -> a}。要证明它是一个函子，我们想要将一个函数 \code{a -> b} 提升为一个接受 \code{r -> a} 并返回 \code{r -> b} 的函数。这些是分别使用类型构造器 \code{(->) r} 作用于 \code{a} 和 \code{b} 时形成的类型。以下是应用于这种情况的 \code{fmap} 的类型签名：
 
 \src{snippet21}
-We have to solve the following puzzle: given a function
-\code{f :: a -> b} and a function
-\code{g :: r -> a}, create a function
-\code{r -> b}. There is only one way we can compose the two
-functions, and the result is exactly what we need. So here's the
-implementation of our \code{fmap}:
+我们需要解决以下难题：给定一个函数 \code{f :: a -> b} 和一个函数 \code{g :: r -> a}，创建一个函数 \code{r -> b}。我们只能以一种方式将这两个函数组合起来，结果恰好是我们需要的。因此，这是我们 \code{fmap} 的实现：
 
 \src{snippet22}
-It just works! If you like terse notation, this definition can be
-reduced further by noticing that composition can be rewritten in prefix
-form:
+它就是有效的！如果你喜欢简洁的符号，这个定义可以进一步简化，注意到组合可以用前缀形式重写：
 
 \src{snippet23}
-and the arguments can be omitted to yield a direct equality of two
-functions:
+并且可以省略参数，得到两个函数的直接等式：
 
 \src{snippet24}
-This combination of the type constructor \code{(->) r}
-with the above implementation of \code{fmap} is called the reader
-functor.
+这种类型构造器 \code{(->) r} 和上面 \code{fmap} 的实现组合在一起，称为 reader 函子。
 
-\section{Functors as Containers}
+\section{函子作为容器（Functors as Containers）}
 
-We've seen some examples of functors in programming languages that
-define general-purpose containers, or at least objects that contain some
-value of the type they are parameterized over. The reader functor seems
-to be an outlier, because we don't think of functions as data. But we've
-seen that pure functions can be memoized, and function execution can be
-turned into table lookup. Tables are data. Conversely, because of
-Haskell's laziness, a traditional container, like a list, may actually
-be implemented as a function. Consider, for instance, an infinite list
-of natural numbers, which can be compactly defined as:
+我们已经看到了一些在编程语言中作为通用容器定义的函子的例子，或者至少是包含它们所参数化的类型的值的对象。reader 函子似乎是一个特例，因为我们不认为函数是数据。但我们已经看到，纯函数可以被记忆化，并且函数执行可以转换为表查找。表是数据。反过来，由于 Haskell 的惰性，传统的容器，比如列表，实际上可能是作为函数实现的。考虑一个自然数的无限列表，它可以简洁地定义为：
 
 \src{snippet25}
-In the first line, a pair of square brackets is Haskell's built-in
-type constructor for lists. In the second line, square brackets are used
-to create a list literal. Obviously, an infinite list like this cannot
-be stored in memory. The compiler implements it as a function that
-generates \code{Integer}s on demand. Haskell effectively blurs the
-distinction between data and code. A list could be considered a
-function, and a function could be considered a table that maps arguments
-to results. The latter can even be practical if the domain of the
-function is finite and not too large. It would not be practical,
-however, to implement \code{strlen} as table lookup, because there are
-infinitely many different strings. As programmers, we don't like
-infinities, but in category theory you learn to eat infinities for
-breakfast. Whether it's a set of all strings or a collection of all
-possible states of the Universe, past, present, and future --- we can
-deal with it! So I like to think of the functor object (an object of the
-type generated by an endofunctor) as containing a value or values of the
-type over which it is parameterized, even if these values are not
-physically present there. One example of a functor is a C++
-\code{std::future}, which may at some point contain a value, but it's
-not guaranteed it will; and if you want to access it, you may block
-waiting for another thread to finish execution. Another example is a
-Haskell \code{IO} object, which may contain user input, or the future
-versions of our Universe with ``Hello World!'' displayed on the monitor.
-According to this interpretation, a functor object is something that may
-contain a value or values of the type it's parameterized upon. Or it may
-contain a recipe for generating those values. We are not at all
-concerned about being able to access the values --- that's totally
-optional, and outside of the scope of the functor. All we are interested
-in is to be able to manipulate those values using functions. If the
-values can be accessed, then we should be able to see the results of
-this manipulation. If they can't, then all we care about is that the
-manipulations compose correctly and that the manipulation with an
-identity function doesn't change anything. Just to show you how much we
-don't care about being able to access the values inside a functor
-object, here's a type constructor that ignores completely its argument
-\code{a}:
+在第一行中，方括号是 Haskell 内置的列表类型构造器。在第二行中，方括号用于创建列表字面量。显然，这样的无限列表不能存储在内存中。编译器将其实现为一个按需生成 \code{Integer} 的函数。Haskell 有效地模糊了数据和代码之间的界限。列表可以被视为一个函数，而函数可以被视为一个将参数映射到结果的表。如果函数的定义域是有限的且不太大，这甚至可能是可行的。然而，将 \code{strlen} 实现为表查找是不现实的，因为有无限多种不同的字符串。作为程序员，我们不喜欢无限，但在范畴论中，你会学会处理无限。无论是所有字符串的集合还是宇宙的所有可能状态，过去、现在和未来——我们都可以应对！所以，我喜欢将函子对象（一个由自函子生成的类型的对象）视为包含它所参数化的类型的值，即使这些值并不实际存在于其中。函子对象的一个例子是 C++ 中的 \code{std::future}，它可能在某个时候包含一个值，但不能保证它一定会；如果你想访问它，可能会阻塞等待另一个线程完成执行。另一个例子是 Haskell 中的 \code{IO} 对象，它可能包含用户输入，或者显示“Hello World！”的未来宇宙版本。根据这种解释，函子对象可能包含它所参数化的类型的一个或多个值。或者它可能包含生成这些值的配方。我们完全不关心是否能够访问这些值——这是完全可选的，并且超出了函子的范围。我们所关心的只是能够使用函数来操作这些值。如果可以访问这些值，那么我们应该能够看到这种操作的结果。如果不能，我们关心的只是这些操作是否能够正确组合，并且使用恒等函数的操作不会改变任何东西。为了向你展示我们有多么不关心是否能够访问函子对象中的值，下面是一个完全忽略其参数 \code{a} 的类型构造器：
 
 \src{snippet26}
-The \code{Const} type constructor takes two types, \code{c} and
-\code{a}. Just like we did with the arrow constructor, we are going to
-partially apply it to create a functor. The data constructor (also
-called \code{Const}) takes just one value of type \code{c}. It has
-no dependence on \code{a}. The type of \code{fmap} for this type
-constructor is:
+\code{Const} 类型构造器接受两个类型，\code{c} 和 \code{a}。就像我们之前处理箭头构造器一样，我们将部分应用它来创建一个函子。数据构造器（也称为 \code{Const}）只接受一个类型为 \code{c} 的值。它与 \code{a} 没有任何依赖关系。对于这个类型构造器，\code{fmap} 的类型是：
 
 \src{snippet27}
-Because the functor ignores its type argument, the implementation of
-\code{fmap} is free to ignore its function argument --- the function
-has nothing to act upon:
+由于函子忽略了其类型参数，\code{fmap} 的实现可以自由地忽略其函数参数——该函数没有作用的对象：
 
 \src{snippet28}
-This might be a little clearer in C++ (I never thought I would utter
-those words!), where there is a stronger distinction between type
-arguments --- which are compile-time --- and values, which are run-time:
+在 C++ 中这可能会更清楚（我从未想过我会说出这些话！），在那里类型参数和值之间有更强的区分——前者是编译时的，后者是运行时的：
 
 \begin{snip}{cpp}
-template<class C, class A>
-struct Const {
+  template<class C, class A>
+  struct Const {
     Const(C v) : _v(v) {}
     C _v;
-};
+  };
 \end{snip}
-The C++ implementation of \code{fmap} also ignores the function
-argument and essentially re-casts the \code{Const} argument without
-changing its value:
+C++ 中的 \code{fmap} 实现同样忽略了函数参数，并且本质上重新转换了 \code{Const} 参数而不改变其值：
 
 \begin{snip}{cpp}
-template<class C, class A, class B>
-Const<C, B> fmap(std::function<B(A)> f, Const<C, A> c) {
+  template<class C, class A, class B>
+  Const<C, B> fmap(std::function<B(A)> f, Const<C, A> c) {
     return Const<C, B>{c._v};
-}
+  }
 \end{snip}
-Despite its weirdness, the \code{Const} functor plays an important
-role in many constructions. In category theory, it's a special case of
-the $\Delta_c$ functor I mentioned earlier --- the endo-functor
-case of a black hole. We'll be seeing more of it in the future.
+尽管它看起来很奇怪，但 \code{Const} 函子在许多结构中起着重要作用。在范畴论中，它是我之前提到的常量函子 $\Delta_c$ 的特例——黑洞的自函子情况。我们将在未来看到更多它的应用。
 
-\section{Functor Composition}
+\section{函子组合（Functor Composition）}
 
-It's not hard to convince yourself that functors between categories
-compose, just like functions between sets compose. A composition of two
-functors, when acting on objects, is just the composition of their
-respective object mappings; and similarly when acting on morphisms.
-After jumping through two functors, identity morphisms end up as
-identity morphisms, and compositions of morphisms finish up as
-compositions of morphisms. There's really nothing much to it. In
-particular, it's easy to compose endofunctors. Remember the function
-\code{maybeTail}? I'll rewrite it using Haskell's built in
-implementation of lists:
+很容易让自己相信范畴之间的函子是可以组合的，就像集合之间的函数可以组合一样。两个函子的组合，在作用于对象时，只是它们各自的对象映射的组合；在作用于态射时，也是类似的。当穿过两个函子时，恒等态射最终仍然是恒等态射，态射的组合最终仍然是态射的组合。这真的没什么特别的。特别是，自函子的组合很容易。还记得 \code{maybeTail} 函数吗？我将用 Haskell 内置的列表实现重写它：
 
 \src{snippet29}
-(The empty list constructor that we used to call \code{Nil} is
-replaced with the empty pair of square brackets \code{{[}{]}}. The
-\code{Cons} constructor is replaced with the infix operator \code{:}
-(colon).) The result of \code{maybeTail} is of a type that's a
-composition of two functors, \code{Maybe} and \code{{[}{]}}, acting
-on \code{a}. Each of these functors is equipped with its own version
-of \code{fmap}, but what if we want to apply some function \code{f}
-to the contents of the composite: a \code{Maybe} list? We have to
-break through two layers of functors. We can use \code{fmap} to break
-through the outer \code{Maybe}. But we can't just send \code{f}
-inside \code{Maybe} because \code{f} doesn't work on lists. We have
-to send \code{(fmap f)} to operate on the inner list. For instance,
-let's see how we can square the elements of a \code{Maybe} list of
-integers:
+（我们之前称为 \code{Nil} 的空列表构造器被替换为一对空方括号 \code{{[}{]}}。\code{Cons} 构造器被替换为中缀操作符 \code{:}（冒号）。）\code{maybeTail} 的结果是 \code{Maybe} 和 \code{{[}{]}} 两个函子的组合，作用于 \code{a}。每个函子都有其自己的 \code{fmap} 版本，但如果我们想将某个函数 \code{f} 应用于组合：一个 \code{Maybe} 列表怎么办？我们必须突破两个函子的层次。我们可以使用 \code{fmap} 突破外部的 \code{Maybe}。但我们不能直接将 \code{f} 发送到 \code{Maybe} 内部，因为 \code{f} 不能作用于列表。我们必须发送 \code{(fmap f)} 来操作内部列表。例如，让我们看看如何对一个 \code{Maybe} 整数列表的元素进行平方：
 
 \src{snippet30}
-The compiler, after analyzing the types, will figure out that, for the
-outer \code{fmap}, it should use the implementation from the
-\code{Maybe} instance, and for the inner one, the list functor
-implementation. It may not be immediately obvious that the above code
-may be rewritten as:
+编译器在分析类型后，会发现对于外部的 \code{fmap}，它应该使用 \code{Maybe} 实例中的实现，而对于内部的，则使用列表函子的实现。可能并不立即明显，上面的代码可以重写为：
 
 \src{snippet31}
-But remember that \code{fmap} may be considered a function of just one
-argument:
+但记住，\code{fmap} 可以被视为只有一个参数的函数：
 
 \src{snippet32}
-In our case, the second \code{fmap} in \code{(fmap . fmap)} takes
-as its argument:
+在我们的例子中，\code{(fmap . fmap)} 中的第二个 \code{fmap} 的参数是：
 
 \src{snippet33}
-and returns a function of the type:
+并返回一个类型为：
 
 \src{snippet34}
-The first \code{fmap} then takes that function and returns a function:
+的函数。第一个 \code{fmap} 然后接受该函数并返回一个函数：
 
 \src{snippet35}
-Finally, that function is applied to \code{mis}. So the composition of
-two functors is a functor whose \code{fmap} is the composition of the
-corresponding \code{fmap}s. Going back to category theory: It's pretty
-obvious that functor composition is associative (the mapping of objects
-is associative, and the mapping of morphisms is associative). And there
-is also a trivial identity functor in every category: it maps every
-object to itself, and every morphism to itself. So functors have all the
-same properties as morphisms in some category. But what category would
-that be? It would have to be a category in which objects are categories
-and morphisms are functors. It's a category of categories. But a
-category of \emph{all} categories would have to include itself, and we
-would get into the same kinds of paradoxes that made the set of all sets
-impossible. There is, however, a category of all \emph{small} categories
-called $\Cat$ (which is big, so it can't be a member of itself). A
-small category is one in which objects form a set, as opposed to
-something larger than a set. Mind you, in category theory, even an
-infinite uncountable set is considered ``small.'' I thought I'd mention
-these things because I find it pretty amazing that we can recognize the
-same structures repeating themselves at many levels of abstraction.
-We'll see later that functors form categories as well.
+最后，该函数被应用于 \code{mis}。因此，两个函子的组合是一个函子，其 \code{fmap} 是相应的 \code{fmap} 组合。回到范畴论：很明显，函子组合是结合的（对象的映射是结合的，态射的映射也是结合的）。而且每个范畴中都有一个平凡的恒等函子：它将每个对象映射到自身，并将每个态射映射到自身。因此，函子具有与某些范畴中的态射相同的属性。但那个范畴是什么呢？它必须是一个对象是范畴，态射是函子的范畴。这是范畴的范畴。但是 \emph{所有} 范畴的范畴必须包含它自身，这会导致与使得所有集合的集合不可能的悖论相同的悖论。然而，存在一个所有 \emph{小} 范畴的范畴，称为 $\Cat$（它是大的，所以不能是它自身的成员）。一个小范畴是其中对象形成一个集合的范畴，而不是比集合更大的东西。请注意，在范畴论中，即使是无限不可数的集合也被认为是“小的”。我之所以提到这些事情，是因为我觉得能够在许多抽象层次上识别出相同的结构是相当令人惊奇的。稍后我们将看到函子也形成了范畴。
 
-\section{Challenges}
+\section{挑战（Challenges）}
 
 \begin{enumerate}
   \tightlist
   \item
-        Can we turn the \code{Maybe} type constructor into a functor by
-        defining:
+  我们能否通过定义以下内容将 \code{Maybe} 类型构造器变成一个函子：
 
-        \begin{snip}{haskell}
-fmap _ _ = Nothing
-\end{snip}
+  \begin{snip}{haskell}
+    fmap _ _ = Nothing
+  \end{snip}
 
-        which ignores both of its arguments? (Hint: Check the functor laws.)
+  它忽略了两个参数？（提示：检查函子定律。）
   \item
-        Prove functor laws for the reader functor. Hint: it's really simple.
+  证明 reader 函子的函子定律。提示：这非常简单。
   \item
-        Implement the reader functor in your second favorite language (the
-        first being Haskell, of course).
+  在你第二喜欢的语言中实现 reader 函子（当然，第一喜欢的语言是 Haskell）。
   \item
-        Prove the functor laws for the list functor. Assume that the laws are
-        true for the tail part of the list you're applying it to (in other
-        words, use \emph{induction}).
+  证明列表函子的函子定律。假设该定律对你应用它的列表的尾部部分是成立的（换句话说，使用 \emph{归纳法}）。
 \end{enumerate}

@@ -1,210 +1,118 @@
 % !TEX root = ../../ctfp-print.tex
 
-\lettrine[lhang=0.17]{W}{e've seen several formulations} of a monoid: as a set, as a
-single-object category, as an object in a monoidal category. How much
-more juice can we squeeze out of this simple concept?
+\lettrine[lhang=0.17]{我}{们已经看到了} monoid 的几种形式：作为一个集合，作为一个单对象范畴，作为 monoidal 范畴中的一个对象。我们还能从这个简单的概念中榨取出多少“果汁”呢？
 
-Let's try. Take this definition of a monoid as a set $m$ with a
-pair of functions:
+让我们试试看。将 monoid 定义为一个集合 $m$ 以及一对函数：
 \begin{align*}
   \mu  & \Colon m\times{}m \to m \\
   \eta & \Colon 1 \to m
 \end{align*}
-Here, 1 is the terminal object in $\Set$ --- the singleton set.
-The first function defines multiplication (it takes a pair of elements
-and returns their product), the second selects the unit element from
-$m$. Not every choice of two functions with these signatures
-results in a monoid. For that we need to impose additional conditions:
-associativity and unit laws. But let's forget about that for a moment
-and just consider ``potential monoids.'' A pair of functions is an
-element of a Cartesian product of two sets of functions. We know that
-these sets may be represented as exponential objects:
+这里，1 是 $\Set$ 中的终对象——单元素集合。第一个函数定义了乘法（它接收一对元素并返回它们的乘积），第二个选择 $m$ 中的单位元。并不是所有具有这些签名的函数对都会产生一个 monoid。为此，我们需要施加附加条件：结合律和单位律。但让我们暂时忘记这些，只考虑“潜在的 monoid”。一对函数是两个函数集的笛卡尔积的元素。我们知道，这些集合可以表示为指数对象：
 \begin{align*}
   \mu  & \in m^{m\times{}m} \\
   \eta & \in m^1
 \end{align*}
-The Cartesian product of these two sets is:
+这两个集合的笛卡尔积为：
 \[m^{m\times{}m}\times{}m^1\]
-Using some high-school algebra (which works in every Cartesian closed
-category), we can rewrite it as:
+利用一些高中代数（这在每个笛卡尔闭范畴中都适用），我们可以将其重写为：
 \[m^{m\times{}m + 1}\]
-The $+$ sign stands for the coproduct in $\Set$. We have just
-replaced a pair of functions with a single function --- an element of
-the set:
+加号表示 $\Set$ 中的余积。我们刚刚用一个函数代替了一对函数——即集合的一个元素：
 \[m\times{}m + 1 \to m\]
-Any element of this set of functions is a potential monoid.
+这个函数集中的任何元素都是一个潜在的 monoid。
 
-The beauty of this formulation is that it leads to interesting
-generalizations. For instance, how would we describe a group using this
-language? A group is a monoid with one additional function that assigns
-the inverse to every element. The latter is a function of the type
-$m \to m$. As an example, integers form a group with
-addition as a binary operation, zero as the unit, and negation as the
-inverse. To define a group we would start with a triple of functions:
+这种表述的美妙之处在于它引出了有趣的推广。例如，我们如何用这种语言描述群（group）呢？群是一个具有附加函数的 monoid，该函数为每个元素分配逆元。后者是类型 $m \to m$ 的函数。举个例子，整数构成了一个加法群，零是单位元，取反是逆元。为了定义一个群，我们将从一组三元函数开始：
 \begin{align*}
   m\times{}m \to m \\
   m \to m          \\
   1 \to m
 \end{align*}
-As before, we can combine all these triples into one set of functions:
+和以前一样，我们可以将这些三元组合成一个函数集：
 \[m\times{}m + m + 1 \to m\]
-We started with one binary operator (addition), one unary operator
-(negation), and one nullary operator (identity --- here zero). We
-combined them into one function. All functions with this signature
-define potential groups.
+我们从一个二元运算符（加法）、一个一元运算符（取反）和一个零元运算符（单位元——这里是零）开始。我们将它们组合成一个函数。所有具有这个签名的函数都定义了潜在的群。
 
-We can go on like this. For instance, to define a ring, we would add one
-more binary operator and one nullary operator, and so on. Each time we
-end up with a function type whose left-hand side is a sum of powers
-(possibly including the zeroth power --- the terminal object), and the
-right-hand side being the set itself.
+我们可以继续这样做。例如，要定义一个环（ring），我们可以添加另一个二元运算符和一个零元运算符，依此类推。每次我们都以一个函数类型结束，其左侧是幂的总和（可能包括零次幂——即终对象），而右侧是集合本身。
 
-Now we can go crazy with generalizations. First of all, we can replace
-sets with objects and functions with morphisms. We can define n-ary
-operators as morphisms from n-ary products. It means that we need a
-category that supports finite products. For nullary operators we require
-the existence of the terminal object. So we need a Cartesian category.
-In order to combine these operators we need exponentials, so that's a
-Cartesian closed category. Finally, we need coproducts to complete our
-algebraic shenanigans.
+现在我们可以进行广泛的推广。首先，我们可以用对象替换集合，用态射替换函数。我们可以将 n 元运算符定义为从 n 元乘积出发的态射。这意味着我们需要一个支持有限积的范畴。对于零元运算符，我们要求终对象的存在。因此我们需要一个笛卡尔范畴。为了组合这些运算符，我们需要指数对象，所以这是一个笛卡尔闭范畴。最后，我们需要余积来完成我们的代数诡计。
 
-Alternatively, we can just forget about the way we derived our formulas
-and concentrate on the final product. The sum of products on the left
-hand side of our morphism defines an endofunctor. What if we pick an
-arbitrary endofunctor $F$ instead? In that case we don't have to
-impose any constraints on our category. What we obtain is called an
-F-algebra.
+或者，我们可以忘记我们推导公式的方式，专注于最终结果。态射左侧的乘积之和定义了一个端函子。如果我们选择一个任意的端函子 $F$，会发生什么呢？在这种情况下，我们不需要对我们的范畴施加任何约束。我们得到的就是所谓的 F-代数。
 
-An F-algebra is a triple consisting of an endofunctor $F$, an
-object $a$, and a morphism
+一个 F-代数是由一个端函子 $F$、一个对象 $a$ 以及一个态射组成的三元组
 \[F a \to a\]
-The object is often called the carrier, an underlying object or, in the
-context of programming, the carrier \emph{type}. The morphism is often
-called the evaluation function or the structure map. Think of the
-functor $F$ as forming expressions and the morphism as evaluating
-them.
+这个对象通常被称为载体（carrier）、基础对象或在编程上下文中称为载体类型。态射通常被称为求值函数或结构映射。可以将函子 $F$ 看作是形成表达式的结构，而态射则用于对它们求值。
 
-Here's the Haskell definition of an F-algebra:
+以下是 Haskell 中对 F-代数的定义：
 
 \src{snippet01}
-It identifies the algebra with its evaluation function.
+它将代数与其求值函数等同。
 
-In the monoid example, the functor in question is:
+在 monoid 示例中，所讨论的函子为：
 
 \src{snippet02}
-This is Haskell for $1 + a\times{}a$ (remember
-\hyperref[simple-algebraic-data-types]{algebraic
-  data structures}).
+这在 Haskell 中表示 $1 + a\times{}a$（请记住 \hyperref[simple-algebraic-data-types]{代数数据结构}）。
 
-A ring would be defined using the following functor:
+一个环将使用以下函子定义：
 
 \src{snippet03}
-which is Haskell for $1 + 1 + a\times{}a + a\times{}a + a$.
+这在 Haskell 中表示 $1 + 1 + a\times{}a + a\times{}a + a$。
 
-An example of a ring is the set of integers. We can choose
-\code{Integer} as the carrier type and define the evaluation function
-as:
+整数集是环的一个例子。我们可以选择 \code{Integer} 作为载体类型，并定义求值函数为：
 
 \src{snippet04}
-There are more F-algebras based on the same functor \code{RingF}. For
-instance, polynomials form a ring and so do square matrices.
+基于同一函子 \code{RingF}，还有更多的 F-代数。例如，多项式构成了一个环，方阵也是如此。
 
-As you can see, the role of the functor is to generate expressions that
-can be evaluated using the evaluator of the algebra. So far we've only
-seen very simple expressions. We are often interested in more elaborate
-expressions that can be defined using recursion.
+如你所见，函子的作用是生成可以使用代数求值器求值的表达式。到目前为止，我们只看到了非常简单的表达式。我们通常对可以使用递归定义的更复杂的表达式感兴趣。
 
-\section{Recursion}
+\section{递归（Recursion）}
 
-One way to generate arbitrary expression trees is to replace the
-variable \code{a} inside the functor definition with recursion. For
-instance, an arbitrary expression in a ring is generated by this
-tree-like data structure:
+生成任意表达式树的一种方法是用递归替换函子定义中的变量 \code{a}。例如，一个环中的任意表达式由这个类树状的数据结构生成：
 
 \src{snippet05}
-We can replace the original ring evaluator with its recursive version:
+我们可以将原始的环求值器替换为其递归版本：
 
 \src{snippet06}
-This is still not very practical, since we are forced to represent all
-integers as sums of ones, but it will do in a pinch.
+这仍然不太实用，因为我们被迫将所有整数表示为 1 的和，但在紧要关头可以使用。
 
-But how can we describe expression trees using the language of
-F-algebras? We have to somehow formalize the process of replacing the
-free type variable in the definition of our functor, recursively, with
-the result of the replacement. Imagine doing this in steps. First,
-define a depth-one tree as:
+但是，我们如何使用 F-代数的语言描述表达式树呢？我们必须以某种方式形式化替换我们的函子定义中自由类型变量的过程，递归地用替换结果填充这个类型变量。想象分步进行这个过程。首先，定义一个深度为 1 的树为：
 
 \src{snippet07}
-We are filling the holes in the definition of \code{RingF} with
-depth-zero trees generated by \code{RingF a}. Depth-2 trees are
-similarly obtained as:
+我们将 \code{RingF} 的定义中用 \code{RingF a} 生成的深度为 0 的树填入空缺中。类似地，深度为 2 的树也可以这样得到：
 
 \src{snippet08}
-which we can also write as:
+我们还可以写成：
 
 \src{snippet09}
-Continuing this process, we can write a symbolic equation:
+继续这个过程，我们可以写出一个符号方程：
 
 \begin{snipv}
-type RingF\textsubscript{n+1} a = RingF (RingF\textsubscript{n} a)
+  type RingF\textsubscript{n+1} a = RingF (RingF\textsubscript{n} a)
 \end{snipv}
-Conceptually, after repeating this process infinitely many times, we end
-up with our \code{Expr}. Notice that \code{Expr} does not depend on
-\code{a}. The starting point of our journey doesn't matter, we always
-end up in the same place. This is not always true for an arbitrary
-endofunctor in an arbitrary category, but in the category $\Set$
-things are nice.
+从概念上讲，在重复这个过程无穷次之后，我们最终得到 \code{Expr}。注意 \code{Expr} 不依赖于 \code{a}。我们旅程的起点无关紧要，最终总是到达同一个地方。这并不总是适用于任意范畴中的任意端函子，但在 $\Set$ 范畴中情况较好。
 
-Of course, this is a hand-waving argument, and I'll make it more
-rigorous later.
+当然，这只是一个牵强的论点，我稍后会对其进行更严格的论证。
 
-Applying an endofunctor infinitely many times produces a \newterm{fixed
-  point}, an object defined as:
+无限次地应用一个端函子生成一个不动点（fixed point），定义为：
 \[\mathit{Fix}\ f = f\ (\mathit{Fix}\ f)\]
-The intuition behind this definition is that, since we applied
-$f$ infinitely many times to get $\mathit{Fix}\ f$, applying it one
-more time doesn't change anything. In Haskell, the definition of a fixed
-point is:
+这个定义背后的直觉是，由于我们已经将 $f$ 应用无穷多次以得到 $\mathit{Fix}\ f$，再应用一次也不会改变任何东西。在 Haskell 中，不动点的定义为：
 
 \src{snippet10}
-Arguably, this would be more readable if the constructor's name were
-different than the name of the type being defined, as in:
+可以说，如果构造器的名称与定义的类型不同，可能会更易读，如：
 
 \src{snippet11}
-but I'll stick with the accepted notation. The constructor \code{Fix}
-(or \code{In}, if you prefer) can be seen as a function:
+但我会坚持使用公认的符号。构造器 \code{Fix}（或 \code{In}，如果你喜欢这样）可以看作是一个函数：
 
 \src{snippet12}
-There is also a function that peels off one level of functor
-application:
+还有一个函数可以剥去一个层次的函子应用：
 
 \src{snippet13}
-The two functions are the inverse of each other. We'll use these
-functions later.
+这两个函数是彼此的逆运算。我们稍后会用到这些函数。
 
-\section{Category of F-Algebras}
+\section{F-代数的范畴（Category of F-Algebras）}
 
-Here's the oldest trick in the book: Whenever you come up with a way of
-constructing some new objects, see if they form a category. Not
-surprisingly, algebras over a given endofunctor $F$ form a
-category. Objects in that category are algebras --- pairs consisting of
-a carrier object $a$ and a morphism
-$F a \to a$, both from the original category
-$\cat{C}$.
+这是书中最古老的技巧之一：每当你想出一种构建新对象的方法时，看看它们是否构成了一个范畴。不出所料，给定端函子 $F$ 的代数构成了一个范畴。该范畴中的对象是代数——由一个载体对象 $a$ 和一个态射 $F a \to a$ 组成的二元组，两者都来自原范畴 $\cat{C}$。
 
-To complete the picture, we have to define morphisms in the category of
-F-algebras. A morphism must map one algebra $(a, f)$ to another
-algebra $(b, g)$. We'll define it as a morphism $m$ that
-maps the carriers --- it goes from $a$ to $b$ in the
-original category. Not any morphism will do: we want it to be compatible
-with the two evaluators. (We call such a structure-preserving morphism a
-\newterm{homomorphism}.) Here's how you define a homomorphism of
-F-algebras. First, notice that we can lift $m$ to the mapping:
+为了完成这个图景，我们必须定义 F-代数范畴中的态射。态射必须将一个代数 $(a, f)$ 映射到另一个代数 $(b, g)$。我们将其定义为一个态射 $m$，它映射载体——即从 $a$ 到 $b$ 在原范畴中的映射。并不是任何态射都可以做到：我们希望它与两个求值器兼容（我们称这种保持结构的态射为同态（homomorphism））。下面是 F-代数同态的定义。首先，注意我们可以将 $m$ 提升为映射：
 \[F m \Colon F a \to F b\]
-we can then follow it with $g$ to get to $b$.
-Equivalently, we can use $f$ to go from $F a$ to
-$a$ and then follow it with $m$. We want the two paths to
-be equal:
+然后我们可以用 $g$ 来得到 $b$。或者，我们可以用 $f$ 从 $F a$ 到 $a$，然后跟随它使用 $m$。我们希望这两条路径相等：
 \[g \circ F m = m \circ f\]
 
 \begin{figure}[H]
@@ -213,18 +121,9 @@ be equal:
 \end{figure}
 
 \noindent
-It's easy to convince yourself that this is indeed a category (hint:
-identity morphisms from $\cat{C}$ work just fine, and a composition of
-homomorphisms is a homomorphism).
+你很容易说服自己这确实是一个范畴（提示：$\cat{C}$ 中的恒等态射工作得很好，且同态的组合仍是同态）。
 
-An initial object in the category of F-algebras, if it exists, is called
-the \newterm{initial algebra}. Let's call the carrier of this initial
-algebra $i$ and its evaluator $j \Colon F i \to i$. It turns out that $j$,
-the evaluator of the initial algebra, is an isomorphism. This result is
-known as Lambek's theorem. The proof relies on the definition of the
-initial object, which requires that there be a unique homomorphism
-$m$ from it to any other F-algebra. Since $m$ is a
-homomorphism, the following diagram must commute:
+F-代数范畴中的初始对象（如果存在）称为初始代数（initial algebra）。我们称这个初始代数的载体为 $i$，其求值器为 $j \Colon F i \to i$。事实证明，初始代数的求值器 $j$ 是一个同构（isomorphism）。这一结果称为 Lambek 定理。证明依赖于初始对象的定义，它要求存在唯一的同态 $m$ 从它映射到任何其他 F-代数。因为 $m$ 是同态，下面的图必须交换：
 
 \begin{figure}[H]
   \centering
@@ -232,14 +131,9 @@ homomorphism, the following diagram must commute:
 \end{figure}
 
 \noindent
-Now let's construct an algebra whose carrier is $F i$. The
-evaluator of such an algebra must be a morphism from $F (F i)$
-to $F i$. We can easily construct such an evaluator simply by
-lifting $j$:
+现在让我们构造一个载体为 $F i$ 的代数。此类代数的求值器必须是从 $F (F i)$ 到 $F i$ 的态射。我们可以通过提升 $j$ 来轻松构造这样的求值器：
 \[F j \Colon F (F i) \to F i\]
-Because $(i, j)$ is the initial algebra, there must be a unique
-homomorphism $m$ from it to $(F i, F j)$. The following
-diagram must commute:
+由于 $(i, j)$ 是初始代数，必须存在一个唯一的同态 $m$ 从它映射到 $(F i, F j)$。以下图必须交换：
 
 \begin{figure}[H]
   \centering
@@ -247,8 +141,7 @@ diagram must commute:
 \end{figure}
 
 \noindent
-But we also have this trivially commuting diagram (both paths are the
-same!):
+但我们还有这个可交换的图（两条路径是相同的！）：
 
 \begin{figure}[H]
   \centering
@@ -256,9 +149,7 @@ same!):
 \end{figure}
 
 \noindent
-which can be interpreted as showing that $j$ is a homomorphism of
-algebras, mapping $(F i, F j)$ to $(i, j)$. We can
-glue these two diagrams together to get:
+这可以解释为 $j$ 是一个将 $(F i, F j)$ 映射到 $(i, j)$ 的代数同态。我们可以将这两个图拼接在一起：
 
 \begin{figure}[H]
   \centering
@@ -266,56 +157,32 @@ glue these two diagrams together to get:
 \end{figure}
 
 \noindent
-This diagram may, in turn, be interpreted as showing that
-$j \circ m$ is a homomorphism of algebras. Only in this case the
-two algebras are the same. Moreover, because $(i, j)$ is
-initial, there can only be one homomorphism from it to itself, and
-that's the identity morphism $\id_i$ --- which we know is a
-homomorphism of algebras. Therefore $j \circ m = \id_i$. Using this
-fact and the commuting property of the left diagram we can prove that
-$m \circ j = \id_{Fi}$. This shows that $m$ is the inverse of
-$j$ and therefore $j$ is an isomorphism between
-$F i$ and $i$:
+这个图可以解释为 $j \circ m$ 是代数同态。在这种情况下，这两个代数是相同的。此外，因为 $(i, j)$ 是初始对象，只能存在一个从它映射到自身的同态，那就是恒等态射 $\id_i$——我们知道这是代数同态。因此 $j \circ m = \id_i$。利用这个事实和左侧图的可交换性质，我们可以证明 $m \circ j = \id_{Fi}$。这表明 $m$ 是 $j$ 的逆运算，因此 $j$ 是 $F i$ 和 $i$ 之间的同构：
 \[F i \cong i\]
-But that is just saying that $i$ is a fixed point of $F$.
-That's the formal proof behind the original hand-waving argument.
+这仅仅表明 $i$ 是 $F$ 的一个不动点（fixed point）。这是对原先牵强论点的正式证明。
 
-Back to Haskell: We recognize $i$ as our \code{Fix f},
-$j$ as our constructor \code{Fix}, and its inverse as
-\code{unFix}. The isomorphism in Lambek's theorem tells us that, in
-order to get the initial algebra, we take the functor $f$ and
-replace its argument $a$ with \code{Fix f}. We also see why
-the fixed point does not depend on $a$.
+回到 Haskell：我们将 $i$ 识别为我们的 \code{Fix f}，将 $j$ 识别为我们的构造器 \code{Fix}，将其逆运算识别为 \code{unFix}。Lambek 定理中的同构告诉我们，为了得到初始代数，我们取函子 $f$ 并用 \code{Fix f} 替换其参数 $a$。我们还看到了为什么不动点不依赖于 $a$。
 
-\section{Natural Numbers}
+\section{自然数（Natural Numbers）}
 
-Natural numbers can also be defined as an F-algebra. The starting point
-is the pair of morphisms:
+自然数也可以定义为一个 F-代数。起点是两个态射的对：
 \begin{align*}
   zero & \Colon 1 \to N \\
   succ & \Colon N \to N
 \end{align*}
-The first one picks the zero, and the second one maps all numbers to
-their successors. As before, we can combine the two into one:
+第一个选择零，第二个将所有数字映射到其后继数。和以前一样，我们可以将两者组合成一个：
 \[1 + N \to N\]
-The left hand side defines a functor which, in Haskell, can be written
-like this:
+左侧定义了一个函子，在 Haskell 中可以写成这样：
 
 \src{snippet14}
-The fixed point of this functor (the initial algebra that it generates)
-can be encoded in Haskell as:
+这个函子的固定点（即它生成的初始代数）可以在 Haskell 中编码为：
 
 \src{snippet15}
-A natural number is either zero or a successor of another number. This
-is known as the Peano representation for natural numbers.
+自然数要么是零，要么是另一个数字的后继数。这就是所谓的 Peano 表示法。
 
 \section{Catamorphisms}
 
-Let's rewrite the initiality condition using Haskell notation. We call
-the initial algebra \code{Fix f}. Its evaluator is the constructor
-\code{Fix}. There is a unique morphism \code{m} from the initial
-algebra to any other algebra over the same functor. Let's pick an
-algebra whose carrier is \code{a} and the evaluator is \code{alg}.
+让我们使用 Haskell 符号重写初始性条件。我们将初始代数称为 \code{Fix f}。它的求值器是构造器 \code{Fix}。从初始代数到任何其他代数的唯一态射是 \code{m}。
 
 \begin{figure}[H]
   \centering
@@ -323,13 +190,9 @@ algebra whose carrier is \code{a} and the evaluator is \code{alg}.
 \end{figure}
 
 \noindent
-By the way, notice what \code{m} is: It's an evaluator for the fixed
-point, an evaluator for the whole recursive expression tree. Let's find
-a general way of implementing it.
+顺便说一句，注意 \code{m} 是什么：它是整个递归表达式树的求值器。让我们找到一种实现它的通用方法。
 
-Lambek's theorem tells us that the constructor \code{Fix} is an
-isomorphism. We called its inverse \code{unFix}. We can therefore flip
-one arrow in this diagram to get:
+Lambek 定理告诉我们，构造器 \code{Fix} 是同构。我们称其逆运算为 \code{unFix}。因此，我们可以翻转这个图中的一条箭头得到：
 
 \begin{figure}[H]
   \centering
@@ -337,98 +200,61 @@ one arrow in this diagram to get:
 \end{figure}
 
 \noindent
-Let's write down the commutation condition for this diagram:
+让我们写下这个图的可交换性条件：
 
 \begin{snip}{haskell}
-m = alg . fmap m . unFix
+  m = alg . fmap m . unFix
 \end{snip}
-We can interpret this equation as a recursive definition of \code{m}.
-The recursion is bound to terminate for any finite tree created using
-the functor \code{f}. We can see that by noticing that
-\code{fmap m} operates underneath the top layer of the functor
-\code{f}. In other words, it works on the children of the original
-tree. The children are always one level shallower than the original
-tree.
+我们可以将这个方程解释为 \code{m} 的递归定义。对于由函子 \code{f} 创建的任何有限树，这个递归必然会终止。我们可以通过注意到 \code{fmap m} 在函子 \code{f} 的顶层之下操作来看到这一点。换句话说，它作用于原始树的子节点。子节点总是比原始树浅一层。
 
-Here's what happens when we apply \code{m} to a tree constructed using
-\code{Fix\ f}. The action of \code{unFix} peels off the constructor,
-exposing the top level of the tree. We then apply \code{m} to all the
-children of the top node. This produces results of type \code{a}.
-Finally, we combine those results by applying the non-recursive
-evaluator \code{alg}. The key point is that our evaluator \code{alg}
-is a simple non-recursive function.
+当我们将 \code{m} 应用于用 \code{Fix\ f} 构造的树时会发生什么。操作 \code{unFix} 剥去了构造器，暴露了树的顶层。然后我们将 \code{m} 应用于顶节点的所有子节点。这会产生类型为 \code{a} 的结果。最后，我们通过应用非递归求值器 \code{alg} 来组合这些结果。关键点是我们的求值器 \code{alg} 是一个简单的非递归函数。
 
-Since we can do this for any algebra \code{alg}, it makes sense to
-define a higher order function that takes the algebra as a parameter and
-gives us the function we called \code{m}. This higher order function
-is called a catamorphism:
+既然我们可以对任何代数 \code{alg} 执行此操作，那么定义一个高阶函数是有意义的，该函数以代数为参数并为我们提供我们称之为 \code{m} 的函数。这个高阶函数称为 catamorphism：
 
 \src{snippet16}
-Let's see an example of that. Take the functor that defines natural
-numbers:
+让我们看看一个例子。采用定义自然数的函子：
 
 \src{snippet17}
-Let's pick \code{(Int, Int)} as the carrier type and define our
-algebra as:
+让我们选择 \code{(Int, Int)} 作为载体类型，并定义我们的代数为：
 
 \src{snippet18}
-You can easily convince yourself that the catamorphism for this algebra,
-\code{cata fib}, calculates Fibonacci numbers.
+你很容易说服自己，这个代数的 catamorphism，\code{cata fib}，计算斐波那契数。
 
-In general, an algebra for \code{NatF} defines a recurrence relation:
-the value of the current element in terms of the previous element. A
-catamorphism then evaluates the n-th element of that sequence.
+一般来说，\code{NatF} 的代数定义了递推关系：当前元素的值以之前的元素为依据。然后，catamorphism 计算该序列的第 n 个元素。
 
-\section{Folds}
+\section{折叠（Folds）}
 
-A list of \code{e} is the initial algebra of the following functor:
+\code{e} 的列表是以下函子的初始代数：
 
 \src{snippet19}
-Indeed, replacing the variable \code{a} with the result of recursion,
-which we'll call \code{List e}, we get:
+实际上，将变量 \code{a} 替换为递归的结果，我们称之为 \code{List e}，我们得到：
 
 \src{snippet20}
-An algebra for a list functor picks a particular carrier type and
-defines a function that does pattern matching on the two constructors.
-Its value for \code{NilF} tells us how to evaluate an empty list, and
-its value for \code{ConsF} tells us how to combine the current element
-with the previously accumulated value.
+列表函子的代数为一个特定的载体类型选择定义一个函数，该函数对两个构造器进行模式匹配。它对 \code{NilF} 的值告诉我们如何计算空列表，对 \code{ConsF} 的值告诉我们如何将当前元素与先前累积的值组合。
 
-For instance, here's an algebra that can be used to calculate the length
-of a list (the carrier type is \code{Int}):
+例如，下面是一个可以用于计算列表长度的代数（载体类型为 \code{Int}）：
 
 \src{snippet21}
-Indeed, the resulting catamorphism \code{cata lenAlg} calculates the
-length of a list. Notice that the evaluator is a combination of (1) a
-function that takes a list element and an accumulator and returns a new
-accumulator, and (2) a starting value, here zero. The type of the value
-and the type of the accumulator are given by the carrier type.
+实际上，catamorphism \code{cata lenAlg} 计算列表的长度。请注意，求值器是（1）一个接受列表元素和累加器并返回新累加器的函数与（2）一个起始值，这里为零的组合。值的类型和累加器的类型由载体类型给出。
 
-Compare this to the traditional Haskell definition:
+将其与传统的 Haskell 定义进行比较：
 
 \src{snippet22}
-The two arguments to \code{foldr} are exactly the two components of
-the algebra.
+\code{foldr} 的两个参数正好是代数的两个组成部分。
 
-Let's try another example:
+让我们尝试另一个例子：
 
 \src{snippet23}
-Again, compare this with:
+再次比较：
 
 \src{snippet24}
-As you can see, \code{foldr} is just a convenient specialization of a
-catamorphism to lists.
+正如你所见，\code{foldr} 只是一个对列表的 catamorphism 的便利特化。
 
-\section{Coalgebras}
+\section{F-Coalgebras}
 
-As usual, we have a dual construction of an F-coalgebra, where the
-direction of the morphism is reversed:
+一如既往，我们有一个 F-余代数（F-coalgebra）的对偶构造，其中态射的方向是相反的：
 \[a \to F a\]
-Coalgebras for a given functor also form a category, with homomorphisms
-preserving the coalgebraic structure. The terminal object
-$(t, u)$ in that category is called the terminal (or final)
-coalgebra. For every other algebra $(a, f)$ there is a unique
-homomorphism $m$ that makes the following diagram commute:
+给定函子的余代数也构成一个范畴，具有保持余代数结构的同态。该范畴中的终端对象 $(t, u)$ 称为终端余代数。对于每个其他代数 $(a, f)$，存在唯一的同态 $m$ 使以下图交换：
 
 \begin{figure}[H]
   \centering
@@ -436,108 +262,67 @@ homomorphism $m$ that makes the following diagram commute:
 \end{figure}
 
 \noindent
-A terminal coalgebra is a fixed point of the functor, in the sense that
-the morphism $u \Colon t \to F t$ is an isomorphism
-(Lambek's theorem for coalgebras):
+终端余代数是函子的一个不动点，因为态射 $u \Colon t \to F t$ 是一个同构（Lambek 的余代数定理）：
 \[F t \cong t\]
-A terminal coalgebra is usually interpreted in programming as a recipe
-for generating (possibly infinite) data structures or transition
-systems.
+终端余代数通常在编程中解释为生成（可能是无限的）数据结构或转移系统的配方。
 
-Just like a catamorphism can be used to evaluate an initial algebra, an
-anamorphism can be used to coevaluate a terminal coalgebra:
+就像 catamorphism 可以用于求值初始代数一样，anamorphism 可以用于余求值终端余代数：
 
 \src{snippet25}
-A canonical example of a coalgebra is based on a functor whose fixed
-point is an infinite stream of elements of type \code{e}. This is the
-functor:
+余代数的一个典型例子基于一个固定点为元素类型 \code{e} 的无限流（stream）的函子。这个函子为：
 
 \src{snippet26}
-and this is its fixed point:
+其固定点为：
 
 \src{snippet27}
-A coalgebra for \code{StreamF e} is a function that takes the seed of
-type \code{a} and produces a pair (\code{StreamF} is a fancy name
-for a pair) consisting of an element and the next seed.
+\code{StreamF e} 的余代数是一个函数，它接收类型为 \code{a} 的种子并生成一个对（\code{StreamF} 是对的别名），包括一个元素和下一个种子。
 
-You can easily generate simple examples of coalgebras that produce
-infinite sequences, like the list of squares, or reciprocals.
+你可以轻松生成简单的余代数来产生无限序列，例如平方数列表或倒数。
 
-A more interesting example is a coalgebra that produces a list of
-primes. The trick is to use an infinite list as a carrier. Our starting
-seed will be the list \code{{[}2..{]}}. The next seed will be the tail
-of this list with all multiples of 2 removed. It's a list of odd numbers
-starting with 3. In the next step, we'll take the tail of this list and
-remove all multiples of 3, and so on. You might recognize the makings of
-the sieve of Eratosthenes. This coalgebra is implemented by the
-following function:
+一个更有趣的例子是一个余代数，它产生一个素数列表。技巧是使用无限列表作为载体。我们的起始种子将是列表 \code{{[}2..{]}}。下一个种子将是此列表的尾部，所有 2 的倍数都被移除。这是以 3 开始的奇数列表。在下一步中，我们将取此列表的尾部并移除所有 3 的倍数，依此类推。你可能认出这是埃拉托色尼筛法的雏形。这个余代数由以下函数实现：
 
 \src{snippet28}
-The anamorphism for this coalgebra generates the list of primes:
+这个余代数的 anamorphism 生成素数列表：
 
 \src{snippet29}
-A stream is an infinite list, so it should be possible to convert it to
-a Haskell list. To do that, we can use the same functor \code{StreamF}
-to form an algebra, and we can run a catamorphism over it. For instance,
-this is a catamorphism that converts a stream to a list:
+流是无限列表，因此应该可以将其转换为 Haskell 列表。为此，我们可以使用相同的函子 \code{StreamF} 形成一个代数，并可以在其上运行一个 catamorphism。例如，这是一个将流转换为列表的 catamorphism：
 
 \src{snippet30}
-Here, the same fixed point is simultaneously an initial algebra and a
-terminal coalgebra for the same endofunctor. It's not always like this,
-in an arbitrary category. In general, an endofunctor may have many (or
-no) fixed points. The initial algebra is the so called least fixed
-point, and the terminal coalgebra is the greatest fixed point. In
-Haskell, though, both are defined by the same formula, and they
-coincide.
+在这里，同一个不动点同时是同一端函子的初始代数和终端余代数。在任意范畴中情况并非总是如此。通常，端函子可能有很多（或没有）不动点。初始代数是所谓的最小不动点，终端余代数是最大的固定点。然而，在 Haskell 中，两者由相同的公式定义，并且它们重合。
 
-The anamorphism for lists is called unfold. To create finite lists, the
-functor is modified to produce a \code{Maybe} pair:
+列表的 anamorphism 称为 unfold。为了创建有限列表，该函子被修改为生成一个 \code{Maybe} 对：
 
 \src{snippet31}
-The value of \code{Nothing} will terminate the generation of the list.
+\code{Nothing} 的值将终止列表的生成。
 
-An interesting case of a coalgebra is related to lenses. A lens can be
-represented as a pair of a getter and a setter:
+与镜头（lens）相关的余代数是一个有趣的例子。镜头可以表示为一个 getter 和 setter 的对：
 
 \src{snippet32}
-Here, \code{a} is usually some product data type with a field of type
-\code{s}. The getter retrieves the value of that field and the setter
-replaces this field with a new value. These two functions can be
-combined into one:
+这里，\code{a} 通常是某种具有类型为 \code{s} 的字段的产品数据类型。getter 获取该字段的值，setter 用一个新值替换此字段。这两个函数可以组合成一个：
 
 \src{snippet33}
-We can rewrite this function further as:
+我们可以进一步重写此函数为：
 
 \src{snippet34}
-where we have defined a functor:
+其中我们定义了一个函子：
 
 \src{snippet35}
-Notice that this is not a simple algebraic functor constructed from sums
-of products. It involves an exponential $a^s$.
+请注意，这不是由乘积和余积构造的简单代数函子。它涉及一个指数 $a^s$。
 
-A lens is a coalgebra for this functor with the carrier type \code{a}.
-We've seen before that \code{Store s} is also a comonad. It turns out
-that a well-behaved lens corresponds to a coalgebra that is compatible
-with the comonad structure. We'll talk about this in the next section.
+镜头是这个函子的余代数，载体类型为 \code{a}。我们之前看到过 \code{Store s} 也是一个余单子（comonad）。事实证明，一个良好行为的镜头对应于一个与余单子结构兼容的余代数。在下一节中，我们将讨论这一点。
 
-\section{Challenges}
+\section{挑战（Challenges）}
 
 \begin{enumerate}
   \tightlist
   \item
-        Implement the evaluation function for a ring of polynomials of one
-        variable. You can represent a polynomial as a list of coefficients in
-        front of powers of $x$. For instance, $4x^2-1$ would be
-        represented as (starting with the zero'th power)
-        \code{{[}-1, 0, 4{]}}.
+  实现一个单变量多项式环的求值函数。你可以将多项式表示为一个系数列表，其前面是 $x$ 的幂。例如，$4x^2-1$ 可以表示为（从零次幂开始）\code{{[}-1, 0, 4{]}}。
   \item
-        Generalize the previous construction to polynomials of many
-        independent variables, like $x^2y-3y^3z$.
+  将前面的构造推广到多变量多项式，如 $x^2y-3y^3z$。
   \item
-        Implement the algebra for the ring of $2\times{}2$ matrices.
+  实现 $2\times{}2$ 矩阵环的代数。
   \item
-        Define a coalgebra whose anamorphism produces a list of squares of
-        natural numbers.
+  定义一个余代数，其 anamorphism 生成自然数的平方列表。
   \item
-        Use \code{unfoldr} to generate a list of the first $n$ primes.
+  使用 \code{unfoldr} 生成前 $n$ 个素数的列表。
 \end{enumerate}

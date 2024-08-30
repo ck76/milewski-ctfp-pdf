@@ -1,19 +1,10 @@
 % !TEX root = ../../ctfp-print.tex
 
-\lettrine[lhang=0.17]{S}{o far we've been} mostly working with a single category or a pair of
-categories. In some cases that was a little too constraining.
+\lettrine[lhang=0.17]{到}{目前为止，我们主要在处理}单一范畴（category）或一对范畴。在某些情况下，这有些过于限制。
 
-For instance, when defining a limit in a category $\cat{C}$, we introduced an
-index category $\cat{I}$ as the template for the pattern that would
-form the basis for our cones. It would have made sense to introduce
-another category, a trivial one, to serve as a template for the apex of
-the cone. Instead we used the constant functor $\Delta_c$ from
-$\cat{I}$ to $\cat{C}$.
+例如，当我们在一个范畴 $\cat{C}$ 中定义极限（limit）时，我们引入了一个索引范畴（index category） $\cat{I}$ 作为模板，这个模板将构成我们圆锥体（cone）基础的模式。此时，引入另一个范畴（一个简单的范畴）来作为圆锥体顶点的模板是有意义的。然而，我们使用了从 $\cat{I}$ 到 $\cat{C}$ 的常量函子（constant functor）$\Delta_c$ 来解决这个问题。
 
-It's time to fix this awkwardness. Let's define a limit using three
-categories. Let's start with the functor $D$ from the index
-category $\cat{I}$ to $\cat{C}$. This is the functor that selects the base
-of the cone --- the diagram functor.
+现在是时候修正这种尴尬了。让我们使用三个范畴来定义极限。首先，我们从索引范畴 $\cat{I}$ 到范畴 $\cat{C}$ 的函子 $D$ 开始。这个函子选择了圆锥体的基础——即图函子（diagram functor）。
 
 \begin{figure}[H]
   \centering
@@ -21,12 +12,7 @@ of the cone --- the diagram functor.
 \end{figure}
 
 \noindent
-The new addition is the category $\cat{1}$ that contains a single
-object (and a single identity morphism). There is only one possible
-functor $K$ from $\cat{I}$ to this category. It maps all objects
-to the only object in $\cat{1}$, and all morphisms to the identity
-morphism. Any functor $F$ from $\cat{1}$ to $\cat{C}$ picks a
-potential apex for our cone.
+新的添加是范畴 $\cat{1}$，它只包含一个对象（以及一个单一的恒等态射）。从 $\cat{I}$ 到这个范畴唯一可能的函子 $K$ 将所有对象映射到 $\cat{1}$ 中唯一的对象，并将所有态射映射到恒等态射。任何从 $\cat{1}$ 到 $\cat{C}$ 的函子 $F$ 选择了我们圆锥体的潜在顶点。
 
 \begin{figure}[H]
   \centering
@@ -34,10 +20,7 @@ potential apex for our cone.
 \end{figure}
 
 \noindent
-A cone is a natural transformation $\varepsilon$ from $F \circ K$ to
-$D$. Notice that $F \circ K$ does exactly the same thing as
-our original $\Delta_c$. The following diagram shows this
-transformation.
+圆锥体是从 $F \circ K$ 到 $D$ 的自然变换（natural transformation）$\varepsilon$。注意，$F \circ K$ 做的与我们最初的 $\Delta_c$ 是一样的事情。下图展示了这一变换。
 
 \begin{figure}[H]
   \centering
@@ -45,18 +28,9 @@ transformation.
 \end{figure}
 
 \noindent
-We can now define a universal property that picks the ``best'' such
-functor $F$. This $F$ will map $\cat{1}$ to the object
-that is the limit of $D$ in $\cat{C}$, and the natural
-transformation $\varepsilon$ from $F \circ K$ to $D$ will
-provide the corresponding projections. This universal functor is called
-the right Kan extension of $D$ along $K$ and is denoted by
-$\Ran_{K}D$.
+我们现在可以定义一个普遍性质（universal property），来选择最“优”的函子 $F$。这个 $F$ 会将 $\cat{1}$ 映射到对象 $D$ 在范畴 $\cat{C}$ 中的极限上，并且自然变换 $\varepsilon$ 将提供相应的投影。这一普遍函子被称为函子 $D$ 沿着 $K$ 的右Kan扩展（right Kan extension），并用 $\Ran_{K}D$ 表示。
 
-Let's formulate the universal property. Suppose we have another cone ---
-that is another functor $F'$ together with a natural
-transformation $\varepsilon'$ from $F' \circ K$ to
-$D$.
+我们来表述一下这个普遍性质。假设我们有另一个圆锥体，即另一个函子 $F'$ 及其与 $F' \circ K$ 到 $D$ 的自然变换 $\varepsilon'$。
 
 \begin{figure}[H]
   \centering
@@ -64,14 +38,9 @@ $D$.
 \end{figure}
 
 \noindent
-If the Kan extension $F = Ran_{K}D$ exists, there must be a unique
-natural transformation $\sigma$ from $F'$ to it, such
-that $\varepsilon'$ factorizes through $\varepsilon$, that is:
+如果右Kan扩展 $F = \Ran_{K}D$ 存在，那么必定存在一个从 $F'$ 到它的唯一自然变换 $\sigma$，使得 $\varepsilon'$ 通过 $\varepsilon$ 分解，即：
 \[\varepsilon' = \varepsilon\ .\ (\sigma \circ K)\]
-Here, $\sigma \circ K$ is the horizontal composition of two natural
-transformations (one of them being the identity natural transformation
-on $K$). This transformation is then vertically composed with
-$\varepsilon$.
+这里，$\sigma \circ K$ 是两个自然变换的水平组合（其中一个是 $K$ 上的恒等自然变换）。然后将此变换与 $\varepsilon$ 垂直组合。
 
 \begin{figure}[H]
   \centering
@@ -79,33 +48,23 @@ $\varepsilon$.
 \end{figure}
 
 \noindent
-In components, when acting on an object $i$ in $\cat{I}$, we get:
+在分量上，作用在范畴 $\cat{I}$ 中的对象 $i$ 上时，我们得到：
 \[\varepsilon'_i = \varepsilon_i \circ \sigma_{K i}\]
-In our case, $\sigma$ has only one component corresponding to the
-single object of $\cat{1}$. So, indeed, this is the unique morphism
-from the apex of the cone defined by $F'$ to the apex of
-the universal cone defined by $\Ran_{K}D$. The commuting conditions
-are exactly the ones required by the definition of a limit.
+在我们的例子中，$\sigma$ 只有一个对应于 $\cat{1}$ 中单一对象的分量。所以，这的确是从 $F'$ 定义的圆锥体顶点到 $\Ran_{K}D$ 定义的普遍圆锥体顶点的唯一态射。所需的交换条件正是极限定义所要求的。
 
-But, importantly, we are free to replace the trivial category $\cat{1}$
-with an arbitrary category $\cat{A}$, and the definition of the right Kan
-extension remains valid.
+但重要的是，我们可以将简单范畴 $\cat{1}$ 替换为任意范畴 $\cat{A}$，右Kan扩展的定义依然有效。
 
-\section{Right Kan Extension}
+\section{右Kan扩展（Right Kan Extension）}
 
-The right Kan extension of the functor $D \Colon \cat{I} \to \cat{C}$
-along the functor $K \Colon \cat{I} \to \cat{A}$ is a functor
-$F \Colon \cat{A} \to \cat{C}$ (denoted $\Ran_{K}D$) together with a
-natural transformation
+函子 $D \Colon \cat{I} \to \cat{C}$ 沿着函子 $K \Colon \cat{I} \to \cat{A}$ 的右Kan扩展是一个函子 $F \Colon \cat{A} \to \cat{C}$（记作 $\Ran_{K}D$），并伴随着一个自然变换
 \[\varepsilon \Colon F \circ K \to D\]
-such that for any other functor $F' \Colon \cat{A} \to \cat{C}$ and
-a natural transformation
+使得对于任何其他函子 $F' \Colon \cat{A} \to \cat{C}$ 和自然变换
 \[\varepsilon' \Colon F' \circ K \to D\]
-there is a unique natural transformation
+都有一个唯一的自然变换
 \[\sigma \Colon F' \to F\]
-that factorizes $\varepsilon'$:
+使得 $\varepsilon'$ 通过 $\varepsilon$ 分解：
 \[\varepsilon' = \varepsilon\ .\ (\sigma \circ K)\]
-This is quite a mouthful, but it can be visualized in this nice diagram:
+这听起来有点复杂，但可以用下图来直观地表示：
 
 \begin{figure}[H]
   \centering
@@ -113,24 +72,9 @@ This is quite a mouthful, but it can be visualized in this nice diagram:
 \end{figure}
 
 \noindent
-An interesting way of looking at this is to notice that, in a sense, the
-Kan extension acts like the inverse of ``functor multiplication.'' Some
-authors go as far as use the notation $D/K$ for $\Ran_{K}D$.
-Indeed, in this notation, the definition of $\varepsilon$, which is also
-called the counit of the right Kan extension, looks like simple
-cancellation:
+一个有趣的观点是，注意到在某种意义上，Kan扩展起到了“函子乘法”逆操作的作用。有些作者甚至使用 $D/K$ 来表示 $\Ran_{K}D$。确实，用这种表示法，右Kan扩展的定义 $\varepsilon$（也称为右Kan扩展的余单元（counit））看起来像是简单的消去：
 \[\varepsilon \Colon D/K \circ K \to D\]
-There is another interpretation of Kan extensions. Consider that the
-functor $K$ embeds the category $\cat{I}$ inside $\cat{A}$. In the
-simplest case $\cat{I}$ could just be a subcategory of $\cat{A}$. We have
-a functor $D$ that maps $\cat{I}$ to $\cat{C}$. Can we extend
-$D$ to a functor $F$ that is defined on the whole of
-$\cat{A}$? Ideally, such an extension would make the composition
-$F \circ K$ be isomorphic to $D$. In other words, $F$
-would be extending the domain of $D$ to $\cat{A}$. But a
-full-blown isomorphism is usually too much to ask, and we can do with
-just half of it, namely a one-way natural transformation $\varepsilon$ from
-$F \circ K$ to $D$. (The left Kan extension picks the other direction.)
+对Kan扩展还有另一种解释。考虑函子 $K$ 嵌入范畴 $\cat{I}$ 到 $\cat{A}$ 中。在最简单的情况下，$\cat{I}$ 可能只是 $\cat{A}$ 的一个子范畴。我们有一个函子 $D$ 将 $\cat{I}$ 映射到 $\cat{C}$。我们能否将 $D$ 扩展为定义在整个 $\cat{A}$ 上的函子 $F$？理想情况下，这样的扩展会使得 $F \circ K$ 与 $D$ 同构。换句话说，$F$ 会将 $D$ 的定义域扩展到 $\cat{A}$ 上。但通常来说，完全的同构往往过于苛刻，我们可以只要求一个方向的自然变换 $\varepsilon$ 从 $F \circ K$ 到 $D$（左Kan扩展取的是另一方向）。
 
 \begin{figure}[H]
   \centering
@@ -138,24 +82,13 @@ $F \circ K$ to $D$. (The left Kan extension picks the other direction.)
 \end{figure}
 
 \noindent
-Of course, the embedding picture breaks down when the functor $K$
-is not injective on objects or not faithful on hom-sets, as in the
-example of the limit. In that case, the Kan extension tries its best to
-extrapolate the lost information.
+当然，当函子 $K$ 在对象上不单射或在同态集（hom-sets）上不忠实时，嵌入的概念就会失效，例如在极限的例子中。此时，Kan扩展会尽其所能地推测丢失的信息。
 
-\section{Kan Extension as Adjunction}
+\section{Kan扩展作为伴随（Adjunction）}
 
-Now suppose that the right Kan extension exists for any $D$ (and
-a fixed $K$). In that case $\Ran_{K}-$ (with the dash
-replacing $D$) is a functor from the functor category
-${[}\cat{I}, \cat{C}{]}$ to the functor category ${[}\cat{A}, \cat{C}{]}$. It
-turns out that this functor is the right adjoint to the precomposition
-functor $- \circ K$. The latter maps functors in ${[}\cat{A}, \cat{C}{]}$
-to functors in ${[}\cat{I}, \cat{C}{]}$. The adjunction is:
+现在假设右Kan扩展对于任何 $D$（和一个固定的 $K$）都存在。在这种情况下，$\Ran_{K}-$（用破折号替代 $D$）是一个从函子范畴 ${[}\cat{I}, \cat{C}{]}$ 到函子范畴 ${[}\cat{A}, \cat{C}{]}$ 的函子。事实证明，这个函子是前合成函子（precomposition functor） $- \circ K$ 的右伴随。后者将 ${[}\cat{A}, \cat{C}{]}$ 中的函子映射到 ${[}\cat{I}, \cat{C}{]}$ 中。这个伴随关系是：
 \[[\cat{I}, \cat{C}](F' \circ K, D) \cong [\cat{A}, \cat{C}](F', \Ran_{K}D)\]
-It is just a restatement of the fact that to every natural
-transformation we called $\varepsilon'$ corresponds a unique natural
-transformation we called $\sigma$.
+这只是对我们称为 $\varepsilon'$ 的自然变换对应唯一的自然变换 $\sigma$ 这一事实的重述。
 
 \begin{figure}[H]
   \centering
@@ -163,46 +96,25 @@ transformation we called $\sigma$.
 \end{figure}
 
 \noindent
-Furthermore, if we chose the category $\cat{I}$ to be the same as
-$\cat{C}$, we can substitute the identity functor $I_{\cat{C}}$ for
-$D$. We get the following identity:
+此外，如果我们选择范畴 $\cat{I}$ 与 $\cat{C}$ 相同，我们可以用恒等函子 $I_{\cat{C}}$ 替换 $D$。我们得到如下恒等式：
 \[[\cat{C}, \cat{C}](F' \circ K, I_{\cat{C}}) \cong [\cat{A}, \cat{C}](F', \Ran_{K}I_{\cat{C}})\]
-We can now chose $F'$ to be the same as $\Ran_{K}I_{\cat{C}}$. In
-that case the right hand side contains the identity natural
-transformation and, corresponding to it, the left hand side gives us the
-following natural transformation:
+我们现在可以选择 $F'$ 与 $\Ran_{K}I_{\cat{C}}$ 相同。在这种情况下，右侧包含恒等自然变换，对应的左侧给出了以下自然变换：
 \[\varepsilon \Colon \Ran_{K}I_{\cat{C}} \circ K \to I_{\cat{C}}\]
-This looks very much like the counit of an adjunction:
+这非常类似于一个伴随的余单元：
 \[\Ran_{K}I_{\cat{C}} \dashv K\]
-Indeed, the right Kan extension of the identity functor along a functor
-$K$ can be used to calculate the left adjoint of $K$. For
-that, one more condition is necessary: the right Kan extension must be
-preserved by the functor $K$. The preservation of the extension
-means that, if we calculate the Kan extension of the functor precomposed
-with $K$, we should get the same result as precomposing the
-original Kan extension with $K$. In our case, this condition
-simplifies to:
+确实，恒等函子 $I_{\cat{C}}$ 沿着一个函子 $K$ 的右Kan扩展可以用来计算 $K$ 的左伴随。为此，还需要一个条件：右Kan扩展必须被函子 $K$ 所保持。保持扩展意味着，如果我们计算与 $K$ 前合成后的函子的Kan扩展，我们应该得到与前合成原始Kan扩展的结果相同。在我们的例子中，这个条件简化为：
 \[K \circ \Ran_{K}I_{\cat{C}} \cong \Ran_{K}K\]
-Notice that, using the division-by-$K$ notation, the adjunction can be
-written as:
+注意，使用除以 $K$ 的表示法，伴随关系可以写为：
 \[I/K \dashv K\]
-which confirms our intuition that an adjunction describes some kind of
-an inverse. The preservation condition becomes:
+这证实了我们对伴随描述某种逆操作的直觉。保持条件变为：
 \[K \circ I/K \cong K/K\]
-The right Kan extension of a functor along itself, $K/K$, is
-called a codensity monad.
+一个函子沿自身的右Kan扩展，$K/K$，被称为余密（codensity）单子（monad）。
 
-The adjunction formula is an important result because, as we'll see
-soon, we can calculate Kan extensions using ends (coends), thus giving
-us practical means of finding right (and left) adjoints.
+伴随公式是一个重要的结果，因为正如我们很快会看到的，我们可以使用积（end）（或余积（coend））来计算Kan扩展，从而为我们提供了实际计算右（和左）伴随的方法。
 
-\section{Left Kan Extension}
+\section{左Kan扩展（Left Kan Extension）}
 
-There is a dual construction that gives us the left Kan extension. To
-build some intuition, we'll can start with the definition of a colimit
-and restructure it to use the singleton category $\cat{1}$. We build a
-cocone by using the functor $D \Colon \cat{I} \to \cat{C}$ to form its
-base, and the functor $F \Colon \cat{1} \to \cat{C}$ to select its apex.
+有一个对偶的构造给出了左Kan扩展。为了建立一些直觉，我们可以从余极限（colimit）的定义开始，并将其重新构建为使用单例范畴 $\cat{1}$。我们使用函子 $D \Colon \cat{I} \to \cat{C}$ 形成基底，并使用函子 $F \Colon \cat{1} \to \cat{C}$ 选择顶点，来构建一个余锥体（cocone）。
 
 \begin{figure}[H]
   \centering
@@ -210,8 +122,7 @@ base, and the functor $F \Colon \cat{1} \to \cat{C}$ to select its apex.
 \end{figure}
 
 \noindent
-The sides of the cocone, the injections, are components of a natural
-transformation $\eta$ from $D$ to $F \circ K$.
+余锥体的侧边，即插入（injections），是从 $D$ 到 $F \circ K$ 的自然变换 $\eta$ 的分量。
 
 \begin{figure}[H]
   \centering
@@ -219,8 +130,7 @@ transformation $\eta$ from $D$ to $F \circ K$.
 \end{figure}
 
 \noindent
-The colimit is the universal cocone. So for any other functor
-$F'$ and a natural transformation
+余极限是普遍余锥体。所以对于任何其他函子 $F'$ 和自然变换
 \[\eta' \Colon D \to F' \circ K\]
 
 \begin{figure}[H]
@@ -229,7 +139,7 @@ $F'$ and a natural transformation
 \end{figure}
 
 \noindent
-there is a unique natural transformation $\sigma$ from $F$ to $F'$
+都有一个从 $F$ 到 $F'$ 的唯一自然变换 $\sigma$：
 
 \begin{figure}[H]
   \centering
@@ -237,9 +147,9 @@ there is a unique natural transformation $\sigma$ from $F$ to $F'$
 \end{figure}
 
 \noindent
-such that:
+使得：
 \[\eta' = (\sigma \circ K)\ .\ \eta\]
-This is illustrated in the following diagram:
+如以下图所示：
 
 \begin{figure}[H]
   \centering
@@ -247,9 +157,7 @@ This is illustrated in the following diagram:
 \end{figure}
 
 \noindent
-Replacing the singleton category $\cat{1}$ with $\cat{A}$, this
-definition naturally generalized to the definition of the left Kan
-extension, denoted by $\Lan_{K}D$.
+将单例范畴 $\cat{1}$ 替换为 $\cat{A}$，这个定义自然推广到左Kan扩展的定义，记作 $\Lan_{K}D$。
 
 \begin{figure}[H]
   \centering
@@ -257,46 +165,24 @@ extension, denoted by $\Lan_{K}D$.
 \end{figure}
 
 \noindent
-The natural transformation:
+自然变换：
 \[\eta \Colon D \to \Lan_{K}D \circ K\]
-is called the unit of the left Kan extension.
+被称为左Kan扩展的单元（unit）。
 
-As before, we can recast the one-to-one correspondence between natural
-transformations:
-\[\eta' = (\sigma \circ K)\ .\ \eta\]
-in terms of the adjunction:
+和之前一样，我们可以将自然变换 $\eta' = (\sigma \circ K)\ .\ \eta$ 的一对一对应关系重新表述为伴随：
 \[[\cat{A}, \cat{C}](\Lan_{K}D, F') \cong [\cat{I}, \cat{C}](D, F' \circ K)\]
-In other words, the left Kan extension is the left adjoint, and the
-right Kan extension is the right adjoint of the precomposition with
-$K$.
+换句话说，左Kan扩展是左伴随，而右Kan扩展是前合成函子的右伴随。
 
-Just like the right Kan extension of the identity functor could be used
-to calculate the left adjoint of $K$, the left Kan extension of
-the identity functor turns out to be the right adjoint of $K$
-(with $\eta$ being the unit of the adjunction):
+就像恒等函子的右Kan扩展可以用来计算 $K$ 的左伴随一样，恒等函子的左Kan扩展最终成为 $K$ 的右伴随（其中 $\eta$ 是伴随的单元）：
 \[K \dashv \Lan_{K}I_{\cat{C}}\]
-Combining the two results, we get:
+结合这两个结果，我们得到：
 \[\Ran_{K}I_{\cat{C}} \dashv K \dashv \Lan_{K}I_{\cat{C}}\]
 
-\section{Kan Extensions as Ends}
+\section{Kan扩展作为积（Ends）}
 
-The real power of Kan extensions comes from the fact that they can be
-calculated using ends (and coends). For simplicity, we'll restrict our
-attention to the case where the target category $\cat{C}$ is
-$\Set$, but the formulas can be extended to any category.
+Kan扩展的真正威力在于它们可以使用积（end）（和余积（coend））来计算。为了简单起见，我们将注意力限制在目标范畴 $\cat{C}$ 为 $\Set$ 的情况下，但这些公式可以推广到任何范畴。
 
-Let's revisit the idea that a Kan extension can be used to extend the
-action of a functor outside of its original domain. Suppose that
-$K$ embeds $\cat{I}$ inside $\cat{A}$. Functor $D$ maps
-$\cat{I}$ to $\Set$. We could just say that for any object
-$a$ in the image of $K$, that is $a = K i$, the
-extended functor maps $a$ to $D i$. The problem is, what
-to do with those objects in $\cat{A}$ that are outside of the image of
-$K$? The idea is that every such object is potentially connected
-through lots of morphisms to every object in the image of $K$. A
-functor must preserve these morphisms. The totality of morphisms from an
-object $a$ to the image of $K$ is characterized by the
-hom-functor:
+让我们重新审视一个Kan扩展可以用来扩展函子的作用范围的想法。假设 $K$ 嵌入 $\cat{I}$ 到 $\cat{A}$ 中。函子 $D$ 将 $\cat{I}$ 映射到 $\Set$。我们可以简单地说，对于 $K$ 的像中的任何对象 $a$，即 $a = K i$，扩展后的函子将 $a$ 映射到 $D i$。问题是，如何处理那些在 $K$ 的像之外的 $\cat{A}$ 中的对象？想法是每个这样的对象都有可能通过大量的态射与 $K$ 的像中的每个对象连接在一起。一个函子必须保持这些态射的结构。一个对象 $a$ 到 $K$ 的像的态射的总和由同态函子（hom-functor）表征：
 \[\cat{A}(a, K -)\]
 
 \begin{figure}[H]
@@ -305,175 +191,108 @@ hom-functor:
 \end{figure}
 
 \noindent
-Notice that this hom-functor is a composition of two functors:
+注意到这个同态函子是两个函子的合成：
 \[\cat{A}(a, K -) = \cat{A}(a, -) \circ K\]
-The right Kan extension is the right adjoint of functor composition:
+右Kan扩展是函子合成的右伴随：
 \[[\cat{I}, \Set](F' \circ K, D) \cong [\cat{A}, \Set](F', \Ran_{K}D)\]
-Let's see what happens when we replace $F'$ with the hom
-functor:
+让我们看看当我们用同态函子替换 $F'$ 时会发生什么：
 \[[\cat{I}, \Set](\cat{A}(a, -) \circ K, D) \cong [\cat{A}, \Set](\cat{A}(a, -), \Ran_{K}D)\]
-and then inline the composition:
-\[[\cat{I}, \Set](\cat{A}(a, K -), D) \cong [\cat{A}, \Set](\cat{A}(a, -), \Ran_{K}D)\]
-The right hand side can be reduced using the Yoneda lemma:
+然后将合成公式内联化：
 \[[\cat{I}, \Set](\cat{A}(a, K -), D) \cong \Ran_{K}D a\]
-We can now rewrite the set of natural transformations as the end to get
-this very convenient formula for the right Kan extension:
+我们现在可以将自然变换集表示为一个积，从而得到这个非常方便的右Kan扩展公式：
 \[\Ran_{K}D a \cong \int_i \Set(\cat{A}(a, K i), D i)\]
-There is an analogous formula for the left Kan extension in terms of a
-coend:
+左Kan扩展也有一个类似的用余积表示的公式：
 \[\Lan_{K}D a = \int^i \cat{A}(K i, a)\times{}D i\]
-To see that this is the case, we'll show that this is indeed the left
-adjoint to functor composition:
+为了证明这一点，我们将展示这确实是前合成函子的左伴随：
 \[[\cat{A}, \Set](\Lan_{K}D, F') \cong [\cat{I}, \Set](D, F' \circ K)\]
-Let's substitute our formula in the left hand side:
+让我们在左侧公式中代入我们的公式：
 \[[\cat{A}, \Set](\int^i \cat{A}(K i, -)\times{}D i, F')\]
-This is a set of natural transformations, so it can be rewritten as an
-end:
+这是一组自然变换，所以它可以被重写为一个积：
 \[\int_a \Set(\int^i \cat{A}(K i, a)\times{}D i, F' a)\]
-Using the continuity of the hom-functor, we can replace the coend with
-the end:
+利用同态函子的连续性，我们可以将余积替换为积：
 \[\int_a \int_i \Set(\cat{A}(K i, a)\times{}D i, F' a)\]
-We can use the product-exponential adjunction:
+我们可以使用乘积-指数（product-exponential）伴随：
 \[\int_a \int_i \Set(\cat{A}(K i, a),\ (F' a)^{D i})\]
-The exponential is isomorphic to the corresponding hom-set:
+指数同构于相应的同态集：
 \[\int_a \int_i \Set(\cat{A}(K i, a),\ \Set(D i, F' a))\]
-There is a theorem called the Fubini theorem that allows us to swap the
-two ends:
+有一个叫做Fubini定理的定理允许我们交换两个积：
 \[\int_i \int_a \Set(\cat{A}(K i, a),\ \Set(D i, F' a))\]
-The inner end represents the set of natural transformations between two
-functors, so we can use the Yoneda lemma:
+内部积表示两个函子之间的自然变换集，所以我们可以使用Yoneda引理：
 \[\int_i \Set(D i, F' (K i))\]
-This is indeed the set of natural transformations that forms the right
-hand side of the adjunction we set out to prove:
+这确实是我们要证明的伴随右侧的自然变换集：
 \[[\cat{I}, \Set](D, F' \circ K)\]
-These kinds of calculations using ends, coends, and the Yoneda lemma are
-pretty typical for the ``calculus'' of ends.
+这些使用积、余积和Yoneda引理的计算对于“积的微积分”来说是非常典型的。
 
-\section{Kan Extensions in Haskell}
+\section{Haskell中的Kan扩展}
 
-The end/coend formulas for Kan extensions can be easily translated to
-Haskell. Let's start with the right extension:
+Kan扩展的积/余积公式可以很容易地翻译成Haskell。让我们从右Kan扩展开始：
 \[\Ran_{K}D a \cong \int_i \Set(\cat{A}(a, K i), D i)\]
-We replace the end with the universal quantifier, and hom-sets with
-function types:
+我们用通用量词替代积，并用函数类型替代同态集：
 
 \src{snippet01}
-Looking at this definition, it's clear that \code{Ran} must contain a
-value of type \code{a} to which the function can be applied, and a
-natural transformation between the two functors \code{k} and
-\code{d}. For instance, suppose that \code{k} is the tree functor,
-and \code{d} is the list functor, and you were given a
-\code{Ran Tree {[}{]} String}. If you pass it a function:
+从这个定义来看，很明显 \code{Ran} 必须包含一个可以应用于函数的类型 \code{a}，以及两个函子 \code{k} 和 \code{d} 之间的自然变换。例如，假设 \code{k} 是树函子（tree functor），\code{d} 是列表函子（list functor），你被给了一个 \code{Ran Tree {[}{]} String}。如果你传递给它一个函数：
 
 \src{snippet02}
-you'll get back a list of \code{Int}, and so on. The right Kan
-extension will use your function to produce a tree and then repackage it
-into a list. For instance, you may pass it a parser that generates a
-parsing tree from a string, and you'll get a list that corresponds to
-the depth-first traversal of this tree.
+你将得到一个 \code{Int} 列表，等等。右Kan扩展将使用你的函数生成一棵树，然后将其重新打包成一个列表。例如，你可以传递一个解析器，该解析器从字符串生成解析树，你将得到一个对应于该树的深度优先遍历的列表。
 
-The right Kan extension can be used to calculate the left adjoint of a
-given functor by replacing the functor \code{d} with the identity
-functor. This leads to the left adjoint of a functor \code{k} being
-represented by the set of polymorphic functions of the type:
+右Kan扩展可以用来计算给定函子的左伴随，通过用恒等函子替换函子 \code{d}。这导致的结果是函子 \code{k} 的左伴随由以下类型的多态函数集表示：
 
 \src{snippet03}
-Suppose that \code{k} is the forgetful functor from the category of
-monoids. The universal quantifier then goes over all monoids. Of course,
-in Haskell we cannot express monoidal laws, but the following is a
-decent approximation of the resulting free functor (the forgetful
-functor \code{k} is an identity on objects):
+假设 \code{k} 是从幺半群（monoids）范畴的遗忘函子（forgetful functor）。通用量词将遍历所有幺半群。当然，在Haskell中我们无法表达幺半群的定律，但以下是一个生成的自由函子的相应近似（遗忘函子 \code{k} 是对对象的恒等）：
 
 \src{snippet04}
-As expected, it generates free monoids, or Haskell lists:
+正如预期的那样，它生成自由幺半群，或者Haskell列表：
 
 \src{snippet05}
-The left Kan extension is a coend:
+左Kan扩展是一个余积：
 \[\Lan_{K}D a = \int^i \cat{A}(K i, a)\times{}D i\]
-so it translates to an existential quantifier. Symbolically:
+因此，它翻译为一个存在量词。符号上表示为：
 
 \begin{snip}{haskell}
-Lan k d a = exists i. (k i -> a, d i)
+  Lan k d a = exists i. (k i -> a, d i)
 \end{snip}
-This can be encoded in Haskell using \acronym{GADT}s, or using a universally
-quantified data constructor:
+这可以在Haskell中使用 \acronym{GADT} 进行编码，或者使用一个通用量词的数据构造器：
 
 \src{snippet06}
-The interpretation of this data structure is that it contains a function
-that takes a container of some unspecified \code{i}s and produces an
-\code{a}. It also has a container of those \code{i}s. Since you have
-no idea what \code{i}s are, the only thing you can do with this data
-structure is to retrieve the container of \code{i}s, repack it into
-the container defined by the functor \code{k} using a natural
-transformation, and call the function to obtain the \code{a}. For
-instance, if \code{d} is a tree, and \code{k} is a list, you can
-serialize the tree, call the function with the resulting list, and
-obtain an \code{a}.
+这个数据结构的解释是，它包含一个函数，该函数接受某些未指定的 \code{i} 的容器并生成一个 \code{a}。它还包含了这些 \code{i} 的容器。由于你不知道 \code{i} 是什么，这个数据结构唯一能做的事情就是检索 \code{i} 的容器，将其重新打包成由函子 \code{k} 定义的容器，并调用该函数以获得 \code{a}。例如，如果 \code{d} 是一棵树，\code{k} 是一个列表，你可以序列化树，用生成的列表调用函数并得到一个 \code{a}。
 
-The left Kan extension can be used to calculate the right adjoint of a
-functor. We know that the right adjoint of the product functor is the
-exponential, so let's try to implement it using the Kan extension:
+左Kan扩展可以用来计算一个函子的右伴随。我们知道乘积函子的右伴随是指数函子，所以让我们尝试使用Kan扩展来实现它：
 
 \src{snippet07}
-This is indeed isomorphic to the function type, as witnessed by the
-following pair of functions:
+这确实与函数类型同构，如以下一对函数所示：
 
 \src{snippet08}
-Notice that, as described earlier in the general case, we performed the
-following steps:
+正如前面所描述的一般情况一样，我们执行了以下步骤：
 
 \begin{enumerate}
   \tightlist
   \item
-        Retrieved the container of \code{x} (here, it's
-        just a trivial identity container), and the function \code{f}.
+  检索到 \code{x} 的容器（在这里，它只是一个简单的恒等容器），以及函数 \code{f}。
   \item
-        Repackaged the container using the natural transformation between the
-        identity functor and the pair functor.
+  使用恒等函子和对函子对的自然变换，将容器重新打包。
   \item
-        Called the function \code{f}.
+  调用函数 \code{f}。
 \end{enumerate}
 
-\section{Free Functor}
+\section{自由函子（Free Functor）}
 
-An interesting application of Kan extensions is the construction of a
-free functor. It's the solution to the following practical problem:
-suppose you have a type constructor --- that is a mapping of objects. Is
-it possible to define a functor based on this type constructor? In other
-words, can we define a mapping of morphisms that would extend this type
-constructor to a full-blown endofunctor?
+Kan扩展的一个有趣应用是自由函子的构造。它解决了以下实际问题：假设你有一个类型构造器（type constructor）——即对象之间的映射。是否有可能基于这个类型构造器定义一个函子？换句话说，我们能否定义一个态射映射，从而将这个类型构造器扩展为一个完备的自函子（endofunctor）？
 
-The key observation is that a type constructor can be described as a
-functor whose domain is a discrete category. A discrete category has no
-morphisms other than the identity morphisms. Given a category $\cat{C}$,
-we can always construct a discrete category $\cat{|C|}$
-by simply discarding all non-identity morphisms. A functor $F$
-from $\cat{|C|}$ to $\cat{C}$ is then a simple mapping
-of objects, or what we call a type constructor in Haskell. There is also
-a canonical functor $J$ that injects $\cat{|C|}$
-into $\cat{C}$: it's an identity on objects (and on identity morphisms).
-The left Kan extension of $F$ along $J$, if it exists, is
-then a functor for $\cat{C}$ to $\cat{C}$:
+关键的观察是，一个类型构造器可以被描述为一个其定义域是离散范畴（discrete category）的函子。离散范畴除了恒等态射外没有其他态射。给定一个范畴 $\cat{C}$，我们总是可以通过简单地丢弃所有非恒等态射来构造一个离散范畴 $\cat{|C|}$。从 $\cat{|C|}$ 到 $\cat{C}$ 的函子 $F$ 是一个简单的对象映射，或者我们在Haskell中称为类型构造器。还有一个典型的函子 $J$ 将 $\cat{|C|}$ 嵌入到 $\cat{C}$ 中：它在对象和恒等态射上是恒等的。$F$ 沿 $J$ 的左Kan扩展（如果存在）就是一个从 $\cat{C}$ 到 $\cat{C}$ 的函子：
 \[\Lan_{J}F a = \int^i \cat{C}(J i, a)\times{}F i\]
-It's called a free functor based on $F$.
+它被称为基于 $F$ 的自由函子。
 
-In Haskell, we would write it as:
+在Haskell中，我们会这样写：
 
 \src{snippet09}
-Indeed, for any type constructor \code{f}, \code{FreeF f} is a
-functor:
+确实，对于任何类型构造器 \code{f}，\code{FreeF f} 是一个函子：
 
 \src{snippet10}
-As you can see, the free functor fakes the lifting of a function by
-recording both the function and its argument. It accumulates the lifted
-functions by recording their composition. Functor rules are
-automatically satisfied. This construction was used in a paper
-\urlref{http://okmij.org/ftp/Haskell/extensible/more.pdf}{Freer Monads,
-  More Extensible Effects}.
+如你所见，自由函子通过记录函数及其参数来模拟函数的提升（lifting）。它通过记录它们的组合来累积提升的函数。函子规则自动得到满足。这种构造在论文\urlref{http://okmij.org/ftp/Haskell/extensible/more.pdf}{Freer Monads, More Extensible Effects}中被使用。
 
-Alternatively, we can use the right Kan extension for the same purpose:
+或者，我们可以使用右Kan扩展来达到相同目的：
 
 \src{snippet11}
-It's easy to check that this is indeed a functor:
+很容易验证这确实是一个函子：
 
 \src{snippet12}

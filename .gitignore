@@ -2,6 +2,7 @@
 /.direnv/
 /build/
 /result
+.idea
 .DS_Store
 src/.dotty-ide-disabled
 src/.metals
@@ -12,7 +13,6 @@ out/*
 *.fdb_latexmk
 *.bak*
 *.log
-*.pdf
 *.xdv
 *.gz
 *.pyg

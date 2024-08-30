@@ -1,69 +1,34 @@
 % !TEX root = ../../ctfp-print.tex
 
-\lettrine[lhang=0.17]{N}{owadays you can't} talk about functional programming without mentioning
-monads. But there is an alternative universe in which, by chance,
-Eugenio Moggi turned his attention to Lawvere theories rather than
-monads. Let's explore that universe.
+\lettrine[lhang=0.17]{现}{在，你几乎不能}谈论函数式编程而不提到幺半群（monads）。但在另一个平行宇宙中，尤金尼奥·莫吉（Eugenio Moggi）可能关注了劳维尔理论（Lawvere theories）而不是幺半群。让我们探索一下那个宇宙。
 
-\section{Universal Algebra}
+\section{泛代数\\ \textmd{Universal Algebra}}
 
-There are many ways of describing algebras at various levels of
-abstraction. We try to find a general language to describe things like
-monoids, groups, or rings. At the simplest level, all these
-constructions define \emph{operations} on elements of a set, plus some
-\emph{laws} that must be satisfied by these operations. For instance, a
-monoid can be defined in terms of a binary operation that is
-associative. We also have a unit element and unit laws. But with a
-little bit of imagination we can turn the unit element to a nullary
-operation --- an operation that takes no arguments and returns a special
-element of the set. If we want to talk about groups, we add a unary
-operator that takes an element and returns its inverse. There are
-corresponding left and right inverse laws to go with it. A ring defines
-two binary operators plus some more laws. And so on.
+有很多方法可以在各种抽象层次上描述代数。我们尝试找到一种通用语言来描述诸如幺半群（monoids）、群（groups）或环（rings）之类的结构。在最简单的层次上，所有这些结构都定义了集合上元素的\emph{运算}，以及必须满足的\emph{定律}。例如，幺半群可以通过一个满足结合律的二元运算来定义。我们还需要一个单位元素和单位定律。但只要稍加想象，我们就可以将单位元素转变为一个零元运算——一个不需要任何参数并返回集合中特殊元素的运算。如果我们想讨论群，我们会添加一个一元运算符，该运算符接受一个元素并返回其逆元。还有相应的左逆定律和右逆定律。环定义了两个二元运算符以及更多的定律。等等。
 
-The big picture is that an algebra is defined by a set of $n$-ary
-operations for various values of $n$, and a set of equational identities.
-These identities are all universally quantified. The associativity
-equation must be satisfied for all possible combinations of three
-elements, and so on.
+大体来看，一个代数是通过对不同 $n$ 值的 $n$ 元运算以及一组方程等式来定义的。这些等式都是全称量化的。结合律等式必须对所有可能的三个元素组合成立，等等。
 
-Incidentally, this eliminates fields from consideration, for the simple
-reason that zero (unit with respect to addition) has no inverse with
-respect to multiplication. The inverse law for a field can't be
-universally quantified.
+顺便提一下，这就排除了对域的考虑，原因很简单，零（加法的单位）对于乘法没有逆元。对于域的逆元定律不能全称量化。
 
-This definition of a universal algebra can be extended to categories
-other than $\Set$, if we replace operations (functions) with
-morphisms. Instead of a set, we select an object $a$ (called a
-generic object). A unary operation is just an endomorphism of
-$a$. But what about other arities (\newterm{arity} is the number of
-arguments for a given operation)? A binary operation (arity 2) can be
-defined as a morphism from the product $a\times{}a$ back to $a$.
-A general $n$-ary operation is a morphism from the $n^\text{th}$ power of
-$a$ to $a$:
+如果我们将运算（函数）替换为态射，这种泛代数的定义可以扩展到 $\Set$ 以外的范畴。我们选择一个对象 $a$（称为泛对象）而不是集合。一个一元运算就是 $a$ 的一个自同态射（endomorphism）。但对于其他元数呢？（\newterm{元数}（arity）是给定运算的参数个数。）一个二元运算（元数为 2）可以定义为从积 $a\times{}a$ 到 $a$ 的态射。一般的 $n$ 元运算是从 $a$ 的 $n$ 次幂到 $a$ 的态射：
 \[\alpha_n \Colon a^n \to a\]
-A nullary operation is a morphism from the terminal object (the zeroth
-power of $a$). So all we need in order to define any algebra is a
-category whose objects are powers of one special object $a$. The
-specific algebra is encoded in the hom-sets of this category. This is a
-Lawvere theory in a nutshell.
+一个零元运算是从终对象（$a$ 的零次幂）到 $a$ 的态射。因此，为了定义任何代数，我们只需要一个范畴，其对象是某个特殊对象 $a$ 的幂。特定的代数被编码在这个范畴的态射集中。这就是劳维尔理论的简要概述。
 
-The derivation of Lawvere theories goes through many steps, so here's
-the roadmap:
+劳维尔理论的推导经过了许多步骤，以下是路线图：
 
 \begin{enumerate}
   \tightlist
   \item
-        Category of finite sets $\cat{FinSet}$.
+  有限集范畴 $\cat{FinSet}$。
   \item
-        Its skeleton $\cat{F}$.
+  其骨架 $\cat{F}$。
   \item
-        Its opposite $\Fop$.
+  其对立范畴 $\Fop$。
   \item
-        Lawvere theory $\cat{L}$: an object in the category $\cat{Law}$.
+  劳维尔理论 $\cat{L}$：在 $\cat{Law}$ 范畴中的一个对象。
   \item
-        Model $M$ of a Lawvere category: an object in the category\\
-        $\cat{Mod}(\cat{Law}, \Set)$.
+  劳维尔范畴的模型 $M$：在范畴\\
+  $\cat{Mod}(\cat{Law}, \Set)$ 中的一个对象。
 \end{enumerate}
 
 \begin{figure}[H]
@@ -71,395 +36,156 @@ the roadmap:
   \includegraphics[width=0.8\textwidth]{images/lawvere1.png}
 \end{figure}
 
-\section{Lawvere Theories}
+\section{劳维尔理论\\ \textmd{Lawvere Theories}}
 
-All Lawvere theories share a common backbone. All objects in a Lawvere
-theory are generated from just one object using products (really, just
-powers). But how do we define these products in a general category? It
-turns out that we can define products using a mapping from a simpler
-category. In fact this simpler category may define coproducts instead of
-products, and we'll use a \emph{contravariant} functor to embed them in
-our target category. A contravariant functor turns coproducts into
-products and injections to projections.
+所有劳维尔理论共享一个共同的骨架。劳维尔理论中的所有对象都是通过对一个对象进行积运算（实际上是幂运算）生成的。但我们如何在一般范畴中定义这些积？事实证明，我们可以通过从一个更简单的范畴映射来定义积。实际上，这个简单的范畴可以定义余积而不是积，而我们会使用一个\emph{反变}函子将它们嵌入我们的目标范畴中。反变函子将余积转换为积，并将嵌入态射转换为投影态射。
 
-The natural choice for the backbone of a Lawvere category is the
-category of finite sets, $\cat{FinSet}$. It contains the empty set
-$\varnothing$, a singleton set $1$, a two-element set $2$,
-and so on. All objects in this category can be generated from the
-singleton set using coproducts (treating the empty set as a special case
-of a nullary coproduct). For instance, a two-element set is a sum of two
-singletons, $2 = 1 + 1$, as expressed in Haskell:
+劳维尔范畴骨架的自然选择是有限集范畴 $\cat{FinSet}$。它包含空集 $\varnothing$，一个单元素集合 $1$，一个双元素集合 $2$，等等。这个范畴中的所有对象都可以通过使用余积从单元素集合生成（将空集视为零元余积的特例）。例如，双元素集合是两个单元素集合的和，$2 = 1 + 1$，如下所示的 Haskell 表达式：
 
 \src{snippet01}
-However, even though it's natural to think that there's only one empty
-set, there may be many distinct singleton sets. In particular, the set
-$1 + \varnothing$ is different from the set $\varnothing + 1$, and
-different from $1$ --- even though they are all isomorphic. The
-coproduct in the category of sets is not associative. We can remedy that
-situation by building a category that identifies all isomorphic sets.
-Such a category is called a \newterm{skeleton}. In other words, the
-backbone of any Lawvere theory is the skeleton $\cat{F}$ of
-$\cat{FinSet}$. The objects in this category can be identified with
-natural numbers (including zero) that correspond to the element count in
-$\cat{FinSet}$. Coproduct plays the role of addition. Morphisms in
-$\cat{F}$ correspond to functions between finite sets. For instance,
-there is a unique morphism from $\varnothing$ to $n$ (empty set
-being the initial object), no morphisms from $n$ to $\varnothing$
-(except $\varnothing \to \varnothing$), $n$ morphisms from $1$ to
-$n$ (the injections), one morphism from $n$ to $1$,
-and so on. Here, $n$ denotes an object in $\cat{F}$
-corresponding to all $n$-element sets in $\cat{FinSet}$ that have been
-identified through isomorphisms.
+然而，即使我们自然地认为只有一个空集，但可能有许多不同的单元素集合。特别是，集合 $1 + \varnothing$ 与集合 $\varnothing + 1$ 是不同的，也与 $1$ 不同——尽管它们都是同构的。集合范畴中的余积不是结合的。我们可以通过构建一个范畴来解决这种情况，该范畴识别所有同构的集合。这种范畴称为\newterm{骨架}（skeleton）。换句话说，任何劳维尔理论的骨架是 $\cat{FinSet}$ 的骨架 $\cat{F}$。这个范畴中的对象可以与自然数（包括零）相对应，这些自然数对应于 $\cat{FinSet}$ 中的元素数量。余积在此处扮演加法的角色。$\cat{F}$ 中的态射对应于有限集之间的函数。例如，从 $\varnothing$ 到 $n$ 存在唯一的态射（空集是初对象），从 $n$ 到 $\varnothing$ 没有态射（除了 $\varnothing \to \varnothing$），从 $1$ 到 $n$ 有 $n$ 个态射（即嵌入态射），从 $n$ 到 $1$ 有一个态射，等等。这里，$n$ 表示 $\cat{F}$ 中的一个对象，它对应于通过同构识别的 $\cat{FinSet}$ 中的所有 $n$ 元集合。
 
-Using the category $\cat{F}$ we can formally define a \newterm{Lawvere
-  theory} as a category $\cat{L}$ equipped with a special functor:
+使用范畴 $\cat{F}$，我们可以正式定义\newterm{劳维尔理论}（Lawvere theory）为一个带有特殊函子的范畴 $\cat{L}$：
 \[I_{\cat{L}} \Colon \Fop \to \cat{L}\]
-This functor must be a bijection on objects and it must preserve finite
-products (products in $\Fop$ are the same as
-coproducts in $\cat{F}$):
+这个函子必须在对象上是双射，并且必须保持有限积（$\Fop$ 中的积与 $\cat{F}$ 中的余积相同）：
 \[I_{\cat{L}} (m\times{}n) = I_{\cat{L}} m\times{}I_{\cat{L}} n\]
-You may sometimes see this functor characterized as identity-on-objects,
-which means that the objects in $\cat{F}$ and $\cat{L}$ are the same.
-We will therefore use the same names for them --- we'll denote them by
-natural numbers. Keep in mind though that objects in $\cat{F}$ are not
-the same as sets (they are classes of isomorphic sets).
+你有时可能会看到这个函子被描述为对象上的恒等，这意味着 $\cat{F}$ 和 $\cat{L}$ 中的对象是相同的。因此，我们将使用相同的名称来表示它们——我们将它们用自然数表示。请记住，$\cat{F}$ 中的对象与集合不同（它们是同构集合的类）。
 
-The hom-sets in $\cat{L}$ are, in general, richer than those in
-$\Fop$. They may contain morphisms other than
-the ones corresponding to functions in $\cat{FinSet}$ (the latter are
-sometimes called \newterm{basic product operations}). Equational laws of a
-Lawvere theory are encoded in those morphisms.
+$\cat{L}$ 中的态射集通常比 $\Fop$ 中的更丰富。它们可能包含除那些对应于 $\cat{FinSet}$ 中函数的态射（后者有时称为\newterm{基本积运算}）以外的态射。劳维尔理论的等式定律编码在这些态射中。
 
-The key observation is that the singleton set $1$ in $\cat{F}$
-is mapped to some object that we also call $1$ in $\cat{L}$, and
-all the other objects in $\cat{L}$ are automatically powers of this
-object. For instance, the two-element set $2$ in $\cat{F}$ is
-the coproduct $1 + 1$, so it must be mapped to a product
-$1 \times 1$ (or $1^2$) in $\cat{L}$. In this sense, the category
-$\cat{F}$ behaves like the logarithm of $\cat{L}$.
+关键的一点是，$\cat{F}$ 中的单元素集合 $1$ 被映射到 $\cat{L}$ 中的某个对象，我们也称其为 $1$，并且 $\cat{L}$ 中的所有其他对象都是这个对象的幂。例如，$\cat{F}$ 中的双元素集合 $2$ 是 $1 + 1$ 的余积，因此它必须映射到 $\cat{L}$ 中的积 $1 \times 1$（或 $1^2$）。从这个意义上说，范畴 $\cat{F}$ 的行为就像是 $\cat{L}$ 的对数。
 
-Among morphisms in $\cat{L}$ we have those transferred by the functor
-$I_{\cat{L}}$ from $\cat{F}$. They play a structural role in $\cat{L}$. In
-particular coproduct injections $i_k$ become product projections
-$p_k$. A useful intuition is to imagine the projection:
+在 $\cat{L}$ 中，我们有那些通过函子 $I_{\cat{L}}$ 从 $\cat{F}$ 转移来的态射。它们在 $\cat{L}$ 中起结构性作用。特别地，余积嵌入 $i_k$ 变成积投影 $p_k$。一个有用的直觉是将投影：
 \[p_k \Colon 1^n \to 1\]
-as the prototype for a function of $n$ variables that ignores all but the
-$k^\text{th}$ variable. Conversely, constant morphisms $n \to 1$
-in $\cat{F}$ become diagonal morphisms $1 \to 1^n$ in
-$\cat{L}$. They correspond to duplication of variables.
+看作一个 $n$ 元函数的原型，它忽略了除第 $k$ 个变量之外的所有变量。相反，$\cat{F}$ 中的常值态射 $n \to 1$ 在 $\cat{L}$ 中变成对角态射 $1 \to 1^n$。它们对应于变量的重复。
 
-The interesting morphisms in $\cat{L}$ are the ones that define $n$-ary
-operations other than projections. It's those morphisms that distinguish
-one Lawvere theory from another. These are the multiplications, the
-additions, the selections of unit elements, and so on, that define the
-algebra. But to make $\cat{L}$ a full category, we also need compound
-operations $n \to m$ (or, equivalently,
-$1^n \to 1^m$). Because of the simple structure of
-the category, they turn out to be products of simpler morphisms of the
-type $n \to 1$. This is a generalization of the
-statement that a function that returns a product is a product of
-functions (or, as we've seen earlier, that the hom-functor is
-continuous).
+$\cat{L}$ 中有趣的态射是定义非投影 $n$ 元运算的那些态射。正是这些态射区分了一个劳维尔理论与另一个。这些是乘法、加法、单位元素的选择等等，这些定义了代数。但是，为了使 $\cat{L}$ 成为一个完整的范畴，我们还需要复合运算 $n \to m$（或等价地 $1^n \to 1^m$）。由于范畴的简单结构，它们最终是 $n \to 1$ 类型的简单态射的积。这是前面我们已经见过的一个泛化，即返回积的函数是函数的积（或者我们已经看到过的同态函子是连续的）。
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.8\textwidth]{images/lawvere1.png}
-  \caption{Lawvere theory $\cat{L}$ is based on $\Fop$, from which
-    it inherits the ``boring'' morphisms that define the products. It adds
-    the ``interesting'' morphisms that describe the $n$-ary operations (dotted
-    arrows).}
+  \caption{劳维尔理论 $\cat{L}$ 基于 $\Fop$，它从中继承了定义积的“无趣”态射。它添加了描述 $n$ 元运算的“有趣”态射（虚线箭头）。}
 \end{figure}
 
-Lawvere theories form a category $\cat{Law}$, in which morphisms are
-functors that preserve finite products and commute with the functors
-$I$. Given two such theories, $(\cat{L}, I_{\cat{L}})$ and
-$(\cat{L'}, I'_{\cat{L'}})$, a morphism between them is a
-functor $F \Colon \cat{L} \to \cat{L'}$ such that:
+劳维尔理论形成一个范畴 $\cat{Law}$，其中的态射是保持有限积并与函子 $I$ 交换的函子。给定两个这样的理论，$(\cat{L}, I_{\cat{L}})$ 和 $(\cat{L'}, I'_{\cat{L'}})$ 之间的态射是一个函子 $F \Colon \cat{L} \to \cat{L'}$，使得：
 \begin{gather*}
   F (m \times n) = F m \times F n \\
   F \circ I_{\cat{L}} = I'_{\cat{L'}}
 \end{gather*}
-Morphisms between Lawvere theories encapsulate the idea of the
-interpretation of one theory inside another. For instance, group
-multiplication may be interpreted as monoid multiplication if we ignore
-inverses.
+劳维尔理论之间的态射封装了将一个理论解释为另一个理论的思想。例如，如果我们忽略逆元，群的乘法可以被解释为幺半群的乘法。
 
-The simplest trivial example of a Lawvere category is
-$\Fop$ itself (corresponding to the choice of
-the identity functor for $I_{\cat{L}}$). This Lawvere theory that has no
-operations or laws happens to be the initial object in $\cat{Law}$.
+劳维尔范畴最简单的例子是 $\Fop$ 本身（对应于 $I_{\cat{L}}$ 的恒等函子的选择）。这个没有运算或定律的劳维尔理论恰好是 $\cat{Law}$ 中的初对象。
 
-At this point it would be very helpful to present a non-trivial example
-of a Lawvere theory, but it would be hard to explain it without first
-understanding what models are.
+此时，如果我们没有先了解模型，提供一个非平凡的劳维尔理论例子会非常困难。
 
-\section{Models of Lawvere Theories}
+\section{劳维尔理论的模型\\ \textmd{Models of Lawvere Theories}}
 
-The key to understand Lawvere theories is to realize that one such
-theory generalizes a lot of individual algebras that share the same
-structure. For instance, the Lawvere theory of monoids describes the
-essence of being a monoid. It must be valid for all monoids. A
-particular monoid becomes a model of such a theory. A model is defined
-as a functor from the Lawvere theory $\cat{L}$ to the category of sets
-$\Set$. (There are generalizations of Lawvere theories that use
-other categories for models but here I'll just concentrate on
-$\Set$.) Since the structure of $\cat{L}$ depends heavily on
-products, we require that such a functor preserve finite products. A
-model of $\cat{L}$, also called the algebra over the Lawvere theory
-$\cat{L}$, is therefore defined by a functor:
+理解劳维尔理论的关键是要意识到这样的理论概括了很多具有相同结构的个别代数。例如，幺半群的劳维尔理论描述了成为幺半群的本质。它必须对所有幺半群有效。特定的幺半群成为这种理论的模型。模型被定义为从劳维尔理论 $\cat{L}$ 到集合范畴 $\Set$ 的函子（有劳维尔理论的推广使用其他范畴作为模型，但在这里我只集中在 $\Set$ 上）。由于 $\cat{L}$ 的结构高度依赖于积，我们要求这样的函子保持有限积。$\cat{L}$ 的模型（也称为劳维尔理论 $\cat{L}$ 上的代数）因此由一个函子定义：
 \begin{gather*}
   M \Colon \cat{L} \to \Set \\
   M (a \times b) \cong M a \times M b
 \end{gather*}
-Notice that we require the preservation of products only \emph{up to
-  isomorphism}. This is very important, because strict preservation of
-products would eliminate most interesting theories.
+注意，我们只要求积保持到同构。这一点非常重要，因为严格保持积会排除大多数有趣的理论。
 
-The preservation of products by models means that the image of
-$M$ in $\Set$ is a sequence of sets generated by powers of
-the set $M 1$ --- the image of the object $1$ from
-$\cat{L}$. Let's call this set $a$. (This set is sometimes
-called a \emph{sort}, and such an algebra is called \newterm{single-sorted}. There
-exist generalizations of Lawvere theories to multi-sorted algebras.) In
-particular, binary operations from $\cat{L}$ are mapped to functions:
+模型保持积意味着 $M$ 在 $\Set$ 中的像是由集合 $M 1$（$\cat{L}$ 中 $1$ 的像）生成的一系列集合。我们称这个集合为 $a$。在特别的情况下，$\cat{L}$ 中的二元运算被映射到函数：
 \[a \times a \to a\]
-As with any functor, it's possible that multiple morphisms in $\cat{L}$
-are collapsed to the same function in $\Set$.
+和任何函子一样，$\cat{L}$ 中的多个态射可能会折叠为 $\Set$ 中的同一个函数。
 
-Incidentally, the fact that all laws are universally quantified
-equalities means that every Lawvere theory has a trivial model: a
-constant functor mapping all objects to the singleton set, and all morphisms
-to the identity function on it.
+顺便提一下，由于所有定律都是全称量化的等式，这意味着每个劳维尔理论都有一个平凡模型：一个将所有对象映射到单元素集合的常值函子，并将所有态射映射为该集合上的恒等函数。
 
-A general morphism in $\cat{L}$ of the form
-$m \to n$ is mapped to a function:
+在 $\cat{L}$ 中，形式为 $m \to n$ 的一般态射被映射到一个函数：
 \[a^m \to a^n\]
-If we have two different models, $M$ and $N$, a natural
-transformation between them is a family of functions indexed by
-$n$:
+如果我们有两个不同的模型，$M$ 和 $N$，它们之间的自然变换是一个由 $n$ 索引的函数族：
 \[\mu_n \Colon M n \to N n\]
-or, equivalently:
+或者等价地：
 \[\mu_n \Colon a^n \to b^n\]
-where $b = N 1$.
+其中 $b = N 1$。
 
-Notice that the naturality condition guarantees the preservation of
-$n$-ary operations:
+请注意，自然性条件保证了 $n$ 元运算的保持：
 \[N f \circ \mu_n = \mu_1 \circ M f\]
-where $f \Colon n \to 1$ is an $n$-ary operation in
-$\cat{L}$.
+其中 $f \Colon n \to 1$ 是 $\cat{L}$ 中的一个 $n$ 元运算。
 
-The functors that define models form a category of models,
-$\cat{Mod}(\cat{L}, \Set)$, with natural transformations as morphisms.
+定义模型的函子形成了模型的一个范畴，$\cat{Mod}(\cat{L}, \Set)$，其态射是自然变换。
 
-Consider a model for the trivial Lawvere category
-$\Fop$. Such a model is completely determined by
-its value at $1$, $M 1$. Since $M 1$ can be any
-set, there are as many of these models as there are sets in
-$\Set$. Moreover, every morphism in $\cat{Mod}(\Fop, \Set)$ (a
-natural transformation between functors $M$ and $N$) is
-uniquely determined by its component at $M 1$. Conversely, every
-function $M 1 \to N 1$ induces a natural
-transformation between the two models $M$ and $N$.
-Therefore $\cat{Mod}(\Fop, \Set)$ is equivalent to $\Set$.
+考虑劳维尔范畴 $\Fop$ 的模型。这样的模型完全由其在 $1$ 处的值 $M 1$ 决定。因为 $M 1$ 可以是任意集合，所以有与 $\Set$ 中集合一样多的模型。此外，$\cat{Mod}(\Fop, \Set)$ 中的每个态射（即 $M$ 和 $N$ 之间的自然变换）都由其在 $M 1$ 的分量唯一确定。反过来，$M 1 \to N 1$ 的每个函数都会在两个模型 $M$ 和 $N$ 之间诱导一个自然变换。因此，$\cat{Mod}(\Fop, \Set)$ 与 $\Set$ 是等价的。
 
-\section{The Theory of Monoids}
+\section{幺半群理论\\ \textmd{The Theory of Monoids}}
 
-The simplest nontrivial example of a Lawvere theory describes the
-structure of monoids. It is a single theory that distills the structure
-of all possible monoids, in the sense that the models of this theory
-span the whole category $\cat{Mon}$ of monoids. We've already seen a
-\hyperref[free-monoids]{universal
-  construction}, which showed that every monoid can be obtained from an
-appropriate free monoid by identifying a subset of morphisms. So a
-single free monoid already generalizes a whole lot of monoids. There
-are, however, infinitely many free monoids. The Lawvere theory for
-monoids $\cat{L}_{\cat{Mon}}$ combines all of them in one
-elegant construction.
+最简单的非平凡劳维尔理论例子描述了幺半群的结构。它是一个单一理论，提炼了所有可能幺半群的结构，因为该理论的模型涵盖了整个 $\cat{Mon}$ 范畴的幺半群。我们已经看到一个\hyperref[free-monoids]{通用构造}，它表明每个幺半群都可以通过识别适当的自由幺半群的态射来获得。因此，一个自由幺半群已经概括了许多幺半群。然而，自由幺半群有无数个。幺半群的劳维尔理论 $\cat{L}_{\cat{Mon}}$ 将它们组合成一个优雅的构造。
 
-Every monoid must have a unit, so we have to have a special morphism
-$\eta$ in $\cat{L}_{\cat{Mon}}$ that goes from $0$ to
-$1$. Notice that there can be no corresponding morphism in
-$\cat{F}$. Such a morphism would go in the opposite direction, from
-$1$ to $0$ which, in $\cat{FinSet}$, would be a function
-from the singleton set to the empty set. No such function exists.
+每个幺半群必须有一个单位，所以我们必须在 $\cat{L}_{\cat{Mon}}$ 中有一个从 $0$ 到 $1$ 的特殊态射 $\eta$。注意，在 $\cat{F}$ 中没有相应的态射。这样的态射会朝相反的方向，从 $1$ 到 $0$，在 $\cat{FinSet}$ 中，这将是一个从单元素集合到空集的函数。不存在这样的函数。
 
-Next, consider morphisms $2 \to 1$, members of
-$\cat{L}_{\cat{Mon}}(2, 1)$, which must contain prototypes of all binary
-operations. When constructing models in $\cat{Mod}(\cat{L}_{\cat{Mon}}, \Set)$, these
-morphisms will be mapped to functions from the Cartesian product
-$M 1 \times M 1$ to $M 1$. In other words, functions of
-two arguments.
+接下来，考虑 $\cat{L}_{\cat{Mon}}(2, 1)$ 中的态射 $2 \to 1$，它们必须包含所有二元运算的原型。在 $\cat{Mod}(\cat{L}_{\cat{Mon}}, \Set)$ 中构建模型时，这些态射将被映射为从笛卡尔积 $M 1 \times M 1$ 到 $M 1$ 的函数。换句话说，二元函数。
 
-The question is: how many functions of two arguments can one implement
-using only the monoidal operator. Let's call the two arguments
-$a$ and $b$. There is one function that ignores both
-arguments and returns the monoidal unit. Then there are two projections
-that return $a$ and $b$, respectively. They are followed
-by functions that return $ab$, $ba$, $aa$,
-$bb$, $aab$, and so on\ldots{} In fact there are as many
-such functions of two arguments as there are elements in the free monoid
-with generators $a$ and $b$. Notice that
-$\cat{L}_{\cat{Mon}}(2, 1)$ must contain all those morphisms because one of the
-models is the free monoid. In a free monoid they correspond to distinct
-functions. Other models may collapse multiple morphisms in
-$\cat{L}_{\cat{Mon}}(2, 1)$ down to a single function, but not the free monoid.
+问题是：仅使用幺半群运算符可以实现多少个二元函数。我们将两个参数称为 $a$ 和 $b$。有一个函数忽略这两个参数并返回幺半群的单位元素。然后有两个投影函数，分别返回 $a$ 和 $b$。然后是返回 $ab$、$ba$、$aa$、$bb$、$aab$ 等等的函数……事实上，存在与具有生成元 $a$ 和 $b$ 的自由幺半群的元素数量相同的二元函数。注意，$\cat{L}_{\cat{Mon}}(2, 1)$ 必须包含所有这些态射，因为自由幺半群是其中一个模型。在自由幺半群中，它们对应于不同的函数。其他模型可能会将 $\cat{L}_{\cat{Mon}}(2, 1)$ 中的多个态射折叠为一个函数，但不是自由幺半群。
 
-If we denote the free monoid with $n$ generators $n^*$, we may
-identify the hom-set $\cat{L}(2, 1)$ with the hom-set
-$\cat{Mon}(1^*, 2^*)$ in $\cat{Mon}$, the category of monoids. In
-general, we pick $\cat{L}_{\cat{Mon}}(m, n)$ to be $\cat{Mon}(n^*, m^*)$. In
-other words, the category $\cat{L}_{\cat{Mon}}$ is the opposite of the category
-of free monoids.
+如果我们用 $n$ 个生成元的自由幺半群表示为 $n^*$，我们可以将 $\cat{L}(2, 1)$ 的态射集识别为 $\cat{Mon}(1^*, 2^*)$ 在 $\cat{Mon}$ 范畴中的态射集。一般来说，我们选择 $\cat{L}_{\cat{Mon}}(m, n)$ 为 $\cat{Mon}(n^*, m^*)$。换句话说，$\cat{L}_{\cat{Mon}}$ 是自由幺半群范畴的对偶范畴。
 
-The category of \emph{models} of the Lawvere theory for monoids,\\
-$\cat{Mod}(\cat{L}_{\cat{Mon}}, \Set)$, is equivalent to the category of all monoids,
-$\cat{Mon}$.
+幺半群劳维尔理论的\emph{模型}的范畴\\
+$\cat{Mod}(\cat{L}_{\cat{Mon}}, \Set)$ 与所有幺半群的范畴 $\cat{Mon}$ 是等价的。
 
-\section{Lawvere Theories and Monads}
+\section{劳维尔理论与幺半群\\ \textmd{Lawvere Theories and Monads}}
 
-As you may remember, algebraic theories can be described using monads
---- in particular
-\hyperref[algebras-for-monads]{algebras
-  for monads}. It should be no surprise then that there is a connection
-between Lawvere theories and monads.
+你可能记得，代数理论可以使用幺半群来描述——特别是\hyperref[algebras-for-monads]{幺半群的代数}。因此，不应感到惊讶，劳维尔理论与幺半群之间存在联系。
 
-First, let's see how a Lawvere theory induces a monad. It does it
-through an
-\hyperref[free-forgetful-adjunctions]{adjunction}
-between a forgetful functor and a free functor. The forgetful functor
-$U$ assigns a set to each model. This set is given by evaluating
-the functor $M$ from $\cat{Mod}(\cat{L}, \Set)$ at the object $1$ in
-$\cat{L}$.
+首先，让我们看看一个劳维尔理论如何诱导一个幺半群。它通过一个\hyperref[free-forgetful-adjunctions]{伴随}来实现，在遗忘函子和自由函子之间。遗忘函子 $U$ 将一个集合分配给每个模型。这个集合是通过在 $\cat{L}$ 中对对象 $1$ 求值的函子 $M$ 给出的。
 
-Another way of deriving $U$ is by exploiting the fact that
-$\Fop$ is the initial object in $\cat{Law}$. It
-means that, for any Lawvere theory $\cat{L}$, there is a unique
-functor $\Fop \to \cat{L}$. This functor induces the
-opposite functor on models (since models are functors \emph{from}
-theories to sets):
+另一种导出 $U$ 的方法是利用 $\Fop$ 是 $\cat{Law}$ 中的初对象这一事实。这意味着，对于任何劳维尔理论 $\cat{L}$，存在一个唯一的函子 $\Fop \to \cat{L}$。这个函子在模型上诱导了一个相反的函子（因为模型是从理论到集合的函子）：
 \[\cat{Mod}(\cat{L}, \Set) \to \cat{Mod}(\Fop, \Set)\]
-But, as we discussed, the category of models of
-$\Fop$ is equivalent to $\Set$, so we get
-the forgetful functor:
+但是，正如我们讨论的，$\Fop$ 的模型范畴等价于 $\Set$，因此我们得到了遗忘函子：
 \[U \Colon \cat{Mod}(\cat{L}, \Set) \to \Set\]
-It can be shown that so defined $U$ always has a left adjoint,
-the free functor $F$.
+可以证明，如此定义的 $U$ 始终有一个左伴随，即自由函子 $F$。
 
-This is easily seen for finite sets. The free functor $F$
-produces free algebras. A free algebra is a particular model in
-$\cat{Mod}(\cat{L}, \Set)$ that is generated from a finite set of generators
-$n$. We can implement $F$ as the representable functor:
+对于有限集合，这很容易看出。自由函子 $F$ 产生自由代数。自由代数是从有限生成元集 $n$ 生成的 $\cat{Mod}(\cat{L}, \Set)$ 中的特定模型。我们可以将 $F$ 实现为可表函子：
 \[\cat{L}(n, -) \Colon \cat{L} \to \Set\]
-To show that it's indeed free, all we have to do is to prove that it's a
-left adjoint to the forgetful functor:
+要证明它确实是自由的，我们需要做的只是证明它是遗忘函子的左伴随：
 \[\cat{Mod}(\cat{L}(n, -), M) \cong \Set(n, U(M))\]
-Let's simplify the right hand side:
+让我们简化右侧：
 \[\Set(n, U(M)) \cong \Set(n, M 1) \cong (M 1)^n \cong M n\]
-(I used the fact that a set of morphisms is isomorphic to the
-exponential which, in this case, is just the iterated product.) The
-adjunction is the result of the Yoneda lemma:
+（我使用了这样一个事实，即态射集同构于指数集，在这种情况下，这只是迭代积。）伴随关系是 Yoneda 引理的结果：
 \[[\cat{L}, \Set](\cat{L}(n, -), M) \cong M n\]
-Together, the forgetful and the free functor define a
-\hyperref[monads-categorically]{monad}
-$T = U \circ F$ on $\Set$. Thus every Lawvere theory generates
-a monad.
+因此，遗忘函子和自由函子一起定义了 $\Set$ 上的\hyperref[monads-categorically]{幺半群} $T = U \circ F$。因此，每个劳维尔理论都生成一个幺半群。
 
-It turns out that the category of
-\hyperref[algebras-for-monads]{algebras
-  for this monad} is equivalent to the category of models.
+事实证明，此幺半群的\hyperref[algebras-for-monads]{幺半群代数}范畴与模型的范畴是等价的。
 
-You may recall that monad algebras define ways to evaluate expressions
-that are formed using monads. A Lawvere theory defines n-ary operations
-that can be used to generate expressions. Models provide means to
-evaluate these expressions.
+你可能还记得，幺半群代数定义了使用幺半群形成的表达式的评估方法。劳维尔理论定义了可用于生成表达式的 $n$ 元运算。模型提供了评估这些表达式的方法。
 
-The connection between monads and Lawvere theories doesn't go both ways,
-though. Only finitary monads lead to Lawvere theories. A finitary monad
-is based on a finitary functor. A finitary functor on $\Set$ is
-fully determined by its action on finite sets. Its action on an
-arbitrary set $a$ can be evaluated using the following coend:
+劳维尔理论与幺半群之间的联系并不是双向的。只有有限的幺半群会导致劳维尔理论。有限幺半群基于有限函子。$\Set$ 上的有限函子完全由其在有限集上的作用决定。它在任意集合 $a$ 上的作用可以使用以下共端来求值：
 \[F a = \int^n a^n \times (F n)\]
-Since the coend generalizes a coproduct, or a sum, this formula is a
-generalization of a power series expansion. Or we can use the intuition
-that a functor is a generalized container. In that case a finitary
-container of $a$s can be described as a sum of shapes and
-contents. Here, $F n$ is a set of shapes for storing $n$ elements,
-and the contents is an $n$-tuple of elements, itself an element of
-$a^n$. For instance, a list (as a functor) is finitary, with one
-shape for every arity. A tree has more shapes per arity, and so on.
+由于共端推广了余积或和，因此该公式是幂级数展开的推广。或者我们可以使用函子是广义容器的直觉。在这种情况下，$a$ 的有限容器可以描述为形状和内容的和。这里，$F n$ 是存储 $n$ 个元素的形状的集合，内容是 $n$ 元组的元素本身，是 $a^n$ 的一个元素。例如，列表（作为函子）是有限的，每个元数只有一个形状。树在每个元数上有更多的形状，等等。
 
-First off, all monads that are generated from Lawvere theories are
-finitary and they can be expressed as coends:
+首先，从劳维尔理论生成的所有幺半群都是有限的，它们可以表示为共端：
 \[T_{\cat{L}} a = \int^n a^n \times \cat{L}(n, 1)\]
-Conversely, given any finitary monad $T$ on $\Set$, we can
-construct a Lawvere theory. We start by constructing a Kleisli category
-for $T$. As you may remember, a morphism in a Kleisli category
-from $a$ to $b$ is given by a morphism in the underlying
-category:
+反过来，给定 $\Set$ 上的任意有限幺半群 $T$，我们可以构造一个劳维尔理论。我们首先构造一个 $T$ 的 Kleisli 范畴。正如你可能记得的，在 Kleisli 范畴中，从 $a$ 到 $b$ 的态射由基础范畴中的一个态射给出：
 \[a \to T b\]
-When restricted to finite sets, this becomes:
+当限制为有限集时，这变为：
 \[m \to T n\]
-The category opposite to this Kleisli category,
-$\cat{Kl}^\mathit{op}_{T}$, restricted to finite
-sets, is the Lawvere theory in question. In particular, the hom-set
-$\cat{L}(n, 1)$ that describes n-ary operations in $\cat{L}$ is given
-by the hom-set $\cat{Kl}_{T}(1, n)$.
+这个 Kleisli 范畴的对立范畴 $\cat{Kl}^\mathit{op}_{T}$ 限制为有限集就是所讨论的劳维尔理论。特别地，描述 $\cat{L}$ 中 $n$ 元运算的态射集 $\cat{L}(n, 1)$ 由 $\cat{Kl}_{T}(1, n)$ 中的态射集给出。
 
-It turns out that most monads that we encounter in programming are
-finitary, with the notable exception of the continuation monad. It is
-possible to extend the notion of Lawvere theory beyond finitary
-operations.
+事实证明，我们在编程中遇到的大多数幺半群都是有限的，唯一的例外是延续幺半群。可以扩展劳维尔理论的概念以超越有限元运算。
 
-\section{Monads as Coends}
+\section{幺半群作为共端\\ \textmd{Monads as Coends}}
 
-Let's explore the coend formula in more detail.
+让我们更详细地探索共端公式。
 \[T_{\cat{L}} a = \int^n a^n \times \cat{L}(n, 1)\]
-To begin with, this coend is taken over a profunctor $P$ in
-$\cat{F}$ defined as:
+首先，这个共端是在 $\cat{F}$ 中的一个伴随函子 $P$ 上取的，定义为：
 \[P n m = a^n \times \cat{L}(m, 1)\]
-This profunctor is contravariant in the first argument, $n$.
-Consider how it lifts morphisms. A morphism in $\cat{FinSet}$ is a
-mapping of finite sets $f \Colon m \to n$. Such a
-mapping describes a selection of $m$ elements from an $n$-element set
-(repetitions are allowed). It can be lifted to the mapping of powers of
-$a$, namely (notice the direction):
+这个伴随函子在第一个参数 $n$ 中是反变的。考虑它如何提升态射。$\cat{FinSet}$ 中的一个态射是一个有限集 $f \Colon m \to n$ 的映射。这样的映射描述了从一个 $n$ 元集合中选择 $m$ 个元素（允许重复）。它可以提升为 $a$ 幂的映射，注意方向：
 \[a^n \to a^m\]
-The lifting simply selects $m$ elements from a tuple of $n$ elements\\
-$(a_1, a_2, \ldots{}, a_n)$ (possibly with repetitions).
+提升只是从 $n$ 元组 $(a_1, a_2, \ldots{}, a_n)$ 中选择 $m$ 个元素（可能有重复）。
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.5\textwidth]{images/liftpower.png}
 \end{figure}
 
-\noindent
-For instance, let's take $f_k \Colon 1 \to n$ --- a
-selection of the $k^\text{th}$ element from an $n$-element set. It lifts to
-a function that takes a $n$-tuple of elements of $a$ and returns
-the $k^\text{th}$ one.
+例如，让我们取 $f_k \Colon 1 \to n$——从 $n$ 元集合中选择第 $k$ 个元素。它提升为一个函数，该函数接受 $n$ 元组的 $a$ 元素并返回第 $k$ 个元素。
 
-Or let's take $f \Colon m \to 1$ --- a constant
-function that maps all $m$ elements to one. Its lifting is a function that
-takes a single element of $a$ and duplicates it $m$ times:
+或者让我们取 $f \Colon m \to 1$——将所有 $m$ 个元素映射为一个常值的函数。它的提升是一个函数，该函数接受 $a$ 的单个元素并将其复制 $m$ 次：
 \[\lambda{}x \to (\underbrace{x, x, \ldots{}, x}_{m})\]
-You might notice that it's not immediately obvious that the profunctor
-in question is covariant in the second argument. The hom-functor
-$\cat{L}(m, 1)$ is actually contravariant in $m$. However, we
-are taking the coend not in the category $\cat{L}$ but in the category
-$\cat{F}$. The coend variable $n$ goes over finite sets (or the
-skeletons of such). The category $\cat{L}$ contains the opposite of
-$\cat{F}$, so a morphism $m \to n$ in $\cat{F}$
-is a member of $\cat{L}(n, m)$ in $\cat{L}$ (the embedding is given
-by the functor $I_{\cat{L}}$).
+你可能注意到，立刻看出这个伴随函子在第二个参数中是协变的并不容易。同态函子 $\cat{L}(m, 1)$ 实际上在 $m$ 上是反变的。然而，我们并不是在 $\cat{L}$ 范畴中取共端，而是在 $\cat{F}$ 范畴中。共端变量 $n$ 遍历有限集（或其骨架）。$\cat{L}$ 包含 $\cat{F}$ 的对偶，所以在 $\cat{F}$ 中的态射 $m \to n$ 是 $\cat{L}$ 中的 $\cat{L}(n, m)$ 的成员（嵌入由函子 $I_{\cat{L}}$ 给出）。
 
-Let's check the functoriality of $\cat{L}(m, 1)$ as a functor from
-$\cat{F}$ to $\Set$. We want to lift a function
-$f \Colon m \to n$, so our goal is to implement a
-function from $\cat{L}(m, 1)$ to $\cat{L}(n, 1)$. Corresponding to
-the function $f$ there is a morphism in $\cat{L}$ from
-$n$ to $m$ (notice the direction). Precomposing this
-morphism with $\cat{L}(m, 1)$ gives us a subset of
-$\cat{L}(n, 1)$.
+让我们检查一下 $\cat{L}(m, 1)$ 作为从 $\cat{F}$ 到 $\Set$ 的函子的函子性。我们希望提升一个函数 $f \Colon m \to n$，因此我们的目标是从 $\cat{L}(m, 1)$ 到 $\cat{L}(n, 1)$ 实现一个函数。与函数 $f$ 对应的 $\cat{L}$ 中的态射是从 $n$ 到 $m$（注意方向）。与 $\cat{L}(m, 1)$ 组合这个态射给我们 $\cat{L}(n, 1)$ 的一个子集。
 
 \begin{figure}[H]
   \centering
@@ -469,27 +195,11 @@ $\cat{L}(n, 1)$.
   \end{tikzcd}
 \end{figure}
 
-\noindent
-Notice that, by lifting a function $1 \to n$ we can go
-from $\cat{L}(1, 1)$ to $\cat{L}(n, 1)$. We'll use this fact later
-on.
+注意，通过提升函数 $1 \to n$ 我们可以从 $\cat{L}(1, 1)$ 到 $\cat{L}(n, 1)$。我们稍后会用到这个事实。
 
-The product of a contravariant functor $a^n$ and a covariant
-functor $\cat{L}(m, 1)$ is a profunctor
-$\Fop \times \cat{F} \to \Set$. Remember that a coend can be defined
-as a coproduct (disjoint sum) of all the diagonal members of a
-profunctor, in which some elements are identified. The identifications
-correspond to cowedge conditions.
+一个反变函子 $a^n$ 和一个协变函子 $\cat{L}(m, 1)$ 的乘积是一个伴随函子 $\Fop \times \cat{F} \to \Set$。记住，共端可以定义为伴随函子的所有对角成员的并集（不相交和），其中某些元素被识别。这些识别对应于共楔条件。
 
-Here, the coend starts as the disjoint sum of sets
-$a^n \times \cat{L}(n, 1)$ over all $n$s. The identifications can
-be generated by expressing the
-\hyperref[ends-and-coends]{coend as
-  a coequalizer}. We start with an off-diagonal term
-$a^n \times \cat{L}(m, 1)$. To get to the diagonal, we can apply a
-morphism $f \Colon m \to n$ either to the first or
-the second component of the product. The two results are then
-identified.
+在这里，共端从对所有 $n$ 的集合 $a^n \times \cat{L}(n, 1)$ 的不相交和开始。这些识别可以通过表达\hyperref[ends-and-coends]{共端为共等化}来生成。我们从 $a^n \times \cat{L}(m, 1)$ 的对角项开始。要达到对角线，我们可以将一个态射 $f \Colon m \to n$ 应用于积的第一个或第二个分量。然后将两个结果识别出来。
 
 \begin{figure}[H]
   \centering
@@ -505,74 +215,34 @@ identified.
   \end{tikzcd}
 \end{figure}
 
-\noindent
-I have shown before that the lifting of
-$f \Colon 1 \to n$ results in these two
-transformations:
+正如我之前展示的，提升 $f \Colon 1 \to n$ 生成以下两种变换：
 \[a^n \to a\]
-and:
+和：
 \[\cat{L}(1, 1) \to \cat{L}(n, 1)\]
-Therefore, starting from $a^n \times \cat{L}(1, 1)$ we can reach both:
+因此，从 $a^n \times \cat{L}(1, 1)$ 开始，我们可以到达：
 \[a \times \cat{L}(1, 1)\]
-when we lift $\langle f, \id \rangle$ and:
+当我们提升 $\langle f, \id \rangle$ 时，以及：
 \[a^n \times \cat{L}(n, 1)\]
-when we lift $\langle \id, f \rangle$. This doesn't
-mean, however, that all elements of $a^n \times \cat{L}(n, 1)$ can be
-identified with $a \times \cat{L}(1, 1)$. That's because not all elements
-of $\cat{L}(n, 1)$ can be reached from $\cat{L}(1, 1)$. Remember
-that we can only lift morphisms from $\cat{F}$. A non-trivial $n$-ary
-operation in $\cat{L}$ cannot be constructed by lifting a morphism
-$f \Colon 1 \to n$.
+当我们提升 $\langle \id, f \rangle$ 时。然而，这并不意味着 $a^n \times \cat{L}(n, 1)$ 的所有元素都可以与 $a \times \cat{L}(1, 1)$ 识别。这是因为 $\cat{L}(n, 1)$ 的所有元素都不能从 $\cat{L}(1, 1)$ 达到。请记住，我们只能提升来自 $\cat{F}$ 的态射。$\cat{L}$ 中的非平凡 $n$ 元运算不能通过提升 $f \Colon 1 \to n$ 构造出来。
 
-In other words, we can only identify all addends in the coend formula
-for which $\cat{L}(n, 1)$ can be reached from $\cat{L}(1, 1)$
-through the application of basic morphisms. They are all equivalent to
-$a \times \cat{L}(1, 1)$. Basic morphisms are the ones that are images of
-morphisms in $\cat{F}$.
+换句话说，我们只能识别共端公式中的所有加法子集，其中 $\cat{L}(n, 1)$ 可以通过应用基本态射从 $\cat{L}(1, 1)$ 达到。它们都等价于 $a \times \cat{L}(1, 1)$。基本态射是 $\cat{F}$ 中态射的图像。
 
-Let's see how this works in the simplest case of the Lawvere theory, the
-$\Fop$ itself. In such a theory, every
-$\cat{L}(n, 1)$ can be reached from $\cat{L}(1, 1)$. This is because
-$\cat{L}(1, 1)$ is a singleton containing just the identity morphism,
-and $\cat{L}(n, 1)$ only contains morphisms corresponding to
-injections $1 \to n$ in $\cat{F}$, which \emph{are}
-basic morphisms. Therefore all the addends in the coproduct are
-equivalent and we get:
+让我们看看这在最简单的劳维尔理论 $\Fop$ 中是如何工作的。在这样的理论中，每个 $\cat{L}(n, 1)$ 都可以从 $\cat{L}(1, 1)$ 达到。这是因为 $\cat{L}(1, 1)$ 是一个单元素集合，仅包含恒等态射，并且 $\cat{L}(n, 1)$ 仅包含对应于 $\cat{F}$ 中嵌入 $1 \to n$ 的态射，它们\emph{确实}是基本态射。因此，余积中的所有加法项都是等价的，我们得到：
 \[T a = a \times \cat{L}(1, 1) = a\]
-which is the identity monad.
+这是恒等幺半群。
 
-\section{Lawvere Theory of Side Effects}
+\section{带有副作用的劳维尔理论\\ \textmd{Lawvere Theory of Side Effects}}
 
-Since there is such a strong connection between monads and Lawvere
-theories, it's natural to ask the question if Lawvere theories could be
-used in programming as an alternative to monads. The major problem with
-monads is that they don't compose nicely. There is no generic recipe for
-building monad transformers. Lawvere theories have an advantage in this
-area: they can be composed using coproducts and tensor products. On the
-other hand, only finitary monads can be easily converted to Lawvere
-theories. The outlier here is the continuation monad. There is ongoing
-research in this area (see bibliography).
+由于幺半群与劳维尔理论之间有如此紧密的联系，自然会问劳维尔理论是否可以作为编程中幺半群的替代方案。幺半群的主要问题在于它们不能很好地组合。没有通用的构建幺半群变换器的配方。劳维尔理论在这方面有优势：它们可以使用余积和张量积来组合。另一方面，只有有限的幺半群可以轻松转换为劳维尔理论。这里的例外是延续幺半群。这个领域的研究正在进行中（参见参考书目）。
 
-To give you a taste of how a Lawvere theory can be used to describe side
-effects, I'll discuss the simple case of exceptions that are
-traditionally implemented using the \code{Maybe} monad.
+为了让你了解劳维尔理论如何用于描述副作用，我将讨论一个使用 \code{Maybe} 幺半群传统实现的简单异常情况。
 
-The \code{Maybe} monad is generated by the Lawvere theory with a
-single nullary operation $0 \to 1$. A model of this
-theory is a functor that maps $1$ to some set $a$, and
-maps the nullary operation to a function:
+\code{Maybe} 幺半群由具有单个零元运算 $0 \to 1$ 的劳维尔理论生成。该理论的模型是一个函子，将 $1$ 映射到某个集合 $a$，并将零元运算映射为一个函数：
 
 \src{snippet02}
-We can recover the \code{Maybe} monad using the coend formula. Let's
-consider what the addition of the nullary operation does to the hom-sets
-$\cat{L}(n, 1)$. Besides creating a new $\cat{L}(0, 1)$ (which is
-absent from $\Fop$), it also adds new morphisms
-to $\cat{L}(n, 1)$. These are the results of composing morphism of the
-type $n \to 0$ with our $0 \to 1$.
-Such contributions are all identified with $a^0 \times \cat{L}(0, 1)$ in
-the coend formula, because they can be obtained from:
+我们可以使用共端公式恢复 \code{Maybe} 幺半群。让我们考虑零元运算的添加对态射集 $\cat{L}(n, 1)$ 的影响。除了创建一个新的 $\cat{L}(0, 1)$（在 $\Fop$ 中不存在），它还向 $\cat{L}(n, 1)$ 添加了新的态射。这些态射是由 $n \to 0$ 的态射与我们的 $0 \to 1$ 组合的结果。这些贡献在共端公式中与 $a^0 \times \cat{L}(0, 1)$ 相关，因为它们可以通过两种不同的方式从：
 \[a^n \times \cat{L}(0, 1)\]
-by lifting $0 \to n$ in two different ways.
+通过提升 $0 \to n$ 获得。
 
 \begin{figure}[H]
   \centering
@@ -588,44 +258,35 @@ by lifting $0 \to n$ in two different ways.
   \end{tikzcd}
 \end{figure}
 
-\noindent
-The coend reduces to:
+共端简化为：
 \[T_{\cat{L}} a = a^0 + a^1\]
-or, using Haskell notation:
+或者，用 Haskell 表示：
 
 \src{snippet03}
-which is equivalent to:
+这相当于：
 
 \src{snippet04}
-Notice that this Lawvere theory only supports the raising of exceptions,
-not their handling.
+请注意，此劳维尔理论仅支持引发异常，而不支持其处理。
 
-\section{Challenges}
+\section{挑战\\ \textmd{Challenges}}
 
 \begin{enumerate}
   \tightlist
   \item
-        Enumerate all morphisms between $2$ and $3$ in $\cat{F}$ (the skeleton of
-        $\cat{FinSet}$).
+  列举 $\cat{F}$（有限集范畴的骨架）中 $2$ 和 $3$ 之间的所有态射。
   \item
-        Show that the category of models for the Lawvere theory of monoids is
-        equivalent to the category of monad algebras for the list monad.
+  证明幺半群劳维尔理论的模型范畴等价于列表幺半群的幺半群代数范畴。
   \item
-        The Lawvere theory of monoids generates the list monad. Show that its
-        binary operations can be generated using the corresponding Kleisli
-        arrows.
+  幺半群劳维尔理论生成了列表幺半群。证明其二元运算可以通过相应的 Kleisli 箭头生成。
   \item
-        \textbf{FinSet} is a subcategory of $\Set$ and there is a
-        functor that embeds it in $\Set$. Any functor on $\Set$
-        can be restricted to $\cat{FinSet}$. Show that a finitary functor is
-        the left Kan extension of its own restriction.
+  \textbf{FinSet} 是 $\Set$ 的一个子范畴，并且有一个函子将其嵌入 $\Set$。$\Set$ 上的任何函子都可以限制在 $\cat{FinSet}$ 上。证明一个有限函子是其自身限制的左 Kan 延拓。
 \end{enumerate}
 
-\section{Further Reading}
+\section{进一步阅读\\ \textmd{Further Reading}}
 \begin{enumerate}
   \tightlist
   \item
-        \urlref{http://www.tac.mta.ca/tac/reprints/articles/5/tr5.pdf}{Functorial Semantics of Algebraic Theories}, F. William Lawvere
+  \urlref{http://www.tac.mta.ca/tac/reprints/articles/5/tr5.pdf}{Functorial Semantics of Algebraic Theories}, F. William Lawvere
   \item
-        \urlref{http://homepages.inf.ed.ac.uk/gdp/publications/Comp_Eff_Monads.pdf}{Notions of computation determine monads}, Gordon Plotkin and John Power
+  \urlref{http://homepages.inf.ed.ac.uk/gdp/publications/Comp_Eff_Monads.pdf}{Notions of computation determine monads}, Gordon Plotkin and John Power
 \end{enumerate}

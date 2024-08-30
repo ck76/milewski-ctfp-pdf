@@ -1,41 +1,18 @@
 % !TEX root = ../../ctfp-print.tex
 
-\lettrine[lhang=0.17]{I}{f I haven't} convinced you yet that category theory is all about
-morphisms then I haven't done my job properly. Since the next topic is
-adjunctions, which are defined in terms of isomorphisms of hom-sets, it
-makes sense to review our intuitions about the building blocks of
-hom-sets. Also, you'll see that adjunctions provide a more general
-language to describe a lot of constructions we've studied before, so it
-might help to review them too.
+\lettrine[lhang=0.17]{如}{果我还没有}让你相信范畴论（category theory）完全是关于态射（morphisms）的，那么说明我还没有做好我的工作。因为下一个主题是伴随（adjunctions），它是以同态集（hom-sets）的同构（isomorphisms）来定义的，因此回顾一下我们对同态集构建块的直觉是有意义的。此外，你会看到伴随提供了一种更通用的语言来描述我们之前学习的许多构造，所以复习它们也可能有所帮助。
 
-\section{Functors}
+\section{函子（Functors）}
 
-To begin with, you should really think of functors as mappings of
-morphisms --- the view that's emphasized in the Haskell definition of
-the \code{Functor} typeclass, which revolves around \code{fmap}. Of
-course, functors also map objects --- the endpoints of morphisms ---
-otherwise we wouldn't be able to talk about preserving composition.
-Objects tell us which pairs of morphisms are composable. The target of
-one morphism must be equal to the source of the other --- if they are to
-be composed. So if we want the composition of morphisms to be mapped to
-the composition of \newterm{lifted} morphisms, the mapping of their
-endpoints is pretty much determined.
+首先，你确实应该把函子（functors）看作是态射的映射——这是 Haskell 中 \code{Functor} 类型类的定义所强调的观点，该定义围绕 \code{fmap} 展开。当然，函子也映射对象——态射的端点——否则我们将无法讨论保持组合性。对象告诉我们哪些态射对可以组合。如果我们希望态射的组合被映射到“提升”（lifted）态射的组合，那么它们端点的映射几乎是确定的。
 
-\section{Commuting Diagrams}
+\section{交换图（Commuting Diagrams）}
 
-A lot of properties of morphisms are expressed in terms of commuting
-diagrams. If a particular morphism can be described as a composition of
-other morphisms in more than one way, then we have a commuting diagram.
+许多态射的性质都是用交换图来表达的。如果一个特定的态射可以用多种方式描述为其他态射的组合，那么我们就有一个交换图。
 
-In particular, commuting diagrams form the basis of almost all universal
-constructions (with the notable exceptions of the initial and terminal
-objects). We've seen this in the definitions of products, coproducts,
-various other (co-)limits, exponential objects, free monoids, etc.
+特别地，交换图构成了几乎所有泛性质构造的基础（初始对象和终端对象是显著的例外）。我们已经在积（product）、余积（coproduct）、各种其他（余）极限（(co-)limits）、指数对象（exponential objects）、自由幺半群（free monoids）等的定义中看到了这一点。
 
-The product is a simple example of a universal construction. We pick two
-objects $a$ and $b$ and see if there exists an object
-$c$, together with a pair of morphisms $p$ and $q$,
-that has the universal property of being their product.
+积是一个简单的泛性质构造的例子。我们选择两个对象 $a$ 和 $b$，看看是否存在一个对象 $c$ 以及一对态射 $p$ 和 $q$，它具有作为它们积的泛性质。
 
 \begin{figure}[H]
   \centering
@@ -43,20 +20,11 @@ that has the universal property of being their product.
 \end{figure}
 
 \noindent
-A product is a special case of a limit. A limit is defined in terms of
-cones. A general cone is built from commuting diagrams. Commutativity of
-those diagrams may be replaced with a suitable naturality condition for
-the mapping of functors. This way commutativity is reduced to the role
-of the assembly language for the higher level language of natural
-transformations.
+积是极限的一个特殊情况。极限是用圆锥（cones）来定义的。一般的圆锥是由交换图构成的。那些图的交换性可能被适当的自然性条件替代，用于函子的映射。这样，交换性被简化为自然变换高级语言的汇编语言。
 
-\section{Natural Transformations}
+\section{自然变换（Natural Transformations）}
 
-In general, natural transformations are very convenient whenever we need
-a mapping from morphisms to commuting squares. Two opposing sides of a
-naturality square are the mappings of some morphism $f$ under two
-functors $F$ and $G$. The other sides are the components
-of the natural transformation (which are also morphisms).
+通常，当我们需要从态射映射到交换方块时，自然变换非常方便。自然性方块的两个对立边是某个态射 $f$ 在两个函子 $F$ 和 $G$ 下的映射。其他边是自然变换的分量（它们也是态射）。
 
 \begin{figure}[H]
   \centering
@@ -64,17 +32,7 @@ of the natural transformation (which are also morphisms).
 \end{figure}
 
 \noindent
-Naturality means that when you move to the ``neighboring'' component (by
-neighboring I mean connected by a morphism), you're not going against
-the structure of either the category or the functors. It doesn't matter
-whether you first use a component of the natural transformation to
-bridge the gap between objects, and then jump to its neighbor using the
-functor; or the other way around. The two directions are orthogonal. A
-natural transformation moves you left and right, and the functors move
-you up and down or back and forth --- so to speak. You can visualize the
-\emph{image} of a functor as a sheet in the target category. A natural
-transformation maps one such sheet corresponding to F, to another,
-corresponding to G.
+自然性意味着当你移动到“邻近”组件时（通过态射连接的邻近），你并没有违背范畴或函子的结构。无论你是先使用自然变换的分量来弥合对象之间的差距，然后再使用函子跳到邻居，还是反过来，都是无所谓的。两个方向是正交的。自然变换使你向左和向右移动，而函子使你上下移动，或者说前后移动——可以这么说。你可以将函子的\emph{像（image）}可视化为目标范畴中的一张纸。自然变换将对应于 $F$ 的一张纸映射到对应于 $G$ 的另一张纸。
 
 \begin{figure}[H]
   \centering
@@ -82,137 +40,58 @@ corresponding to G.
 \end{figure}
 
 \noindent
-We've seen examples of this orthogonality in Haskell. There the action
-of a functor modifies the content of a container without changing its
-shape, while a natural transformation repackages the untouched contents
-into a different container. The order of these operations doesn't
-matter.
+我们已经在 Haskell 中看到了这种正交性的例子。在那里，函子的作用是修改容器的内容而不改变其形状，而自然变换则将未更改的内容重新打包到另一个容器中。这些操作的顺序并不重要。
 
-We've seen the cones in the definition of a limit replaced by natural
-transformations. Naturality ensures that the sides of every cone
-commute. Still, a limit is defined in terms of mappings \emph{between}
-cones. These mappings must also satisfy commutativity conditions. (For
-instance, the triangles in the definition of the product must commute.)
+我们已经在极限的定义中看到了圆锥被自然变换替换的情况。自然性确保了每个圆锥的边都是交换的。然而，极限仍然是以圆锥\emph{之间}的映射来定义的。这些映射也必须满足交换性条件。（例如，积的定义中的三角形必须是交换的。）
 
-These conditions, too, may be replaced by naturality. You may recall
-that the \emph{universal} cone, or the limit, is defined as a natural
-transformation between the (contravariant) hom-functor:
+这些条件也可以用自然性来替代。你可能还记得\emph{泛（universal）}圆锥，或极限，被定义为（逆变）同态函子之间的自然变换：
 \[F \Colon c \to \cat{C}(c, \Lim[D])\]
-and the (also contravariant) functor that maps objects in \emph{C} to
-cones, which themselves are natural transformations:
+以及映射范畴 $\cat{C}$ 中对象到圆锥的（也是逆变的）函子，而这些圆锥本身就是自然变换：
 \[G \Colon c \to \cat{Nat}(\Delta_c, D)\]
-Here, $\Delta_c$ is the constant functor, and $D$ is the functor
-that defines the diagram in $\cat{C}$. Both functors $F$ and
-$G$ have well defined actions on morphisms in $\cat{C}$. It so
-happens that this particular natural transformation between $F$
-and $G$ is an \emph{isomorphism}.
+其中，$\Delta_c$ 是常函子，$D$ 是在 $\cat{C}$ 中定义图的函子。两个函子 $F$ 和 $G$ 在 $\cat{C}$ 中的态射上具有明确的作用。事实上，这个特殊的自然变换 $F$ 和 $G$ 之间是一个\emph{同构（isomorphism）}。
 
-\section{Natural Isomorphisms}
+\section{自然同构（Natural Isomorphisms）}
 
-A natural isomorphism --- which is a natural transformation whose every
-component is reversible --- is category theory's way of saying that
-``two things are the same.'' A component of such a transformation must
-be an isomorphism between objects --- a morphism that has the inverse.
-If you visualize functor images as sheets, a natural isomorphism is a
-one-to-one invertible mapping between those sheets.
+自然同构——即每个分量都是可逆的自然变换——是范畴论中表示“两物相同”的方式。此类变换的分量必须是对象之间的同构态射——即具有逆的态射。如果你将函子像可视化为纸张，自然同构是一对一的可逆映射。
 
-\section{Hom-Sets}
+\section{同态集（Hom-Sets）}
 
-But what are morphisms? They do have more structure than objects: unlike
-objects, morphisms have two ends. But if you fix the source and the
-target objects, the morphisms between the two form a boring set (at
-least for locally small categories). We can give elements of this set
-names like $f$ or $g$, to distinguish one from another ---
-but what is it, really, that makes them different?
+但是态射是什么呢？它们比对象具有更多的结构：与对象不同，态射有两个端点。但是，如果你固定源对象和目标对象，两者之间的态射形成一个无趣的集合（至少对于局部小范畴来说是这样）。我们可以给这个集合中的元素起名字，比如 $f$ 或 $g$，以区分一个态射和另一个态射——但是什么使它们不同呢？
 
-The essential difference between morphisms in a given hom-set lies in
-the way they compose with other morphisms (from abutting hom-sets). If
-there is a morphism $h$ whose composition (either pre- or post-)
-with $f$ is different than that with $g$, for instance:
+在给定同态集中，态射之间的本质区别在于它们与其他态射（来自相邻同态集的态射）的组合方式。如果存在一个态射 $h$，其与 $f$ 的组合（无论是前组合还是后组合）与与 $g$ 的组合不同，例如：
 \[h \circ f \neq h \circ g\]
-then we can directly ``observe'' the difference between $f$ and
-$g$. But even if the difference is not directly observable, we
-might use functors to zoom in on the hom-set. A functor $F$ may
-map the two morphisms to distinct morphisms:
+那么我们可以直接“观察”到 $f$ 和 $g$ 之间的差异。但即使这种差异不是直接可观察到的，我们也可以用函子来放大同态集。函子 $F$ 可能将两个态射映射到不同的态射：
 \[F f \neq F g\]
-in a richer category, where the abutting hom-sets provide more
-resolution, e.g.,
+在一个更丰富的范畴中，其中相邻的同态集提供了更多的分辨率，例如，
 \[h' \circ F f \neq h' \circ F g\]
-where $h'$ is not in the image of $F$.
+其中，$h'$ 不在 $F$ 的像中。
 
-\section{Hom-Set Isomorphisms}
+\section{同态集同构（Hom-Set Isomorphisms）}
 
-A lot of categorical constructions rely on isomorphisms between
-hom-sets. But since hom-sets are just sets, a plain isomorphism between
-them doesn't tell you much. For finite sets, an isomorphism just says
-that they have the same number of elements. If the sets are infinite,
-their cardinality must be the same. But any meaningful isomorphism of
-hom-sets must take into account composition. And composition involves
-more than one hom-set. We need to define isomorphisms that span whole
-collections of hom-sets, and we need to impose some compatibility
-conditions that interoperate with composition. And a \newterm{natural}
-isomorphism fits the bill exactly.
+许多范畴构造依赖于同态集之间的同构。但是，由于同态集只是集合，集合之间的普通同构并不能告诉你很多信息。对于有限集合，同构只说明它们具有相同数量的元素。如果集合是无限的，那么它们的基数必须相同。但是，任何有意义的同态集同构都必须考虑组合。组合涉及的不仅仅是一个同态集。我们需要定义跨越整个同态集集合的同构，并且我们需要施加一些与组合相互操作的兼容性条件。而\newterm{自然}同构完全符合要求。
 
-But what's a natural isomorphism of hom-sets? Naturality is a property
-of mappings between functors, not sets. So we are really talking about a
-natural isomorphism between hom-set-valued functors. These functors are
-more than just set-valued functors. Their action on morphisms is induced
-by the appropriate hom-functors. Morphisms are canonically mapped by
-hom-functors using either pre- or post-composition (depending on the
-covariance of the functor).
+但是，同态集的自然同构是什么呢？自然性是函子之间的映射的性质，而不是集合的。所以我们实际上是在谈论同态集值函子之间的自然同构。这些函子不仅仅是集合值的函子。它们在态射上的作用是由适当的同态函子诱导的。态射通过同态函子用前组合或后组合（取决于函子的协变性）来进行规范映射。
 
-The Yoneda embedding is one example of such an isomorphism. It maps
-hom-sets in $\cat{C}$ to hom-sets in the functor category; and it's
-natural. One functor in the Yoneda embedding is the hom-functor in
-$\cat{C}$ and the other maps objects to sets of natural transformations
-between hom-sets.
+Yoneda 嵌入就是这种同构的一个例子。它将 $\cat{C}$ 中的同态集映射到函子范畴中的同态集，并且它是自然的。Yoneda 嵌入中的一个函子是 $\cat{C}$ 中的同态函子，另一个将对象映射到同态集之间的自然变换的集合。
 
-The definition of a limit is also a natural isomorphism between hom-sets
-(the second one, again, in the functor category):
+极限的定义也是同态集之间的自然同构（第二个也是在函子范畴中）：
 \[\cat{C}(c, \Lim[D]) \simeq \cat{Nat}(\Delta_c, D)\]
-It turns out that our construction of an exponential object, or that of
-a free monoid, can also be rewritten as a natural isomorphism between
-hom-sets.
+事实证明，我们对指数对象的构造或对自由幺半群的构造也可以重写为同态集之间的自然同构。
 
-This is no coincidence --- we'll see next that these are just different
-examples of adjunctions, which are defined as natural isomorphisms of
-hom-sets.
+这并非巧合——我们接下来会看到，这些只是伴随的不同例子，而伴随被定义为同态集的自然同构。
 
-\section{Asymmetry of Hom-Sets}
+\section{同态集的不对称性（Asymmetry of Hom-Sets）}
 
-There is one more observation that will help us understand adjunctions.
-Hom-sets are, in general, not symmetric. A hom-set $\cat{C}(a, b)$ is
-often very different from the hom-set $\cat{C}(b, a)$. The ultimate
-demonstration of this asymmetry is a partial order viewed as a category.
-In a partial order, a morphism from $a$ to $b$ exists if
-and only if $a$ is less than or equal to $b$. If
-$a$ and $b$ are different, then there can be no morphism
-going the other way, from $b$ to $a$. So if the hom-set
-$\cat{C}(a, b)$ is non-empty, which in this case means it's a
-singleton set, then $\cat{C}(b, a)$ must be empty, unless
-$a = b$. The arrows in this category have a definite flow in
-one direction.
+还有一个观察将帮助我们理解伴随。一般来说，同态集并不是对称的。同态集 $\cat{C}(a, b)$ 通常与同态集 $\cat{C}(b, a)$ 非常不同。部分顺序作为范畴时，是这种不对称性的最终证明。在部分顺序中，当且仅当 $a$ 小于或等于 $b$ 时，从 $a$ 到 $b$ 的态射才存在。如果 $a$ 和 $b$ 是不同的，那么就不能存在从 $b$ 到 $a$ 的态射。所以，如果同态集 $\cat{C}(a, b)$ 是非空的，在这种情况下意味着它是单元素集合，那么 $\cat{C}(b, a)$ 必须是空的，除非 $a = b$。在这个范畴中，箭头的流动方向是确定的。
 
-A preorder, which is based on a relation that's not necessarily
-antisymmetric, is also ``mostly'' directional, except for occasional
-cycles. It's convenient to think of an arbitrary category as a
-generalization of a preorder.
+预序（preorder），基于不一定是反对称的关系，也是“主要”方向性的，除了偶尔的循环。将任意范畴视为预序的广义化是很方便的。
 
-A preorder is a thin category --- all hom-sets are either singletons or
-empty. We can visualize a general category as a ``thick'' preorder.
+预序是一个稀薄范畴——所有同态集要么是单元素的，要么是空的。我们可以将一般范畴可视化为“厚”预序。
 
-\section{Challenges}
+\section{挑战（Challenges）}
 
 \begin{enumerate}
   \tightlist
   \item
-        Consider some degenerate cases of a naturality condition and draw the
-        appropriate diagrams. For instance, what happens if either functor
-        $F$ or $G$ map both objects $a$ and $b$
-        (the ends of $f \Colon a \to b$) to the same
-        object, e.g., $F a = F b$ or $G a = G b$?
-        (Notice that you get a cone or a co-cone this way.) Then consider
-        cases where either $F a = G a$ or $F b = G b$.
-        Finally, what if you start with a morphism that loops on itself ---
-        $f \Colon a \to a$?
+  考虑自然性条件的一些退化情况并绘制相应的图。例如，如果函子 $F$ 或 $G$ 将对象 $a$ 和 $b$（即态射 $f \Colon a \to b$ 的两端）映射到同一对象，例如 $F a = F b$ 或 $G a = G b$，会发生什么？（注意，通过这种方式你会得到一个圆锥或余圆锥）。然后，考虑 $F a = G a$ 或 $F b = G b$ 的情况。最后，如果你从一个循环自身的态射开始，即 $f \Colon a \to a$，会发生什么？
 \end{enumerate}

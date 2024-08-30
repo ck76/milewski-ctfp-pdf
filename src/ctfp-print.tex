@@ -1,3 +1,27 @@
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{color}
+\lstdefinestyle{haskellStyle}{
+  language=Haskell,
+  basicstyle=\ttfamily,
+  keywordstyle=\color{blue},
+  commentstyle=\color{green},
+  stringstyle=\color{red},
+  morecomment=[l][\color{magenta}]{--},
+  breaklines=true
+}
+
+\lstdefinestyle{ocamlStyle}{
+  language=OCaml,
+  basicstyle=\ttfamily,
+  keywordstyle=\color{blue},
+  commentstyle=\color{green},
+  stringstyle=\color{red},
+  breaklines=true
+}
+
+\lstset{style=haskellStyle}
+\usepackage{minted}
 % This is a main LaTeX file for generating the CTFP book
 % for printing in US-trade format, suitable for binding.
 % The links are black in this version.

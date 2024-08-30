@@ -1,54 +1,20 @@
 % !TEX root = ../../ctfp-print.tex
 
-\lettrine[lhang=0.17]{M}{ost constructions in} category theory are generalizations of results
-from other more specific areas of mathematics. Things like products,
-coproducts, monoids, exponentials, etc., have been known long before
-category theory. They might have been known under different names in
-different branches of mathematics. A Cartesian product in set theory, a
-meet in order theory, a conjunction in logic --- they are all specific
-examples of the abstract idea of a categorical product.
+\lettrine[lhang=0.17]{大}{多数范畴论中的构造}都是从数学中其他更具体的领域中推广而来的结果。像积（product）、余积（coproduct）、幺半群（monoids）、指数（exponentials）等概念早在范畴论之前就已经为人所知了。它们在不同的数学分支中可能有不同的名称。例如，在集合论中是笛卡尔积（Cartesian product）、在序理论中是交（meet）、在逻辑中是合取（conjunction）——这些都是范畴积这一抽象概念的具体例子。
 
-The Yoneda lemma stands out in this respect as a sweeping statement
-about categories in general with little or no precedent in other
-branches of mathematics. Some say that its closest analog is Cayley's
-theorem in group theory (every group is isomorphic to a permutation
-group of some set).
+在这方面，$\textbf{Yoneda 引理}$格外引人注目，因为它是关于范畴的一个广泛声明，在数学的其他分支中几乎没有前例。有人说它最接近的类比是群论中的凯莱定理（Cayley’s theorem），即每个群都同构于某个集合的置换群。
 
-The setting for the Yoneda lemma is an arbitrary category $\cat{C}$
-together with a functor $F$ from $\cat{C}$ to $\Set$. We've
-seen in the previous section that some $\Set$-valued functors are
-representable, that is isomorphic to a hom-functor. The Yoneda lemma
-tells us that all $\Set$-valued functors can be obtained from
-hom-functors through natural transformations, and it explicitly
-enumerates all such transformations.
+Yoneda 引理的背景是一个任意的范畴 $\cat{C}$，以及从 $\cat{C}$ 到 $\Set$ 的一个函子 $F$。我们在前一节中看到，一些 $\Set$ 值函子是可表示的，也就是说，它们同构于某个同态函子（hom-functor）。Yoneda 引理告诉我们，所有的 $\Set$ 值函子都可以通过自然变换（natural transformations）从同态函子中获得，并且它明确列举了所有这样的变换。
 
-When I talked about natural transformations, I mentioned that the
-naturality condition can be quite restrictive. When you define a
-component of a natural transformation at one object, naturality may be
-strong enough to ``transport'' this component to another object that is
-connected to it through a morphism. The more arrows between objects in
-the source and the target categories there are, the more constraints you
-have for transporting the components of natural transformations.
-$\Set$ happens to be a very arrow-rich category.
+当我谈到自然变换时，我提到自然性条件可能非常具有约束性。当你在一个对象上定义了自然变换的一个分量时，自然性可能足够强大，可以将这个分量“传递”到通过态射与之连接的另一个对象中。在源范畴和目标范畴中的对象之间的箭头越多，你就有越多的约束条件来传递自然变换的分量。$\Set$ 恰好是一个箭头非常丰富的范畴。
 
-The Yoneda lemma tells us that a natural transformation between a
-hom-functor and any other functor $F$ is completely determined by
-specifying the value of its single component at just one point! The rest
-of the natural transformation just follows from naturality conditions.
+Yoneda 引理告诉我们，两个同态函子和任意其他函子 $F$ 之间的自然变换完全由在一个点上的单个分量的值决定！其余的自然变换仅由自然性条件决定。
 
-So let's review the naturality condition between the two functors
-involved in the Yoneda lemma. The first functor is the hom-functor. It
-maps any object $x$ in $\cat{C}$ to the set of morphisms
-$\cat{C}(a, x)$ --- for $a$ a fixed object in $\cat{C}$. We've
-also seen that it maps any morphism $f$ from $x \to y$ to $\cat{C}(a, f)$.
+因此，让我们回顾一下 Yoneda 引理中涉及的两个函子之间的自然性条件。第一个函子是同态函子。它将 $\cat{C}$ 中的任意对象 $x$ 映射为 $\cat{C}(a, x)$ 的态射集，其中 $a$ 是 $\cat{C}$ 中的一个固定对象。我们还看到它将从 $x \to y$ 的任何态射 $f$ 映射为 $\cat{C}(a, f)$。
 
-The second functor is an arbitrary $\Set$-valued functor
-$F$.
+第二个函子是任意的 $\Set$ 值函子 $F$。
 
-Let's call the natural transformation between these two functors
-$\alpha$. Because we are operating in $\Set$, the components of
-the natural transformation, like $\alpha_x$ or $\alpha_y$, are just
-regular functions between sets:
+我们将这两个函子之间的自然变换称为 $\alpha$。由于我们在 $\Set$ 中操作，自然变换的分量，如 $\alpha_x$ 或 $\alpha_y$，只是集合之间的常规函数：
 \begin{gather*}
   \alpha_x \Colon \cat{C}(a, x) \to F x \\
   \alpha_y \Colon \cat{C}(a, y) \to F y
@@ -60,23 +26,17 @@ regular functions between sets:
 \end{figure}
 
 \noindent
-And because these are just functions, we can look at their values at
-specific points. But what's a point in the set $\cat{C}(a, x)$? Here's
-the key observation: Every point in the set $\cat{C}(a, x)$ is also a
-morphism $h$ from $a$ to $x$.
+因为这些只是函数，我们可以观察它们在特定点上的值。但是在集合 $\cat{C}(a, x)$ 中的一个点是什么？这是关键的观察点：集合 $\cat{C}(a, x)$ 中的每个点也是从 $a$ 到 $x$ 的态射 $h$。
 
-So the naturality square for $\alpha$:
+因此，自然性方块 $\alpha$：
 \[\alpha_y \circ \cat{C}(a, f) = F f \circ \alpha_x\]
-becomes, point-wise, when acting on $h$:
+在作用于 $h$ 时，逐点变为：
 \[\alpha_y (\cat{C}(a, f) h) = (F f) (\alpha_x h)\]
-You might recall from the previous section that the action of the
-hom-functor $\cat{C}(a,-)$ on a morphism $f$ was defined as
-precomposition:
+你可能还记得在前一节中，同态函子 $\cat{C}(a,-)$ 作用于态射 $f$ 时的操作被定义为前组合：
 \[\cat{C}(a, f) h = f \circ h\]
-which leads to:
+这就导致了：
 \[\alpha_y (f \circ h) = (F f) (\alpha_x h)\]
-Just how strong this condition is can be seen by specializing it to the
-case of $x = a$.
+这种条件的强大之处在于将其特化为 $x = a$ 的情况。
 
 \begin{figure}[H]
   \centering
@@ -84,53 +44,26 @@ case of $x = a$.
 \end{figure}
 
 \noindent
-In that case $h$ becomes a morphism from $a$ to
-$a$. We know that there is at least one such morphism,
-$h = \id_a$. Let's plug it in:
+在这种情况下，$h$ 变成了从 $a$ 到 $a$ 的态射。我们知道至少有一个这样的态射，即 $h = \id_a$。让我们将其代入：
 \[\alpha_y f = (F f) (\alpha_a \id_a)\]
-Notice what has just happened: The left hand side is the action of
-$\alpha_y$ on an arbitrary element $f$ of $\cat{C}(a, y)$. And
-it is totally determined by the single value of $\alpha_a$ at
-$\id_a$. We can pick any such value and it will generate a natural
-transformation. Since the values of $\alpha_a$ are in the set
-$F a$, any point in $F a$ will define some $\alpha$.
+注意到刚刚发生的事情：左侧是自然变换 $\alpha_y$ 对 $\cat{C}(a, y)$ 中任意元素 $f$ 的作用。它完全由 $\alpha_a$ 在 $\id_a$ 上的单一值决定。我们可以选择任意这样的值，并且它将生成一个自然变换。由于 $\alpha_a$ 的值位于集合 $F a$ 中，因此 $F a$ 中的任何点都将定义一些 $\alpha$。
 
-Conversely, given any natural transformation $\alpha$ from
-$\cat{C}(a, -)$ to $F$, you can evaluate it at $\id_a$ to
-get a point in $F a$.
+反之，给定从 $\cat{C}(a, -)$ 到 $F$ 的任意自然变换 $\alpha$，你可以在 $\id_a$ 处评估它以获得 $F a$ 中的一个点。
 
-We have just proven the Yoneda lemma:
+我们刚刚证明了 Yoneda 引理：
 
 \begin{quote}
-  There is a one-to-one correspondence between natural transformations
-  from $\cat{C}(a, -)$ to $F$ and elements of $F a$.
+  从 $\cat{C}(a, -)$ 到 $F$ 的自然变换与 $F a$ 的元素之间存在一一对应关系。
 \end{quote}
-in other words,
+换句话说，
 \[\cat{Nat}(\cat{C}(a, -), F) \cong F a\]
-Or, if we use the notation $[\cat{C}, \Set]$ for the functor
-category between $\cat{C}$ and $\Set$, the set of natural
-transformation is just a hom-set in that category, and we can write:
+或者，如果我们使用符号 $[\cat{C}, \Set]$ 表示 $\cat{C}$ 和 $\Set$ 之间的函子范畴，则自然变换的集合只是该范畴中的一个同态集（hom-set），我们可以写作：
 \[[\cat{C}, \Set](\cat{C}(a, -), F) \cong F a\]
-I'll explain later how this correspondence is in fact a natural
-isomorphism.
+稍后我会解释这个对应关系实际上是一个自然同构。
 
-Now let's try to get some intuition about this result. The most amazing
-thing is that the whole natural transformation crystallizes from just
-one nucleation site: the value we assign to it at $\id_a$. It
-spreads from that point following the naturality condition. It floods
-the image of $\cat{C}$ in $\Set$. So let's first consider what the
-image of $\cat{C}$ is under $\cat{C}(a, -)$.
+现在让我们试着对这个结果获得一些直觉。最令人惊奇的是，整个自然变换从一个成核点开始结晶：我们在 $\id_a$ 处赋予它的值。它从那个点开始扩展，遵循自然性条件。它渗透到 $\Set$ 中 $\cat{C}$ 的像中。因此，让我们首先考虑 $\cat{C}$ 在 $\cat{C}(a, -)$ 下的像是什么。
 
-Let's start with the image of $a$ itself. Under the hom-functor
-$\cat{C}(a, -)$, $a$ is mapped to the set $\cat{C}(a, a)$.
-Under the functor $F$, on the other hand, it is mapped to the set
-$F a$. The component of the natural transformation $\alpha_a$
-is some function from $\cat{C}(a, a)$ to $F a$. Let's focus on
-just one point in the set $\cat{C}(a, a)$, the point corresponding to
-the morphism $\id_a$. To emphasize the fact that it's just a point
-in a set, let's call it $p$. The component $\alpha_a$ should map
-$p$ to some point $q$ in $F a$. I'll show you that
-any choice of $q$ leads to a unique natural transformation.
+让我们从 $a$ 本身的像开始。在同态函子 $\cat{C}(a, -)$ 下，$a$ 被映射为 $\cat{C}(a, a)$ 的集合。在函子 $F$ 下，它被映射为集合 $F a$。自然变换 $\alpha_a$ 的分量是从 $\cat{C}(a, a)$ 到 $F a$ 的某个函数。让我们关注 $\cat{C}(a, a)$ 集合中的一个点，该点对应于态射 $\id_a$。为了强调它只是集合中的一个点，我们称它为 $p$。$\alpha_a$ 的分量应该将 $p$ 映射为 $F a$ 中的某个点 $q$。我会向你展示，任何 $q$ 的选择都会导致一个唯一的自然变换。
 
 \begin{figure}[H]
   \centering
@@ -138,15 +71,7 @@ any choice of $q$ leads to a unique natural transformation.
 \end{figure}
 
 \noindent
-The first claim is that the choice of one point $q$ uniquely
-determines the rest of the function $\alpha_a$. Indeed, let's pick any
-other point, $p'$ in $\cat{C}(a, a)$, corresponding to
-some morphism $g$ from $a$ to $a$. And here's where
-the magic of the Yoneda lemma happens: $g$ can be viewed as a
-point $p'$ in the set $\cat{C}(a, a)$. At the same time,
-it selects two \emph{functions} between sets. Indeed, under the
-hom-functor, the morphism $g$ is mapped to a function
-$\cat{C}(a, g)$; and under $F$ it's mapped to $F g$.
+第一个主张是，一个点 $q$ 的选择唯一地决定了其余的函数 $\alpha_a$。确实，让我们选择 $\cat{C}(a, a)$ 中的另一个点 $p'$，该点对应于从 $a$ 到 $a$ 的某个态射 $g$。这是 Yoneda 引理的魔力发生的地方：$g$ 可以看作是 $\cat{C}(a, a)$ 集合中的一个点 $p'$。同时，它选择了集合之间的两个函数。实际上，在同态函子下，态射 $g$ 被映射为函数 $\cat{C}(a, g)$；在 $F$ 下，它被映射为 $F g$。
 
 \begin{figure}[H]
   \centering
@@ -154,36 +79,17 @@ $\cat{C}(a, g)$; and under $F$ it's mapped to $F g$.
 \end{figure}
 
 \noindent
-Now let's consider the action of $\cat{C}(a, g)$ on our original
-$p$ which, as you remember, corresponds to $\id_a$. It is
-defined as precomposition, $g \circ \id_a$, which is equal to $g$,
-which corresponds to our point $p'$. So the morphism
-$g$ is mapped to a function that, when acting on $p$
-produces $p'$, which is $g$. We have come full
-circle!
+现在让我们考虑 $\cat{C}(a, g)$ 作用于我们原来的 $p$ 的动作，正如你所记得的那样，它对应于 $\id_a$。它被定义为前组合 $g \circ \id_a$，等于 $g$，即对应于我们的点 $p'$。因此，态射 $g$ 被映射为一个函数，当作用于 $p$ 时产生 $p'$，即 $g$。我们已经完成了完整的循环！
 
-Now consider the action of $F g$ on $q$. It is some
-$q'$, a point in $F a$. To complete the naturality
-square, $p'$ must be mapped to $q'$ under
-$\alpha_a$. We picked an arbitrary $p'$ (an arbitrary
-$g$) and derived its mapping under $\alpha_a$. The function
-$\alpha_a$ is thus completely determined.
+现在考虑 $F g$ 对 $q$ 的作用。它是 $F a$ 中的一个点 $q'$。为了完成自然性方块，$p'$ 必须在 $\alpha_a$ 下被映射为 $q'$。我们选择了任意的 $p'$（任意的 $g$），并推导出它在 $\alpha_a$ 下的映射。函数 $\alpha_a$ 因此完全确定。
 
-The second claim is that $\alpha_x$ is uniquely determined for any
-object $x$ in $\cat{C}$ that is connected to $a$. The
-reasoning is analogous, except that now we have two more sets,
-$\cat{C}(a, x)$ and $F x$, and the morphism $g$ from
-$a$ to $x$ is mapped, under the hom-functor, to:
+第二个主张是，对于 $\cat{C}$ 中与 $a$ 相连的任何对象 $x$，$\alpha_x$ 是唯一确定的。推理是类似的，只不过现在我们有了两个更多的集合 $\cat{C}(a, x)$ 和 $F x$，从 $a$ 到 $x$ 的态射 $g$ 在同态函子下被映射为：
 \[\cat{C}(a, g) \Colon \cat{C}(a, a) \to \cat{C}(a, x)\]
-and under $F$ to:
+在 $F$ 下则被映射为：
 \[F g \Colon F a \to F x\]
-Again, $\cat{C}(a, g)$ acting on our $p$ is given by the
-precomposition: $g \circ \id_a$, which corresponds to a point
-$p'$ in $\cat{C}(a, x)$. Naturality determines the value
-of $\alpha_x$ acting on $p'$ to be:
+同样地，$\cat{C}(a, g)$ 作用于我们的 $p$ 是通过前组合给出的：$g \circ \id_a$，对应于 $\cat{C}(a, x)$ 中的一个点 $p'$。自然性决定了作用于 $p'$ 的 $\alpha_x$ 的值是：
 \[q' = (F g) q\]
-Since $p'$ was arbitrary, the whole function $\alpha_x$ is
-thus determined.
+由于 $p'$ 是任意的，因此整个函数 $\alpha_x$ 因此确定。
 
 \begin{figure}[H]
   \centering
@@ -191,159 +97,95 @@ thus determined.
 \end{figure}
 
 \noindent
-What if there are objects in $\cat{C}$ that have no connection to
-$a$? They are all mapped under $\cat{C}(a, -)$ to a single set
---- the empty set. Recall that the empty set is the initial object in
-the category of sets. It means that there is a unique function from this
-set to any other set. We called this function \code{absurd}. So here,
-again, we have no choice for the component of the natural
-transformation: it can only be \code{absurd}.
+如果 $\cat{C}$ 中有与 $a$ 无连接的对象怎么办？它们都在 $\cat{C}(a, -)$ 下映射为单个集合——空集。回想一下，空集是集合范畴中的始对象（initial object）。这意味着从该集合到任何其他集合都有唯一的函数。我们称这个函数为 \code{absurd}。因此，在这里，自然变换的分量没有选择，它只能是 \code{absurd}。
 
-One way of understanding the Yoneda lemma is to realize that natural
-transformations between $\Set$-valued functors are just families
-of functions, and functions are in general lossy. A function may
-collapse information and it may cover only parts of its codomain. The
-only functions that are not lossy are the ones that are invertible ---
-the isomorphisms. It follows then that the best structure-preserving
-$\Set$-valued functors are the representable ones. They are either
-the hom-functors or the functors that are naturally isomorphic to
-hom-functors. Any other functor $F$ is obtained from a
-hom-functor through a lossy transformation. Such a transformation may
-not only lose information, but it may also cover only a small part of
-the image of the functor $F$ in $\Set$.
+理解 Yoneda 引理的一种方法是认识到，$\Set$ 值函子之间的自然变换只是函数的家族，而函数通常是有损的（lossy）。函数可能会丢失信息，并且可能只覆盖其值域的一部分。唯一不丢失信息的函数是可逆的——即同构（isomorphisms）。因此，最好的结构保留 $\Set$ 值函子是可表示的函子。它们要么是同态函子，要么是自然同构于同态函子的函子。任何其他函子 $F$ 都是通过有损变换从同态函子中获得的。这样的变换不仅可能丢失信息，而且可能只覆盖函子 $F$ 在 $\Set$ 中的像的一小部分。
 
-\section{Yoneda in Haskell}
+\section{Haskell 中的 Yoneda 引理}
 
-We have already encountered the hom-functor in Haskell under the guise
-of the reader functor:
+我们已经在 Haskell 中以 reader 函子的形式遇到过同态函子：
 
 \src{snippet01}
-The reader maps morphisms (here, functions) by precomposition:
+reader 函子通过前组合映射态射（这里的函数）：
 
 \src{snippet02}
-The Yoneda lemma tells us that the reader functor can be naturally
-mapped to any other functor.
+Yoneda 引理告诉我们，reader 函子可以自然地映射到任何其他函子。
 
-A natural transformation is a polymorphic function. So given a functor
-\code{F}, we have a mapping to it from the reader functor:
+自然变换是多态函数。因此，给定一个函子 \code{F}，我们可以从 reader 函子映射到它：
 
 \src{snippet03}
-As usual, \code{forall} is optional, but I like to write it explicitly
-to emphasize parametric polymorphism of natural transformations.
+和往常一样，\code{forall} 是可选的，但我喜欢明确地写出来，以强调自然变换的参数多态性。
 
-The Yoneda lemma tells us that these natural transformations are in
-one-to-one correspondence with the elements of \code{F a}:
+Yoneda 引理告诉我们，这些自然变换与 \code{F a} 的元素是一一对应的：
 
 \begin{snipv}
-forall x . (a -> x) -> F x \ensuremath{\cong} F a
+  forall x . (a -> x) -> F x \ensuremath{\cong} F a
 \end{snipv}
-The right hand side of this identity is what we would normally consider
-a data structure. Remember the interpretation of functors as generalized
-containers? \code{F a} is a container of \code{a}. But the left
-hand side is a polymorphic function that takes a function as an
-argument. The Yoneda lemma tells us that the two representations are
-equivalent --- they contain the same information.
+这个等式的右侧是我们通常认为的数据结构。记住函子作为广义容器的解释？\code{F a} 是一个 \code{a} 的容器。但左侧是一个多态函数，它接受一个函数作为参数。Yoneda 引理告诉我们，这两种表示是等价的——它们包含相同的信息。
 
-Another way of saying this is: Give me a polymorphic function of the
-type:
+换句话说：给我一个类型为：
 
 \src{snippet04}
-and I'll produce a container of \code{a}. The trick is the one we used
-in the proof of the Yoneda lemma: we call this function with \code{id}
-to get an element of \code{F a}:
+的多态函数，我将生成一个 \code{a} 的容器。诀窍是我们在证明 Yoneda 引理时使用的：我们用 \code{id} 调用这个函数来获得 \code{F a} 的一个元素：
 
 \src{snippet05}
-The converse is also true: Given a value of the type \code{F a}:
+反之亦然：给定一个类型为 \code{F a} 的值：
 
 \src{snippet06}
-one can define a polymorphic function:
+可以定义一个类型正确的多态函数：
 
 \src{snippet07}
-of the correct type. You can easily go back and forth between the two
-representations.
+你可以轻松地在两种表示之间来回转换。
 
-The advantage of having multiple representations is that one might be
-easier to compose than the other, or that one might be more efficient in
-some applications than the other.
+拥有多种表示的好处是，其中一种可能比另一种更容易组合，或者在某些应用中更高效。
 
-The simplest illustration of this principle is the code transformation
-that is often used in compiler construction: the continuation passing
-style or \acronym{CPS}. It's the simplest application of the Yoneda lemma to the
-identity functor. Replacing \code{F} with identity produces:
+这一原理的最简单示例是编译器构建中常用的代码转换：续延传递风格（continuation-passing style, \acronym{CPS}）。这是 Yoneda 引理对恒等函子的最简单应用。将 \code{F} 替换为恒等函子得到：
 
 \begin{snipv}
-forall r . (a -> r) -> r \ensuremath{\cong} a
+  forall r . (a -> r) -> r \ensuremath{\cong} a
 \end{snipv}
-The interpretation of this formula is that any type \code{a} can be
-replaced by a function that takes a ``handler'' for \code{a}. A
-handler is a function accepting \code{a} and performing the rest of
-the computation --- the continuation. (The type \code{r} usually
-encapsulates some kind of status code.)
+这一公式的解释是，任何类型 \code{a} 都可以被一个接受 \code{a} 的“处理器”的函数替换。处理器是接受 \code{a} 并执行其余计算的函数——续延。（类型 \code{r} 通常封装某种状态代码。）
 
-This style of programming is very common in UIs, in asynchronous
-systems, and in concurrent programming. The drawback of \acronym{CPS} is that it
-involves inversion of control. The code is split between producers and
-consumers (handlers), and is not easily composable. Anybody who's done
-any amount of nontrivial web programming is familiar with the nightmare
-of spaghetti code from interacting stateful handlers. As we'll see
-later, judicious use of functors and monads can restore some
-compositional properties of \acronym{CPS}.
+这种编程风格在用户界面（UIs）、异步系统和并发编程中非常常见。\acronym{CPS} 的缺点是它涉及控制的反转。代码分为生产者和消费者（处理器），并且不易组合。任何做过不小的 Web 编程的人都熟悉从交互式有状态处理器中产生的面条代码噩梦。正如我们稍后将看到的那样，合理使用函子和单子可以恢复 \acronym{CPS} 的某些组合属性。
 
-\section{Co-Yoneda}
+\section{对偶 Yoneda 引理（Co-Yoneda）}
 
-As usual, we get a bonus construction by inverting the direction of
-arrows. The Yoneda lemma can be applied to the opposite category
-$\cat{C}^\mathit{op}$ to give us a mapping between contravariant
-functors.
+像往常一样，我们通过逆转箭头的方向获得了一个额外的构造。Yoneda 引理可以应用于对偶范畴 $\cat{C}^\mathit{op}$，为我们提供了逆变函子之间的映射。
 
-Equivalently, we can derive the co-Yoneda lemma by fixing the target
-object of our hom-functors instead of the source. We get the
-contravariant hom-functor from $\cat{C}$ to $\Set$:
-$\cat{C}(-, a)$. The contravariant version of the Yoneda lemma
-establishes one-to-one correspondence between natural transformations
-from this functor to any other contravariant functor $F$ and the
-elements of the set $F a$:
+同样地，我们可以通过固定同态函子的目标对象而不是源对象来推导对偶 Yoneda 引理。我们得到了从 $\cat{C}$ 到 $\Set$ 的逆变同态函子：
+$\cat{C}(-, a)$。Yoneda 引理的逆变版本建立了从这个函子到任何其他逆变函子 $F$ 的自然变换与集合 $F a$ 的元素之间的一一对应关系：
 \[\cat{Nat}(\cat{C}(-, a), F) \cong F a\]
-Here's the Haskell version of the co-Yoneda lemma:
+这是 Haskell 版本的对偶 Yoneda 引理：
 
 \begin{snipv}
-forall x . (x -> a) -> F x \ensuremath{\cong} F a
+  forall x . (x -> a) -> F x \ensuremath{\cong} F a
 \end{snipv}
-Notice that in some literature it's the contravariant version that's
-called the Yoneda lemma.
+请注意，在某些文献中，这个逆变版本被称为 Yoneda 引理。
 
-\section{Challenges}
+\section{挑战（Challenges）}
 
 \begin{enumerate}
   \tightlist
   \item
-        Show that the two functions \code{phi} and \code{psi} that form
-        the Yoneda isomorphism in Haskell are inverses of each other.
+  证明构成 Haskell 中 Yoneda 同构的两个函数 \code{phi} 和 \code{psi} 是彼此的逆。
 
-        \begin{snip}{haskell}
-phi :: (forall x . (a -> x) -> F x) -> F a
-phi alpha = alpha id
+  \begin{snip}{haskell}
+    phi :: (forall x . (a -> x) -> F x) -> F a
+    phi alpha = alpha id
 
-psi :: F a -> (forall x . (a -> x) -> F x)
-psi fa h = fmap h fa
-\end{snip}
+    psi :: F a -> (forall x . (a -> x) -> F x)
+    psi fa h = fmap h fa
+  \end{snip}
   \item
-        A discrete category is one that has objects but no morphisms other
-        than identity morphisms. How does the Yoneda lemma work for functors
-        from such a category?
+  离散范畴是指只有对象而没有态射的范畴，除了恒等态射之外。对于从这样一个范畴来的函子，Yoneda 引理如何运作？
   \item
-        A list of units \code{{[}(){]}} contains no other information but
-        its length. So, as a data type, it can be considered an encoding of
-        integers. An empty list encodes zero, a singleton \code{{[}(){]}} (a
-        value, not a type) encodes one, and so on. Construct another
-        representation of this data type using the Yoneda lemma for the list
-        functor.
+  单位类型的列表 \code{{[}(){]}} 不包含除长度之外的其他信息。因此，作为一种数据类型，它可以被视为整数的编码。一个空列表编码为零，一个单元素列表 \code{{[}(){]}}（值，而不是类型）编码为一，依此类推。使用 Yoneda 引理为列表函子构造这种数据类型的另一种表示。
 \end{enumerate}
 
-\section{Bibliography}
+\section{参考文献（Bibliography）}
 
 \begin{enumerate}
   \tightlist
   \item
-        \urlref{https://www.youtube.com/watch?v=TLMxHB19khE}{Catsters} video.
+  \urlref{https://www.youtube.com/watch?v=TLMxHB19khE}{Catsters} 视频。
 \end{enumerate}

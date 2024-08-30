@@ -1,400 +1,233 @@
 % !TEX root = ../../ctfp-print.tex
 
-\lettrine[lhang=0.17]{N}{ow that we have covered} monads, we can reap the benefits of duality and
-get comonads for free simply by reversing the arrows and working in the
-opposite category.
+\lettrine[lhang=0.17]{现}{在我们已经介绍了}monad（单子），我们可以利用对偶性来免费获得 comonad（余单子），只需反转箭头并在对偶范畴中工作。
 
-Recall that, at the most basic level, monads are about composing Kleisli
-arrows:
+回想一下，在最基本的层面上，monad 是关于组合 Kleisli 箭头的：
 
 \src{snippet01}
-where \code{m} is a functor that is a monad. If we use the letter
-\code{w} (upside down \code{m}) for the comonad, we can define
-co-Kleisli arrows as morphism of the type:
+其中，\code{m} 是一个函子，该函子是一个 monad。如果我们使用字母 \code{w}（倒转的 \code{m}）来表示 comonad，我们可以将 co-Kleisli 箭头定义为以下类型的态射：
 
 \src{snippet02}
-The analog of the fish operator for co-Kleisli arrows is defined as:
+对于 co-Kleisli 箭头来说，其对应的鱼操作符的定义为：
 
 \src{snippet03}
-For co-Kleisli arrows to form a category we also have to have an
-identity co-Kleisli arrow, which is called \code{extract}:
+为了使 co-Kleisli 箭头形成一个范畴，我们还必须有一个身份 co-Kleisli 箭头，这被称为 \code{extract}：
 
 \src{snippet04}
-This is the dual of \code{return}. We also have to impose the laws of
-associativity as well as left- and right-identity. Putting it all
-together, we could define a comonad in Haskell as:
+这是 \code{return} 的对偶。我们还必须施加结合律以及左、右单位律。将这些全部结合起来，我们可以在 Haskell 中定义一个 comonad 如下：
 
 \src{snippet05}
-In practice, we use slightly different primitives, as we'll see shortly.
+实际上，我们使用的基本函数略有不同，稍后我们会看到。
 
-The question is, what's the use for comonads in programming?
+问题是，在编程中 comonad 的用途是什么？
 
-\section{Programming with Comonads}
+\section{使用 Comonad 编程}
 
-Let's compare the monad with the comonad. A monad provides a way of
-putting a value in a container using \code{return}. It doesn't give
-you access to a value or values stored inside. Of course, data
-structures that implement monads might provide access to their contents,
-but that's considered a bonus. There is no common interface for
-extracting values from a monad. And we've seen the example of the
-\code{IO} monad that prides itself in never exposing its contents.
+让我们比较一下 monad 和 comonad。monad 提供了一种使用 \code{return} 将值放入容器的方法。它并不提供访问容器内存储值的方式。当然，许多实现了 monad 的数据结构可能会提供访问其内容的方法，但这被视为一种额外功能。对于 monad，没有通用的接口来提取值。我们已经看到 \code{IO} monad 的例子，它以从不暴露其内容为傲。
 
-A comonad, on the other hand, provides the means of extracting a single
-value from it. It does not give the means to insert values. So if you
-want to think of a comonad as a container, it always comes pre-filled
-with contents, and it lets you peek at it.
+另一方面，comonad 提供了一种从其中提取单个值的方法。它不提供插入值的方法。因此，如果你想将 comonad 视为一个容器，那么它总是预先填充了内容，并允许你窥探其中的内容。
 
-Just as a Kleisli arrow takes a value and produces some embellished
-result --- it embellishes it with context --- a co-Kleisli arrow takes a
-value together with a whole context and produces a result. It's an
-embodiment of \newterm{contextual computation}.
+就像 Kleisli 箭头接受一个值并产生一些带有上下文的结果——它将其与上下文一起装饰，co-Kleisli 箭头则接受一个值和整个上下文并产生一个结果。这是\newterm{上下文计算}的体现。
 
-\section{The Product Comonad}
+\section{Product Comonad（乘积余单子）}
 
-Remember the reader monad? We introduced it to tackle the problem of
-implementing computations that need access to some read-only environment
-\code{e}. Such computations can be represented as pure functions of
-the form:
+还记得 reader monad 吗？我们引入它是为了应对实现需要访问某些只读环境 \code{e} 的计算的问题。这类计算可以表示为以下形式的纯函数：
 
 \src{snippet06}
-We used currying to turn them into Kleisli arrows:
+我们使用柯里化将它们转化为 Kleisli 箭头：
 
 \src{snippet07}
-But notice that these functions already have the form of co-Kleisli
-arrows. Let's massage their arguments into the more convenient functor
-form:
+但请注意，这些函数已经具有 co-Kleisli 箭头的形式。让我们将它们的参数调整为更方便的函子形式：
 
 \src{snippet08}
-We can easily define the composition operator by making the same
-environment available to the arrows that we are composing:
+我们可以轻松定义组合操作符，通过使我们要组合的箭头都可以访问相同的环境：
 
 \src{snippet09}
-The implementation of \code{extract} simply ignores the environment:
+\code{extract} 的实现简单地忽略了环境：
 
 \src{snippet10}
-Not surprisingly, the product comonad can be used to perform exactly the
-same computations as the reader monad. In a way, the comonadic
-implementation of the environment is more natural --- it follows the
-spirit of ``computation in context.'' On the other hand, monads come
-with the convenient syntactic sugar of the \code{do} notation.
+不出所料，product comonad 可以用于执行与 reader monad 完全相同的计算。在某种程度上，comonad 的环境实现更为自然——它遵循了“上下文中的计算”的精神。另一方面，monad 具有 \code{do} 记法的便捷语法糖。
 
-The connection between the reader monad and the product comonad goes
-deeper, having to do with the fact that the reader functor is the right
-adjoint of the product functor. In general, though, comonads cover
-different notions of computation than monads. We'll see more examples
-later.
+reader monad 与 product comonad 之间的联系更加深入，因为 reader 函子是 product 函子的右伴随。不过，一般来说，comonad 涵盖了与 monad 不同的计算概念。稍后我们将看到更多的例子。
 
-It's easy to generalize the \code{Product} comonad to arbitrary
-product types including tuples and records.
+将 \code{Product} comonad 推广到任意乘积类型，包括元组和记录类型是很容易的。
 
-\section{Dissecting the Composition}
+\section{解剖组合}
 
-Continuing the process of dualization, we could go ahead and dualize
-monadic bind and join. Alternatively, we can repeat the process we used
-with monads, where we studied the anatomy of the fish operator. This
-approach seems more enlightening.
+继续对偶化的过程，我们可以继续对偶化 monad 的 bind 和 join 操作。或者，我们可以重复使用 monad 时的过程，即研究鱼操作符的解剖。这种方法似乎更具启发性。
 
-The starting point is the realization that the composition operator must
-produce a co-Kleisli arrow that takes \code{w a} and produces a
-\code{c}. The only way to produce a \code{c} is to apply the second
-function to an argument of the type \code{w b}:
+起点是意识到组合操作符必须生成一个 co-Kleisli 箭头，它接受 \code{w a} 并生成 \code{c}。生成 \code{c} 的唯一方法是将第二个函数应用于类型为 \code{w b} 的参数：
 
 \src{snippet11}
-But how can we produce a value of type \code{w b} that could be fed
-to \code{g}? We have at our disposal the argument of type
-\code{w a} and the function \code{f :: w a -> b}.
-The solution is to define the dual of bind, which is called extend:
+但我们如何生成类型为 \code{w b} 的值，以便传递给 \code{g}？我们手头有一个类型为 \code{w a} 的参数和一个函数 \code{f :: w a -> b}。解决方案是定义 bind 的对偶，它被称为 \code{extend}：
 
 \src{snippet12}
-Using \code{extend} we can implement composition:
+使用 \code{extend} 我们可以实现组合：
 
 \src{snippet13}
-Can we next dissect \code{extend}? You might be tempted to say, why
-not just apply the function \code{w a -> b} to the
-argument \code{w a}, but then you quickly realize that you'd have no
-way of converting the resulting \code{b} to \code{w b}. Remember,
-the comonad provides no means of lifting values. At this point, in the
-analogous construction for monads, we used \code{fmap}. The only way
-we could use \code{fmap} here would be if we had something of the type
-\code{w (w a)} at our disposal. If we could only turn \code{w a}
-into\\ \code{w (w a)}. And, conveniently, that would be exactly the
-dual of \code{join}. We call it \code{duplicate}:
+接下来，我们能解剖 \code{extend} 吗？你可能会说，为什么不直接将 \code{w a -> b} 函数应用于参数 \code{w a}，但你很快就会意识到你无法将结果 \code{b} 转换为 \code{w b}。请记住，comonad 不提供提升值的方法。在类似的 monad 构造中，我们使用了 \code{fmap}。在这里我们只能使用 \code{fmap}，前提是我们手头有类型为 \code{w (w a)} 的东西。如果我们可以将 \code{w a} 转换为 \code{w (w a)}。方便的是，这正是 \code{join} 的对偶。我们称之为 \code{duplicate}：
 
 \src{snippet14}
-So, just like with the definitions of the monad, we have three
-equivalent definitions of the comonad: using co-Kleisli arrows,
-\code{extend}, or \code{duplicate}. Here's the Haskell definition
-taken directly from\\ \code{Control.Comonad} library:
+因此，就像对 monad 的定义一样，我们对 comonad 有三种等效的定义：使用 co-Kleisli 箭头、\code{extend} 或 \code{duplicate}。以下是直接取自 \code{Control.Comonad} 库的 Haskell 定义：
 
 \src{snippet15}
-Provided are the default implementations of \code{extend} in terms of
-\code{duplicate} and vice versa, so you only need to override one of
-them.
+提供了 \code{extend} 基于 \code{duplicate} 的默认实现，反之亦然，所以你只需覆盖其中之一。
 
-The intuition behind these functions is based on the idea that, in
-general, a comonad can be thought of as a container filled with values
-of type \code{a} (the product comonad was a special case of just one
-value). There is a notion of the ``current'' value, one that's easily
-accessible through \code{extract}. A co-Kleisli arrow performs some
-computation that is focused on the current value, but it has access to
-all the surrounding values. Think of the Conway's game of life. Each
-cell contains a value (usually just \code{True} or \code{False}). A
-comonad corresponding to the game of life would be a grid of cells
-focused on the ``current'' cell.
+这些函数背后的直觉基于这样一个想法：一般来说，comonad 可以被看作是一个充满类型为 \code{a} 的值的容器（product comonad 是只有一个值的特例）。有一个“当前”值的概念，它可以通过 \code{extract} 轻松获取。co-Kleisli 箭头执行一些专注于当前值的计算，但它可以访问所有周围的值。想想康威的生命游戏。每个单元格都包含一个值（通常只是 \code{True} 或 \code{False}）。一个对应于生命游戏的 comonad 将是一个集中在“当前”单元格的单元格网格。
 
-So what does \code{duplicate} do? It takes a comonadic container
-\code{w a} and produces a container of containers \code{w (w a)}.
-The idea is that each of these containers is focused on a different
-\code{a} inside \code{w a}. In the game of life, you would get a
-grid of grids, each cell of the outer grid containing an inner grid
-that's focused on a different cell.
+那么 \code{duplicate} 做了什么？它接受一个 comonad 容器 \code{w a} 并生成一个容器的容器 \code{w (w a)}。其想法是这些容器中的每一个都集中在 \code{w a} 内的不同 \code{a} 上。在生命游戏中，你会得到一个网格的网格，外部网格的每个单元格都包含一个内部网格，该网格集中在不同的单元格上。
 
-Now look at \code{extend}. It takes a co-Kleisli arrow and a comonadic
-container \code{w a} filled with \code{a}s. It applies the
-computation to all of these \code{a}s, replacing them with
-\code{b}s. The result is a comonadic container filled with
-\code{b}s. \code{extend} does it by shifting the focus from one
-\code{a} to another and applying the co-Kleisli arrow to each of them
-in turn. In the game of life, the co-Kleisli arrow would calculate the
-new state of the current cell. To do that, it would look at its context
---- presumably its nearest neighbors. The default implementation of
-\code{extend} illustrates this process. First we call
-\code{duplicate} to produce all possible foci and then we apply
-\code{f} to each of them.
+现在看看 \code{extend}。它接受一个 co-Kleisli 箭头和一个充满 \code{a} 的 comonad 容器 \code{w a}。它将计算应用于所有这些 \code{a}，并将它们替换为 \code{b}。结果是一个充满 \code{b} 的 comonad 容器。\code{extend} 通过将焦点从一个 \code{a} 转移到另一个并依次应用 co-Kleisli 箭头来实现这一点。在生命游戏中，co-Kleisli 箭头将计算当前单元格的新状态。为此，它将查看其上下文——可能是最近的邻居。默认的 \code{extend} 实现说明了这一过程。首先我们调用 \code{duplicate} 生成所有可能的焦点，然后将 \code{f} 应用于它们。
 
-\section{The Stream Comonad}
+\section{Stream Comonad（流余单子）}
 
-This process of shifting the focus from one element of the container to
-another is best illustrated with the example of an infinite stream. Such
-a stream is just like a list, except that it doesn't have the empty
-constructor:
+这个从容器的一个元素转移焦点到另一个元素的过程最适合用无限流的例子来说明。这样的流就像一个列表，只是它没有空构造函数：
 
 \src{snippet16}
-It's trivially a \code{Functor}:
+它显然是一个 \code{Functor}：
 
 \src{snippet17}
-The focus of a stream is its first element, so here's the implementation
-of \code{extract}:
+流的焦点是它的第一个元素，所以这是 \code{extract} 的实现：
 
 \src{snippet18}
-\code{duplicate} produces a stream of streams, each focused on a
-different element.
+\code{duplicate} 生成一个流的流，每个流都集中在不同的元素上。
 
 \src{snippet19}
-The first element is the original stream, the second element is the tail
-of the original stream, the third element is its tail, and so on, ad
-infinitum.
+第一个元素是原始流，第二个元素是原始流的尾部，第三个元素是它的尾部，以此类推，无穷无尽。
 
-Here's the complete instance:
+这是完整的实例：
 
 \src{snippet20}
-This is a very functional way of looking at streams. In an imperative
-language, we would probably start with a method \code{advance} that
-shifts the stream by one position. Here, \code{duplicate} produces all
-shifted streams in one fell swoop. Haskell's laziness makes this
-possible and even desirable. Of course, to make a \code{Stream}
-practical, we would also implement the analog of \code{advance}:
+这是一种非常函数式的看待流的方式。在命令式语言中，我们可能会从一个方法 \code{advance} 开始，该方法将流移位一个位置。这里，\code{duplicate} 一次性生成所有移位流。Haskell 的惰性计算使这成为可能，并且甚至是可取的。当然，为了使 \code{Stream} 实际可用，我们还会实现 \code{advance} 的类似物：
 
 \src{snippet21}
-but it's never part of the comonadic interface.
+但这永远不是 comonad 接口的一部分。
 
-If you had any experience with digital signal processing, you'll see
-immediately that a co-Kleisli arrow for a stream is just a digital
-filter, and \code{extend} produces a filtered stream.
+如果你有任何数字信号处理的经验，你会立即看到流的 co-Kleisli 箭头只是一个数字滤波器，而 \code{extend} 生成一个经过滤波的流。
 
-As a simple example, let's implement the moving average filter. Here's a
-function that sums \code{n} elements of a stream:
+作为一个简单的例子，让我们实现移动平均滤波器。这里是一个求和流中 \code{n} 个元素的函数：
 
 \src{snippet22}
-Here's the function that calculates the average of the first \code{n}
-elements of the stream:
+这里是计算流的前 \code{n} 个元素的平均值的函数：
 
 \src{snippet23}
-Partially applied \code{average n} is a co-Kleisli arrow, so we can
-\code{extend} it over the whole stream:
+部分应用的 \code{average n} 是一个 co-Kleisli 箭头，因此我们可以在整个流上 \code{extend} 它：
 
 \src{snippet24}
-The result is the stream of running averages.
+结果是运行平均值的流。
 
-A stream is an example of a unidirectional, one-dimensional comonad. It
-can be easily made bidirectional or extended to two or more dimensions.
+流是一个单向、一维 comonad 的例子。它可以轻松扩展为双向或扩展为二维或多维。
 
-\section{Comonad Categorically}
+\section{Comonad 的范畴论定义}
 
-Defining a comonad in category theory is a straightforward exercise in
-duality. As with the monad, we start with an endofunctor \code{T}. The
-two natural transformations, $\eta$ and $\mu$, that define the monad are simply
-reversed for the comonad:
+在范畴论中定义 comonad 是一个对偶性的简单练习。与 monad 一样，我们从一个端函子 \code{T} 开始。定义 monad 的两个自然变换 $\eta$ 和 $\mu$ 仅需对 comonad 反转：
 \begin{align*}
   \varepsilon & \Colon T \to I   \\
   \delta      & \Colon T \to T^2
 \end{align*}
-The components of these transformations correspond to \code{extract}
-and \code{duplicate}. Comonad laws are the mirror image of monad laws.
-No big surprise here.
+这些变换的分量对应于 \code{extract} 和 \code{duplicate}。comonad 定律是 monad 定律的镜像。这里没有什么大惊喜。
 
-Then there is the derivation of the monad from an adjunction. Duality
-reverses an adjunction: the left adjoint becomes the right adjoint and
-vice versa. And, since the composition $R \circ L$ defines a monad,
-$L \circ R$ must define a comonad. The counit of the adjunction:
+然后还有从伴随中推导出 monad。对偶性反转了一个伴随：左伴随变成右伴随，反之亦然。而且，由于组合 $R \circ L$ 定义了一个 monad，$L \circ R$ 必须定义一个 comonad。伴随的 counit：
 \[\varepsilon \Colon L \circ R \to I\]
-is indeed the same $\varepsilon$ that we see in the definition of the comonad ---
-or, in components, as Haskell's \code{extract}. We can also use the
-unit of the adjunction:
+确实是我们在 comonad 定义中看到的 $\varepsilon$——或者在 Haskell 的 \code{extract} 中作为组件。我们还可以使用伴随的 unit：
 \[\eta \Colon I \to R \circ L\]
-to insert an $R \circ L$ in the middle of $L \circ R$ and
-produce $L \circ R \circ L \circ R$. Making $T^2$ from $T$
-defines the $\delta$, and that completes the definition of the comonad.
+将一个 $R \circ L$ 插入到 $L \circ R$ 中间，并生成 $L \circ R \circ L \circ R$。使 $T^2$ 成为 $T$ 的定义了 $\delta$，从而完成了 comonad 的定义。
 
-We've also seen that the monad is a monoid. The dual of this statement
-would require the use of a comonoid, so what's a comonoid? The original
-definition of a monoid as a single-object category doesn't dualize to
-anything interesting. When you reverse the direction of all
-endomorphisms, you get another monoid. Recall, however, that in our
-approach to a monad, we used a more general definition of a monoid as an
-object in a monoidal category. The construction was based on two
-morphisms:
+我们还看到 monad 是一个 monoid。这个陈述的对偶性需要使用 comonoid，那么 comonoid 是什么？monoid 作为单对象范畴的原始定义并没有对偶化为任何有趣的东西。当你反转所有同态射的方向时，你得到另一个 monoid。然而，回想一下，在我们的方法中，monad 是作为 monoidal 范畴中的一个 monoid 被定义的。这个构造基于两个态射：
 \begin{align*}
   \mu  & \Colon m \otimes m \to m \\
   \eta & \Colon i \to m
 \end{align*}
-The reversal of these morphisms produces a comonoid in a monoidal
-category:
+这些态射的反转生成了 monoidal 范畴中的一个 comonoid：
 \begin{align*}
   \delta      & \Colon m \to m \otimes m \\
   \varepsilon & \Colon m \to i
 \end{align*}
-One can write a definition of a comonoid in Haskell:
+可以在 Haskell 中编写 comonoid 的定义：
 
 \src{snippet25}
-but it is rather trivial. Obviously \code{destroy} ignores its
-argument.
+但它相当简单。显然，\code{destroy} 忽略了它的参数。
 
 \src{snippet26}
-\code{split} is just a pair of functions:
+\code{split} 只是一个函数对：
 
 \src{snippet27}
-Now consider comonoid laws that are dual to the monoid unit laws.
+现在考虑对偶于 monoid 单位律的 comonoid 定律。
 
 \src{snippet28}
-Here, \code{lambda} and \code{rho} are the left and right unitors,
-respectively (see the definition of
-\hyperref[monads-categorically]{monoidal
-  categories}). Plugging in the definitions, we get:
+这里，\code{lambda} 和 \code{rho} 分别是左和右单位元（参见 \hyperref[monads-categorically]{monoidal 范畴}的定义）。替换定义后，我们得到：
 
 \src{snippet29}
-which proves that \code{g = id}. Similarly, the second law expands
-to \code{f = id}. In conclusion:
+这证明了 \code{g = id}。同样，第二个定律展开为 \code{f = id}。结论是：
 
 \src{snippet30}
-which shows that in Haskell (and, in general, in the category
-$\Set$) every object is a trivial comonoid.
+这表明在 Haskell 中（一般来说，在范畴 $\Set$ 中）每个对象都是一个简单的 comonoid。
 
-Fortunately there are other more interesting monoidal categories in
-which to define comonoids. One of them is the category of endofunctors.
-And it turns out that, just like the monad is a monoid in the category
-of endofunctors,
+幸运的是，还有其他更有趣的 monoidal 范畴可以用来定义 comonoid。其中之一是端函子的范畴。事实证明，正如 monad 是端函子范畴中的 monoid，
 
 \begin{quote}
-  The comonad is a comonoid in the category of endofunctors.
+  comonad 是端函子范畴中的 comonoid。
 \end{quote}
 
-\section{The Store Comonad}
+\section{Store Comonad（存储余单子）}
 
-Another important example of a comonad is the dual of the state monad.
-It's called the costate comonad or, alternatively, the store comonad.
+另一个重要的 comonad 例子是 state monad 的对偶。它被称为 costate comonad 或者称为 store comonad。
 
-We've seen before that the state monad is generated by the adjunction
-that defines the exponentials:
+我们之前已经看到 state monad 是由定义指数对象的伴随生成的：
 \begin{align*}
   L z & = z\times{}s      \\
   R a & = s \Rightarrow a
 \end{align*}
-We'll use the same adjunction to define the costate comonad. A comonad
-is defined by the composition $L \circ R$:
+我们将使用相同的伴随来定义 costate comonad。一个 comonad 由组合 $L \circ R$ 定义：
 \[L (R a) = (s \Rightarrow a)\times{}s\]
-Translating this to Haskell, we start with the adjunction between the
-\code{Product} functor on the left and the \code{Reader} functor or the
-right. Composing \code{Product} after \code{Reader} is equivalent to
-the following definition:
+将其转换为 Haskell，我们从左侧的 \code{Product} 函子和右侧的 \code{Reader} 函子之间的伴随开始。组合 \code{Product} 在 \code{Reader} 之后等效于以下定义：
 
 \src{snippet31}
-The counit of the adjunction taken at the object $a$ is the
-morphism:
+伴随在对象 $a$ 处的 counit 是态射：
 \[\varepsilon_a \Colon ((s \Rightarrow a)\times{}s) \to a\]
-or, in Haskell notation:
+或者在 Haskell 记法中：
 
 \src{snippet32}
-This becomes our \code{extract}:
+这成为我们的 \code{extract}：
 
 \src{snippet33}
-The unit of the adjunction:
+伴随的 unit：
 
 \src{snippet34}
-can be rewritten as partially applied data constructor:
+可以重写为部分应用的数据构造函数：
 
 \src{snippet35}
-We construct $\delta$, or \code{duplicate}, as the horizontal composition:
+我们将 \code{duplicate} 构造为水平组合：
 \begin{align*}
   \delta & \Colon L \circ R \to L \circ R \circ L \circ R \\
   \delta & = L \circ \eta \circ R
 \end{align*}
-We have to sneak $\eta$ through the leftmost $L$, which is the
-\code{Product} functor. It means acting with $\eta$, or \code{Store f}, on
-the left component of the pair (that's what \code{fmap} for
-\code{Product} would do). We get:
+我们必须通过最左侧的 $L$ 来偷渡 $\eta$，这是 \code{Product} 函子。这意味着对对偶化的左侧部分应用 $\eta$ 或 \code{Store f}（这就是 \code{Product} 的 \code{fmap} 将要做的）。我们得到：
 
 \src{snippet36}
-(Remember that, in the formula for $\delta$, $L$ and $R$ stand
-for identity natural transformations whose components are identity
-morphisms.)
+（请记住，在 \code{duplicate} 的公式中，$L$ 和 $R$ 代表分量为身份态射的自然变换。）
 
-Here's the complete definition of the \code{Store} comonad:
+以下是 \code{Store} comonad 的完整定义：
 
 \src{snippet37}
-You may think of the \code{Reader} part of \code{Store} as a
-generalized container of \code{a}s that are keyed using elements of
-the type \code{s}. For instance, if \code{s} is \code{Int},
-\code{Reader Int a} is an infinite bidirectional stream of
-\code{a}s. \code{Store} pairs this container with a value of the key
-type. For instance, \code{Reader Int a} is paired with an
-\code{Int}. In this case, \code{extract} uses this integer to index
-into the infinite stream. You may think of the second component of
-\code{Store} as the current position.
+你可以将 \code{Reader} 部分的 \code{Store} 看作是一个以 \code{s} 类型的元素作为键的 \code{a} 类型的通用容器。例如，如果 \code{s} 是 \code{Int}，\code{Reader Int a} 是一个 \code{a} 类型的双向无限流。\code{Store} 将此容器与一个键类型的值配对。例如，\code{Reader Int a} 与一个 \code{Int} 配对。在这种情况下，\code{extract} 使用这个整数来索引到无限流中。你可以将 \code{Store} 的第二个分量视为当前位置。
 
-Continuing with this example, \code{duplicate} creates a new infinite
-stream indexed by an \code{Int}. This stream contains streams as its
-elements. In particular, at the current position, it contains the
-original stream. But if you use some other \code{Int} (positive or
-negative) as the key, you'd obtain a shifted stream positioned at that
-new index.
+继续这个例子，\code{duplicate} 创建一个由 \code{Int} 索引的新无限流。这个流包含流作为它的元素。特别是在当前位置，它包含原始流。但是，如果你使用其他 \code{Int}（正数或负数）作为键，你会得到一个在该新索引位置移位的流。
 
-In general, you can convince yourself that when \code{extract} acts on
-the \code{duplicate}d \code{Store} it produces the original
-\code{Store} (in fact, the identity law for the comonad states that
-\code{extract . duplicate = id}).
+一般来说，你可以说服自己，当 \code{extract} 作用于 \code{duplicate}d 的 \code{Store} 时，它会生成原始的 \code{Store}（事实上，comonad 的单位定律指出 \code{extract . duplicate = id}）。
 
-The \code{Store} comonad plays an important role as the theoretical
-basis for the \code{Lens} library. Conceptually, the
-\code{Store s a} comonad encapsulates the idea of ``focusing'' (like
-a lens) on a particular substructure of the data type \code{a} using
-the type \code{s} as an index. In particular, a function of the type:
+\code{Store} comonad 在 \code{Lens} 库中起着重要的理论基础作用。概念上，\code{Store s a} comonad 封装了“聚焦”（如同镜头）于数据类型 \code{a} 的特定子结构的思想，使用类型 \code{s} 作为索引。特别是，以下类型的函数：
 
 \src{snippet38}
-is equivalent to a pair of functions:
+等价于一对函数：
 
 \src{snippet39}
-If \code{a} is a product type, \code{set} could be implemented as
-setting the field of type \code{s} inside of \code{a} while
-returning the modified version of \code{a}. Similarly, \code{get}
-could be implemented to read the value of the \code{s} field from
-\code{a}. We'll explore these ideas more in the next section.
+如果 \code{a} 是一个乘积类型，\code{set} 可以实现为设置 \code{a} 内部 \code{s} 类型的字段，同时返回修改后的 \code{a} 版本。同样，\code{get} 可以实现为从 \code{a} 中读取 \code{s} 字段的值。我们将在下一节中进一步探讨这些思想。
 
-\section{Challenges}
+\section{挑战}
 
 \begin{enumerate}
   \tightlist
   \item
-        Implement the Conway's Game of Life using the \code{Store} comonad.
-        Hint: What type do you pick for \code{s}?
+  使用 \code{Store} comonad 实现 Conway 的生命游戏。提示：你为 \code{s} 选择什么类型？
 \end{enumerate}

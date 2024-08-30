@@ -1,39 +1,15 @@
 % !TEX root = ../../ctfp-print.tex
 
-\lettrine[lhang=0.17]{I}{n mathematics we have} various ways of saying that one thing is like
-another. The strictest is equality. Two things are equal if there is no
-way to distinguish one from another. One can be substituted for the
-other in every imaginable context. For instance, did you notice that we
-used \newterm{equality} of morphisms every time we talked about commuting
-diagrams? That's because morphisms form a set (hom-set) and set elements
-can be compared for equality.
+\lettrine[lhang=0.17]{在}{数学中，我们有}多种方式来表达一件事物与另一件事物相似。最严格的方式是相等（equality）。如果没有任何方式可以区分两个事物，那么它们就是相等的。在任何可以想象的情况下，一个可以被替换为另一个。例如，你是否注意到，每当我们谈到交换图（commuting diagrams）时，我们使用的是态射（morphisms）的\newterm{相等性}？这是因为态射形成一个集合（同态集（hom-set）），而集合的元素可以进行相等性比较。
 
-But equality is often too strong. There are many examples of things
-being the same for all intents and purposes, without actually being
-equal. For instance, the pair type \code{(Bool, Char)} is not
-strictly equal to \code{(Char, Bool)}, but we understand that they
-contain the same information. This concept is best captured by an
-\newterm{isomorphism} between two types --- a morphism that's invertible.
-Since it's a morphism, it preserves the structure; and being ``iso''
-means that it's part of a round trip that lands you in the same spot, no
-matter on which side you start. In the case of pairs, this isomorphism
-is called \code{swap}:
+但相等性往往过于严格。有许多事例表明，事物在所有实际用途上都是相同的，但实际上并不相等。例如，类型对 \code{(Bool, Char)} 严格来说并不等于 \code{(Char, Bool)}，但我们理解它们包含相同的信息。这个概念最好用两个类型之间的\newterm{同构（isomorphism）}来描述——这是一个可逆的态射。既然它是一个态射，它就保留了结构；而“同构”意味着它是一个往返行程的一部分，无论从哪一边开始，都会回到原来的位置。在成对类型的情况下，这个同构称为 \code{swap}：
 
 \src{snippet01}
-\code{swap} happens to be its own inverse.
+\code{swap} 恰好是它自己的逆。
 
-\section{Adjunction and Unit/Counit Pair}
+\section{伴随和单位/余单位对（Adjunction and Unit/Counit Pair）}
 
-When we talk about categories being isomorphic, we express this in terms
-of mappings between categories, a.k.a. functors. We would like to be
-able to say that two categories $\cat{C}$ and $\cat{D}$ are isomorphic if
-there exists a functor $R$ (``right'') from $\cat{C}$ to $\cat{D}$,
-which is invertible. In other words, there exists another functor
-$L$ (``left'') from $\cat{D}$ back to $\cat{C}$ which, when
-composed with $R$, is equal to the identity functor $I$.
-There are two possible compositions, $R \circ L$ and
-$L \circ R$; and two possible identity functors: one in $\cat{C}$
-and another in $\cat{D}$.
+当我们谈论范畴是同构的时，我们用范畴之间的映射来表达，也就是函子（functors）。我们希望能够说两个范畴 $\cat{C}$ 和 $\cat{D}$ 是同构的，如果存在一个从 $\cat{C}$ 到 $\cat{D}$ 的函子 $R$（“右”），它是可逆的。换句话说，存在另一个从 $\cat{D}$ 回到 $\cat{C}$ 的函子 $L$（“左”），当它与 $R$ 组合时，等于恒等函子 $I$。有两种可能的组合，$R \circ L$ 和 $L \circ R$；以及两个可能的恒等函子：一个在 $\cat{C}$ 中，另一个在 $\cat{D}$ 中。
 
 \begin{figure}[H]
   \centering
@@ -41,67 +17,35 @@ and another in $\cat{D}$.
 \end{figure}
 
 \noindent
-But here's the tricky part: What does it mean for two functors to be
-\emph{equal}? What do we mean by this equality:
+但这里有一个棘手的问题：两个函子\emph{相等}是什么意思？我们所说的相等是指：
 \[R \circ L = I_{\cat{D}}\]
-or this one:
+或者这个：
 \[L \circ R = I_{\cat{C}}\]
-It would be reasonable to define functor equality in terms of equality
-of objects. Two functors, when acting on equal objects, should produce
-equal objects. But we don't, in general, have the notion of object
-equality in an arbitrary category. It's just not part of the definition.
-(Going deeper into this rabbit hole of ``what equality really is,'' we
-would end up in Homotopy Type Theory.)
+将函子的相等性定义为对象的相等性是合理的。当两个函子作用于相等的对象时，它们应该产生相等的对象。但在一般情况下，我们没有在任意范畴中定义对象相等性的概念。它不属于范畴定义的一部分。（如果我们深入探讨“相等性到底是什么”这个问题，我们将进入同伦类型论（Homotopy Type Theory）这个深渊。）
 
-You might argue that functors \emph{are} morphisms in the category of
-categories, so they should be equality-comparable. And indeed, as long
-as we are talking about small categories, where objects form a set, we
-can indeed use the equality of elements of a set to equality-compare
-objects.
+你可能会认为函子是范畴范畴中的态射，因此它们应该是可以进行相等性比较的。确实，只要我们讨论的是小范畴，其中的对象形成一个集合，我们确实可以使用集合元素的相等性来比较对象的相等性。
 
-But, remember, $\Cat$ is really a $\cat{2}$-category. Hom-sets in a
-$\cat{2}$-category have additional structure --- there are $2$-morphisms acting
-between $1$-morphisms. In $\Cat$, $1$-morphisms are functors, and
-$2$-morphisms are natural transformations. So it's more natural (can't
-avoid this pun!) to consider natural isomorphisms as substitutes for
-equality when talking about functors.
+但请记住，$\Cat$ 实际上是一个 $\cat{2}$-范畴。在一个 $\cat{2}$-范畴中，同态集（hom-sets）具有附加结构——在 $1$-态射之间存在 $2$-态射。在 $\Cat$ 中，$1$-态射是函子，而 $2$-态射是自然变换。因此，当谈到函子时，考虑自然同构作为相等的替代是更自然的（避免不了这个双关语！）。
 
-So, instead of isomorphism of categories, it makes sense to consider a
-more general notion of \newterm{equivalence}. Two categories $\cat{C}$ and
-$\cat{D}$ are \emph{equivalent} if we can find two functors going back
-and forth between them, whose composition (either way) is
-\newterm{naturally isomorphic} to the identity functor. In other words,
-there is a two-way natural transformation between the composition
-$R \circ L$ and the identity functor $I_{\cat{D}}$, and another
-between $L \circ R$ and the identity functor $I_{\cat{C}}$.
+所以，与其考虑范畴的同构，不如考虑更广泛的\newterm{等价（equivalence）}概念。如果我们能找到两个函子在它们之间来回映射，并且它们的组合（任意一种方式）\newterm{自然同构}于恒等函子，我们就说两个范畴 $\cat{C}$ 和 $\cat{D}$ 是\emph{等价的}。换句话说，在 $R \circ L$ 与恒等函子 $I_{\cat{D}}$ 之间存在一个双向自然变换，在 $L \circ R$ 与恒等函子 $I_{\cat{C}}$ 之间也存在一个双向自然变换。
 
-Adjunction is even weaker than equivalence, because it doesn't require
-that the composition of the two functors be \emph{isomorphic} to the
-identity functor. Instead it stipulates the existence of a \newterm{one
-  way} natural transformation from $I_{\cat{D}}$ to $R \circ L$, and
-another from $L \circ R$ to $I_{\cat{C}}$. Here are the signatures of
-these two natural transformations:
+伴随（Adjunction）甚至比等价更弱，因为它不要求两个函子的组合\emph{同构}于恒等函子。相反，它规定存在从 $I_{\cat{D}}$ 到 $R \circ L$ 的\newterm{单向}自然变换，以及从 $L \circ R$ 到 $I_{\cat{C}}$ 的另一个自然变换。以下是这两个自然变换的形式：
 \begin{gather*}
   \eta \Colon I_{\cat{D}} \to R \circ L \\
   \varepsilon \Colon L \circ R \to I_{\cat{C}}
 \end{gather*}
-$\eta$ is called the unit, and $\varepsilon$ the counit of the adjunction.
+$\eta$ 被称为单位（unit），而 $\varepsilon$ 被称为余单位（counit）。
 
-Notice the asymmetry between these two definitions. In general, we don't
-have the two remaining mappings:
+注意这两个定义之间的不对称性。一般来说，我们没有两个剩余的映射：
 \begin{gather*}
-  R \circ L \to I_{\cat{D}} \quad\quad\text{not necessarily} \\
-  I_{\cat{C}} \to L \circ R \quad\quad\text{not necessarily}
+  R \circ L \to I_{\cat{D}} \quad\quad\text{不一定} \\
+  I_{\cat{C}} \to L \circ R \quad\quad\text{不一定}
 \end{gather*}
-Because of this asymmetry, the functor $L$ is called the
-\newterm{left adjoint} to the functor $R$, while the functor
-$R$ is the right adjoint to $L$. (Of course, left and
-right make sense only if you draw your diagrams one particular way.)
+由于这种不对称性，函子 $L$ 被称为 $R$ 的\newterm{左伴随}，而函子 $R$ 是 $L$ 的右伴随（right adjoint）。当然，左和右只有当你以特定方式绘制图表时才有意义。
 
-The compact notation for the adjunction is:
+伴随的紧凑表示是：
 \[L \dashv R\]
-To better understand the adjunction, let's analyze the unit and the
-counit in more detail.
+为了更好地理解伴随，让我们更详细地分析单位和余单位。
 
 \begin{figure}[H]
   \centering
@@ -109,18 +53,11 @@ counit in more detail.
 \end{figure}
 
 \noindent
-Let's start with the unit. It's a natural transformation, so it's a
-family of morphisms. Given an object $d$ in $\cat{D}$, the
-component of $\eta$ is a morphism between $I d$, which is equal to
-$d$, and $(R \circ L) d$; which, in the picture, is called
-$d'$:
+让我们从单位开始。它是一个自然变换，因此它是一组态射的集合。给定一个在 $\cat{D}$ 中的对象 $d$，$\eta$ 的分量是 $I d$ 和 $(R \circ L) d$ 之间的态射；在图中，它被称为 $d'$：
 \[\eta_d \Colon d \to (R \circ L) d\]
-Notice that the composition $R \circ L$ is an endofunctor in $\cat{D}$.
+注意，组合 $R \circ L$ 是在 $\cat{D}$ 中的一个自函子（endofunctor）。
 
-This equation tells us that we can pick any object $d$ in
-$\cat{D}$ as our starting point, and use the round trip functor
-$R \circ L$ to pick our target object $d'$. Then we
-shoot an arrow --- the morphism $\eta_d$ --- to our target.
+这个方程告诉我们，我们可以选择 $\cat{D}$ 中的任何对象 $d$ 作为起点，并使用往返函子 $R \circ L$ 选择目标对象 $d'$。然后我们发射一支箭——态射 $\eta_d$——到达目标。
 
 \begin{figure}[H]
   \centering
@@ -128,27 +65,16 @@ shoot an arrow --- the morphism $\eta_d$ --- to our target.
 \end{figure}
 
 \noindent
-By the same token, the component of the counit $\varepsilon$ can be described as:
+同样地，余单位 $\varepsilon$ 的分量可以描述为：
 \[\varepsilon_{c} \Colon (L \circ R) c \to c\]
-It tells us that we
-can pick any object $c$ in $\cat{C}$ as our target, and use the
-round trip functor $L \circ R$ to pick the source
-$c' = (L \circ R) c$. Then we shoot the arrow --- the morphism
-$\varepsilon_{c}$ --- from the source to the target.
+它告诉我们，我们可以选择 $\cat{C}$ 中的任何对象 $c$ 作为目标，并使用往返函子 $L \circ R$ 选择源对象 $c' = (L \circ R) c$。然后我们发射一支箭——态射 $\varepsilon_{c}$——从源对象到目标对象。
 
-Another way of looking at unit and counit is that unit lets us
-\emph{introduce} the composition $R \circ L$ anywhere we could
-insert an identity functor on $\cat{D}$; and counit lets us
-\emph{eliminate} the composition $L \circ R$, replacing it with the
-identity on $\cat{C}$. That leads to some ``obvious'' consistency
-conditions, which make sure that introduction followed by elimination
-doesn't change anything:
+另一种看待单位和余单位的方式是，单位让我们在 $\cat{D}$ 上的任何地方\emph{引入}组合 $R \circ L$，而余单位让我们\emph{消除}组合 $L \circ R$，用 $\cat{C}$ 上的恒等函子替换它。这导致了一些“显而易见”的一致性条件，这些条件确保引入和消除的顺序不会改变任何东西：
 \begin{gather*}
   L = L \circ I_{\cat{D}} \to L \circ R \circ L \to I_{\cat{C}} \circ L = L \\
   R = I_{\cat{D}} \circ R \to R \circ L \circ R \to R \circ I_{\cat{C}} = R
 \end{gather*}
-These are called triangular identities because they make the following
-diagrams commute:
+这些被称为三角恒等式（triangular identities），因为它们使以下图表交换：
 
 \begin{figure}[H]
   \centering
@@ -173,85 +99,41 @@ diagrams commute:
 \end{figure}
 
 \noindent
-These are diagrams in the functor category: the arrows are natural
-transformations, and their composition is the horizontal composition of
-natural transformations. In components, these identities become:
+这些是在函子范畴中的图：箭头是自然变换，它们的组合是自然变换的水平组合。用分量来表示，这些恒等式变为：
 \begin{gather*}
   \varepsilon_{L d} \circ L \eta_d = \id_{L d} \\
   R \varepsilon_{c} \circ \eta_{R c} = \id_{R c}
 \end{gather*}
-We often see unit and counit in Haskell under different names. Unit is
-known as \code{return} (or \code{pure}, in the definition of
-\code{Applicative}):
+我们经常在 Haskell 中以不同的名称看到单位和余单位。单位被称为 \code{return}（或在 \code{Applicative} 定义中称为 \code{pure}）：
 
 \src{snippet02}
-and counit as \code{extract}:
+而余单位则称为 \code{extract}：
 
 \src{snippet03}
-Here, \code{m} is the (endo-) functor corresponding to $R \circ L$,
-and \code{w} is the (endo-) functor corresponding to $L \circ R$. As
-we'll see later, they are part of the definition of a monad and a
-comonad, respectively.
+在这里，\code{m} 是对应于 $R \circ L$ 的（自）函子，而 \code{w} 是对应于 $L \circ R$ 的（自）函子。正如我们稍后会看到的，它们分别是单子（monad）和余单子（comonad）定义的一部分。
 
-If you think of an endofunctor as a container, the unit (or
-\code{return}) is a polymorphic function that creates a default box
-around a value of arbitrary type. The counit (or \code{extract}) does
-the reverse: it retrieves or produces a single value from a container.
+如果你将自函子视为一个容器，单位（或 \code{return}）是一个多态函数，它为任意类型的值创建一个默认的盒子。余单位（或 \code{extract}）则是相反的：它从容器中检索或生成单一值。
 
-We'll see later that every pair of adjoint functors defines a monad and
-a comonad. Conversely, every monad or comonad may be factorized into a
-pair of adjoint functors --- this factorization is not unique, though.
+我们稍后会看到，每对伴随函子都会定义一个单子和一个余单子。反过来，每个单子或余单子都可以分解为一对伴随函子——尽管这种分解不是唯一的。
 
-In Haskell, we use monads a lot, but only rarely factorize them into
-pairs of adjoint functors, primarily because those functors would
-normally take us out of $\Hask$.
+在 Haskell 中，我们经常使用单子，但很少将它们分解为一对伴随函子，主要是因为这些函子通常会将我们带出 $\Hask$。
 
-We can however define adjunctions of \newterm{endofunctors} in Haskell.
-Here's part of the definition taken from
-\code{Data.Functor.Adjunction}:
+然而，我们可以在 Haskell 中定义\newterm{自函子}的伴随关系。以下是取自 \code{Data.Functor.Adjunction} 的部分定义：
 
 \src{snippet04}
-This definition requires some explanation. First of all, it describes a
-multi-parameter type class --- the two parameters being \code{f} and
-\code{u}. It establishes a relation called \code{Adjunction} between
-these two type constructors.
+此定义需要一些解释。首先，它描述了一个多参数类型类——这两个参数是 \code{f} 和 \code{u}。它建立了 \code{Adjunction} 之间的关系。
 
-Additional conditions, after the vertical bar, specify functional
-dependencies. For instance, \code{f -> u} means that
-\code{u} is determined by \code{f} (the relation between \code{f}
-and \code{u} is a function, here on type constructors). Conversely,
-\code{u -> f} means that, if we know \code{u}, then
-\code{f} is uniquely determined.
+纵向条件（在竖线之后）指定了功能依赖性。例如，\code{f -> u} 意味着 \code{u} 是由 \code{f} 决定的（\code{f} 和 \code{u} 之间的关系是一个函数，这里是在类型构造函数上）。相反，\code{u -> f} 意味着如果我们知道 \code{u}，那么 \code{f} 是唯一确定的。
 
-I'll explain in a moment why, in Haskell, we can impose the condition
-that the right adjoint \code{u} be a \newterm{representable} functor.
+稍后我将解释为什么在 Haskell 中，我们可以施加条件使得右伴随 \code{u} 是一个\newterm{可表函子}。
 
-\section{Adjunctions and Hom-Sets}
+\section{伴随和同态集（Adjunctions and Hom-Sets）}
 
-There is an equivalent definition of the adjunction in terms of natural
-isomorphisms of hom-sets. This definition ties nicely with universal
-constructions we've been studying so far. Every time you hear the
-statement that there is some unique morphism, which factorizes some
-construction, you should think of it as a mapping of some set to a
-hom-set. That's the meaning of ``picking a unique morphism.''
+有一个等价的定义是基于同态集自然同构的伴随定义。这个定义与我们到目前为止研究的通用构造非常吻合。每次你听到某个唯一态射的声明，它因某种结构而因子化时，你应该将其视为从某个集合到同态集的映射。这就是“选择唯一态射”的意义。
 
-Furthermore, factorization can be often described in terms of natural
-transformations. Factorization involves commuting diagrams --- some
-morphism being equal to a composition of two morphisms (factors). A
-natural transformation maps morphisms to commuting diagrams. So, in a
-universal construction, we go from a morphism to a commuting diagram,
-and then to a unique morphism. We end up with a mapping from morphism to
-morphism, or from one hom-set to another (usually in different
-categories). If this mapping is invertible, and if it can be naturally
-extended across all hom-sets, we have an adjunction.
+此外，因子化通常可以通过自然变换来描述。因子化涉及交换图——某个态射等于两个态射（因子）的组合。自然变换将态射映射到交换图上。因此，在通用构造中，我们从态射到交换图，然后到唯一态射。我们最终得到的是从态射到态射的映射，或者从一个同态集到另一个（通常是在不同范畴中）。如果这个映射是可逆的，并且它可以自然地扩展到所有同态集上，我们就有了一个伴随。
 
-The main difference between universal constructions and adjunctions is
-that the latter are defined globally --- for all hom-sets. For instance,
-using a universal construction you can define a product of two select
-objects, even if it doesn't exist for any other pair of objects in that
-category. As we'll see soon, if the product of \emph{any pair} of
-objects exists in a category, it can be also defined through an
-adjunction.
+通用构造和伴随之间的主要区别在于后者是全局定义的——适用于所有同态集。例如，使用通用构造你可以定义两个特定对象的积，即使在该范畴中的其他对象对之间不存在积。正如我们即将看到的，如果在一个范畴中\emph{任意一对}对象的积存在，它也可以通过伴随来定义。
 
 \begin{figure}[H]
   \centering
@@ -259,156 +141,77 @@ adjunction.
 \end{figure}
 
 \noindent
-Here's the alternative definition of the adjunction using hom-sets. As
-before, we have two functors $L \Colon \cat{D} \to \cat{C}$ and
-$R \Colon \cat{C} \to \cat{D}$. We pick two arbitrary objects: the
-source object $d$ in $\cat{D}$, and the target object $c$
-in $\cat{C}$. We can map the source object $d$ to $\cat{C}$ using
-$L$. Now we have two objects in $\cat{C}$, $L d$ and
-$c$. They define a hom-set:
+这是使用同态集定义伴随的另一种方式。与之前一样，我们有两个函子 $L \Colon \cat{D} \to \cat{C}$ 和 $R \Colon \cat{C} \to \cat{D}$。我们选择两个任意的对象：在 $\cat{D}$ 中的源对象 $d$ 和在 $\cat{C}$ 中的目标对象 $c$。我们可以使用 $L$ 将源对象 $d$ 映射到 $\cat{C}$。现在我们在 $\cat{C}$ 中有两个对象，$L d$ 和 $c$。它们定义了一个同态集：
 \[\cat{C}(L d, c)\]
-Similarly, we can map the target object $c$ using $R$. Now
-we have two objects in $\cat{D}$, $d$ and $R c$. They,
-too, define a hom set:
+类似地，我们可以使用 $R$ 将目标对象 $c$ 映射到 $\cat{D}$。现在我们在 $\cat{D}$ 中有两个对象，$d$ 和 $R c$。它们也定义了一个同态集：
 \[\cat{D}(d, R c)\]
-We say that $L$ is left adjoint to $R$ iff there is an
-isomorphism of hom sets:
+我们说 $L$ 是 $R$ 的左伴随当且仅当存在一个同态集之间的同构：
 \[\cat{C}(L d, c) \cong \cat{D}(d, R c)\]
-that is natural both in $d$ and $c$.
-Naturality means that the source $d$ can be varied smoothly
-across $\cat{D}$; and the target $c$, across $\cat{C}$. More
-precisely, we have a natural transformation $\varphi$ between the
-following two (covariant) functors from $\cat{C}$ to $\Set$. Here's
-the action of these functors on objects:
+这个同构在 $d$ 和 $c$ 上都是自然的。自然性意味着源对象 $d$ 可以在 $\cat{D}$ 中平滑变化；目标对象 $c$ 可以在 $\cat{C}$ 中平滑变化。更精确地说，我们有一个自然变换 $\varphi$ 在以下两个（协变）函子之间，从 $\cat{C}$ 到 $\Set$。这是这些函子在对象上的作用：
 \begin{gather*}
   c \to \cat{C}(L d, c) \\
   c \to \cat{D}(d, R c)
 \end{gather*}
-The other natural transformation, $\psi$, acts between the following
-(contravariant) functors:
+另一个自然变换 $\psi$ 作用在以下（逆变）函子之间：
 \begin{gather*}
   d \to \cat{C}(L d, c) \\
   d \to \cat{D}(d, R c)
 \end{gather*}
-Both natural transformations must be invertible.
+这两个自然变换都必须是可逆的。
 
-It's easy to show that the two definitions of the adjunction are
-equivalent. For instance, let's derive the unit transformation starting
-from the isomorphism of hom-sets:
+很容易证明这两个伴随定义是等价的。例如，让我们从同态集同构开始推导单位变换：
 \[\cat{C}(L d, c) \cong \cat{D}(d, R c)\]
-Since this isomorphism works for any object $c$, it must also
-work for $c = L d$:
+由于这个同构适用于任何对象 $c$，它也必须适用于 $c = L d$：
 \[\cat{C}(L d, L d) \cong \cat{D}(d, (R \circ L) d)\]
-We know that the left hand side must contain at least one morphism, the
-identity. The natural transformation will map this morphism to an
-element of $\cat{D}(d, (R \circ L) d)$ or, inserting the identity
-functor $I$, a morphism in:
+我们知道，左边至少必须包含一个态射，恒等态射。自然变换将这个态射映射到 $\cat{D}(d, (R \circ L) d)$ 中的一个元素，或者插入恒等函子 $I$，即：
 \[\cat{D}(I d, (R \circ L) d)\]
-We get a family of morphisms parameterized by $d$. They form a
-natural transformation between the functor $I$ and the functor
-$R \circ L$ (the naturality condition is easy to verify). This is
-exactly our unit, $\eta$.
+我们得到一个由 $d$ 参数化的态射族。它们构成了从函子 $I$ 到函子 $R \circ L$ 之间的自然变换（自然性条件很容易验证）。这正是我们的单位 $\eta$。
 
-Conversely, starting from the existence of the unit and counit, we can
-define the transformations between hom-sets. For instance, let's pick an
-arbitrary morphism $f$ in the hom-set $\cat{C}(L d, c)$. We
-want to define a $\varphi$ that, acting on $f$, produces a
-morphism in $\cat{D}(d, R c)$.
+反过来，从单位和余单位的存在开始，我们可以定义同态集之间的变换。例如，我们选择一个在同态集 $\cat{C}(L d, c)$ 中的任意态射 $f$。我们想定义一个 $\varphi$，它作用在 $f$ 上，生成一个在 $\cat{D}(d, R c)$ 中的态射。
 
-There isn't really much choice. One thing we can try is to lift
-$f$ using $R$. That will produce a morphism $R f$
-from $R (L d)$ to $R c$ --- a morphism that's an
-element of $\cat{D}((R \circ L) d, R c)$.
+实际上我们没有太多选择。我们可以尝试使用 $R$ 提升 $f$。这将生成一个态射 $R f$，从 $R (L d)$ 到 $R c$——这是 $\cat{D}((R \circ L) d, R c)$ 中的一个态射。
 
-What we need for a component of $\varphi$, is a morphism from
-$d$ to $R c$. That's not a problem, since we can use a
-component of $\eta_d$ to get from $d$ to
-$(R \circ L) d$. We get:
+我们需要的是一个 $\varphi$ 的分量，一个从 $d$ 到 $R c$ 的态射。这不是问题，因为我们可以使用 $\eta_d$ 的一个分量从 $d$ 到 $(R \circ L) d$。我们得到：
 \[\varphi_f = R f \circ \eta_d\]
-The other direction is analogous, and so is the derivation of $\psi$.
+另一个方向类似，$\psi$ 的推导也是如此。
 
-Going back to the Haskell definition of \code{Adjunction}, the natural
-transformations $\varphi$ and $\psi$ are replaced by polymorphic
-(in \code{a} and \code{b}) functions \code{leftAdjunct} and
-\code{rightAdjunct}, respectively. The functors $L$ and
-$R$ are called \code{f} and \code{u}:
+回到 Haskell 中 \code{Adjunction} 的定义，自然变换 $\varphi$ 和 $\psi$ 被分别替换为多态的（在 \code{a} 和 \code{b} 上）函数 \code{leftAdjunct} 和 \code{rightAdjunct}。函子 $L$ 和 $R$ 分别被称为 \code{f} 和 \code{u}：
 
 \src{snippet05}
-The equivalence between the \code{unit}/\code{counit} formulation
-and the \code{leftAdjunct}/\allowbreak\code{rightAdjunct} formulation is
-witnessed by these mappings:
+在 \code{unit}/\code{counit} 表述和 \code{leftAdjunct}/\allowbreak\code{rightAdjunct} 表述之间的等价性由以下映射见证：
 
 \src{snippet06}
-It's very instructive to follow the translation from the categorical
-description of the adjunction to Haskell code. I highly encourage this
-as an exercise.
+从伴随的范畴描述到 Haskell 代码的转换是非常有启发性的。我强烈建议将其作为练习。
 
-We are now ready to explain why, in Haskell, the right adjoint is
-automatically a \hyperref[representable-functors]{representable
-  functor}. The reason for this is that, to the first approximation, we
-can treat the category of Haskell types as the category of sets.
+我们现在准备解释为什么在 Haskell 中右伴随自动是一个\hyperref[representable-functors]{可表函子}。原因是，在第一近似下，我们可以将 Haskell 类型的范畴视为集合的范畴。
 
-When the right category $\cat{D}$ is $\Set$, the right adjoint
-$R$ is a functor from $\cat{C}$ to $\Set$. Such a functor is
-representable if we can find an object $\mathit{rep}$ in $\cat{C}$ such
-that the hom-functor $\cat{C}(\mathit{rep}, \_)$ is naturally isomorphic to
-$R$. It turns out that, if $R$ is the right adjoint of
-some functor $L$ from $\Set$ to $\cat{C}$, such an object
-always exists --- it's the image of the singleton set $()$ under
-$L$:
+当右范畴 $\cat{D}$ 是 $\Set$ 时，右伴随 $R$ 是一个从 $\cat{C}$ 到 $\Set$ 的函子。如果我们可以找到 $\cat{C}$ 中的一个对象 $\mathit{rep}$，使得同态函子 $\cat{C}(\mathit{rep}, \_)$ 自然同构于 $R$，则该函子是可表的。事实证明，如果 $R$ 是某个函子 $L$ 从 $\Set$ 到 $\cat{C}$ 的右伴随，这样的对象总是存在——它是单集合 $()$ 在 $L$ 下的像：
 \[\mathit{rep} = L ()\]
-Indeed, the adjunction tells us that the following two hom-sets are
-naturally isomorphic:
+确实，伴随告诉我们，以下两个同态集是自然同构的：
 \[\cat{C}(L (), c) \cong \Set((), R c)\]
-For a given $c$, the right hand side is the set of functions from
-the singleton set $()$ to $R c$. We've seen earlier that
-each such function picks one element from the set $R c$. The set
-of such functions is isomorphic to the set $R c$. So we have:
+对于给定的 $c$，右侧是从单集合 $()$ 到 $R c$ 的函数集。我们前面已经看到，每个这样的函数从 $R c$ 中选择一个元素。这些函数的集合与 $R c$ 集合同构。因此我们有：
 \[\cat{C}(L (), -) \cong R\]
-which shows that $R$ is indeed representable.
+这表明 $R$ 确实是可表的。
 
-\section{Product from Adjunction}
+\section{从伴随到积（Product from Adjunction）}
 
-We have previously introduced several concepts using universal
-constructions. Many of those concepts, when defined globally, are easier
-to express using adjunctions. The simplest non-trivial example is that
-of the product. The gist of the \hyperref[products-and-coproducts]{universal
-  construction of the product} is the ability to factorize any
-product-like candidate through the universal product.
+我们之前已经使用通用构造介绍了几个概念。当这些概念在全局定义时，使用伴随表达起来更容易。最简单的非平凡例子是积（product）。\hyperref[products-and-coproducts]{积的通用构造}的要点是能够通过通用积因子化任何积状候选对象。
 
-More precisely, the product of two objects $a$ and $b$ is
-the object $(a\times{}b)$ (or \code{(a, b)} in the Haskell
-notation) equipped with two morphisms $\mathit{fst}$ and $\mathit{snd}$ such
-that, for any other candidate $c$ equipped with two morphisms
-$p \Colon c \to a$ and $q \Colon c \to b$, there
-exists a unique morphism $m \Colon c \to (a, b)$ that
-factorizes $p$ and $q$ through $\mathit{fst}$ and $\mathit{snd}$.
+更确切地说，两个对象 $a$ 和 $b$ 的积是对象 $(a\times{}b)$（或在 Haskell 中表示为 \code{(a, b)}），配有两个态射 $\mathit{fst}$ 和 $\mathit{snd}$，使得对于任何其他候选对象 $c$，配有两个态射 $p \Colon c \to a$ 和 $q \Colon c \to b$，存在一个唯一的态射 $m \Colon c \to (a, b)$，它因子化了 $p$ 和 $q$ 通过 $\mathit{fst}$ 和 $\mathit{snd}$。
 
-As we've seen earlier, in Haskell, we can implement a \code{factorizer} that generates this
-morphism from the two projections:
+如我们前面所见，在 Haskell 中，我们可以实现一个 \code{factorizer}，它从两个投影生成这个态射：
 
 \src{snippet07}
-It's easy to verify that the factorization conditions hold:
+验证因子化条件成立是很容易的：
 
 \src{snippet08}
-We have a mapping that takes a pair of morphisms \code{p} and
-\code{q} and produces another morphism
-\code{m = factorizer p q}.
+我们有一个映射，它接受一对态射 \code{p} 和 \code{q} 并生成另一个态射 \code{m = factorizer p q}。
 
-How can we translate this into a mapping between two hom-sets that we
-need to define an adjunction? The trick is to go outside of
-$\Hask$ and treat the pair of morphisms as a single morphism in
-the product category.
+我们如何将其转化为定义伴随所需的同态集之间的映射？诀窍是走出 $\Hask$，并将态射对视为在积范畴中的单个态射。
 
-Let me remind you what a product category is. Take two arbitrary
-categories $\cat{C}$ and $\cat{D}$. The objects in the product category
-$\cat{C}\times{}\cat{D}$ are pairs of objects, one from $\cat{C}$ and one from
-$\cat{D}$. The morphisms are pairs of morphisms, one from $\cat{C}$ and
-one from $\cat{D}$.
+让我提醒你，什么是积范畴。取两个任意范畴 $\cat{C}$ 和 $\cat{D}$。积范畴 $\cat{C}\times{}\cat{D}$ 中的对象是对象对，一个来自 $\cat{C}$，另一个来自 $\cat{D}$。态射是态射对，一个来自 $\cat{C}$，一个来自 $\cat{D}$。
 
-To define a product in some category $\cat{C}$, we should start with the
-product category $\cat{C}\times{}\cat{C}$. Pairs of morphism from $\cat{C}$ are single
-morphisms in the product category $\cat{C}\times{}\cat{C}$.
+为了在某个范畴 $\cat{C}$ 中定义积，我们应该从积范畴 $\cat{C}\times{}\cat{C}$ 开始。来自 $\cat{C}$ 的态射对是在积范畴 $\cat{C}\times{}\cat{C}$ 中的单个态射。
 
 \begin{figure}[H]
   \centering
@@ -416,53 +219,22 @@ morphisms in the product category $\cat{C}\times{}\cat{C}$.
 \end{figure}
 
 \noindent
-It might be a little confusing at first that we are using a product
-category to define a product. These are, however, very different
-products. We don't need a universal construction to define a product
-category. All we need is the notion of a pair of objects and a pair of
-morphisms.
+起初使用积范畴来定义积可能有点令人困惑。然而，这些积是非常不同的。我们不需要通用构造来定义积范畴。我们只需要对象对和态射对的概念。
 
-However, a pair of objects from $\cat{C}$ is \emph{not} an object in
-$\cat{C}$. It's an object in a different category, $\cat{C}\times{}\cat{C}$. We can
-write the pair formally as $\langle a, b \rangle$,
-where $a$ and $b$ are objects of $\cat{C}$. The universal
-construction, on the other hand, is necessary in order to define the
-object $a\times{}b$ (or \code{(a, b)} in Haskell), which is an object
-in \emph{the same} category $\cat{C}$. This object is supposed to
-represent the pair $\langle a, b \rangle$ in a way
-specified by the universal construction. It doesn't always exist and,
-even if it exists for some, might not exist for other pairs of objects
-in $\cat{C}$.
+然而，来自 $\cat{C}$ 的对象对\emph{不是} $\cat{C}$ 中的对象。它是一个不同范畴 $\cat{C}\times{}\cat{C}$ 中的对象。我们可以将该对形式化为 $\langle a, b \rangle$，其中 $a$ 和 $b$ 是 $\cat{C}$ 的对象。另一方面，通用构造是必要的，以便在\emph{相同}的范畴 $\cat{C}$ 中定义对象 $a\times{}b$（或在 Haskell 中表示为 \code{(a, b)}）。该对象应根据通用构造表示对 $\langle a, b \rangle$。它不总是存在，并且即使它存在于某些情况下，也可能不适用于 $\cat{C}$ 中的其他对象对。
 
-Let's now look at the \code{factorizer} as a mapping of hom-sets. The
-first hom-set is in the product category $\cat{C}\times{}\cat{C}$, and the second is
-in $\cat{C}$. A general morphism in $\cat{C}\times{}\cat{C}$ would be a pair of
-morphisms $\langle f, g \rangle$:
+现在让我们将 \code{factorizer} 看作同态集的映射。第一个同态集在积范畴 $\cat{C}\times{}\cat{C}$ 中，第二个在 $\cat{C}$ 中。积范畴中的一般态射是态射对 $\langle f, g \rangle$：
 \begin{gather*}
   f \Colon c' \to a \\
   g \Colon c'' \to b
 \end{gather*}
-with $c''$ potentially different from
-$c'$. But to define a product, we are interested in a
-special morphism in $\cat{C}\times{}\cat{C}$, the pair $p$ and $q$ that
-share the same source object $c$. That's okay: In the definition
-of an adjunction, the source of the left hom-set is not an arbitrary
-object --- it's the result of the left functor $L$ acting on some
-object from the right category. The functor that fits the bill is easy
-to guess --- it's the diagonal functor $\Delta$ from $\cat{C}$ to $\cat{C}\times{}\cat{C}$,
-whose action on objects is:
+其中 $c''$ 可能不同于 $c'$。但为了定义积，我们对 $\cat{C}\times{}\cat{C}$ 中的一个特殊态射感兴趣，这对 $p$ 和 $q$ 共享相同的源对象 $c$。这没问题：在伴随的定义中，左同态集的源不是任意对象——它是左函子 $L$ 在右范畴的某个对象上作用的结果。符合条件的函子很容易猜测——它是从 $\cat{C}$ 到 $\cat{C}\times{}\cat{C}$ 的对角函子（diagonal functor）$\Delta$，其对对象的作用是：
 \[\Delta c = \langle c, c \rangle\]
-The left-hand side hom-set in our adjunction should thus be:
+我们伴随中的左侧同态集应为：
 \[(\cat{C}\times{}\cat{C})(\Delta c, \langle a, b \rangle)\]
-It's a hom-set in the product category. Its elements are pairs of
-morphisms that we recognize as the arguments to our \code{factorizer}:
+它是积范畴中的同态集。其元素是我们识别为 \code{factorizer} 参数的态射对：
 \[(c \to a) \to (c \to b) \ldots{}\]
-The right-hand side hom-set lives in $\cat{C}$, and it goes between the
-source object $c$ and the result of some functor $R$
-acting on the target object in $\cat{C}\times{}\cat{C}$. That's the functor that maps
-the pair $\langle a, b \rangle$ to our product object,
-$a\times{}b$. We recognize this element of the hom-set as the
-\emph{result} of the \code{factorizer}:
+右侧同态集存在于 $\cat{C}$ 中，它在源对象 $c$ 和某些函子 $R$ 的结果之间映射。该函子将对 $\langle a, b \rangle$ 映射到我们的积对象 $a\times{}b$。我们将该同态集的元素识别为 \code{factorizer} 的结果：
 \[\ldots{} \to (c \to (a, b))\]
 
 \begin{figure}[H]
@@ -471,74 +243,40 @@ $a\times{}b$. We recognize this element of the hom-set as the
 \end{figure}
 
 \noindent
-We still don't have a full adjunction. For that we first need our
-\code{factorizer} to be invertible --- we are building an
-\emph{isomorphism} between hom-sets. The inverse of the
-\code{factorizer} should start from a morphism $m$ --- a
-morphism from some object $c$ to the product object $a\times{}b$.
-In other words, $m$ should be an element of:
+我们仍然没有完整的伴随。为此，我们首先需要 \code{factorizer} 是可逆的——我们正在构建同态集之间的同构。逆的 \code{factorizer} 应该从某个对象 $c$ 到积对象 $a\times{}b$ 的态射 $m$ 开始。换句话说，$m$ 应该是：
 \[\cat{C}(c, a\times{}b)\]
-The inverse factorizer should map $m$ to a morphism
-$\langle p, q \rangle$ in $\cat{C}\times{}\cat{C}$ that goes from
-$\langle c, c \rangle$ to
-$\langle a, b \rangle$; in other words, a morphism
-that's an element of:
+逆因子应该将 $m$ 映射到 $\cat{C}\times{}\cat{C}$ 中的态射对 $\langle p, q \rangle$，该对从 $\langle c, c \rangle$ 到 $\langle a, b \rangle$；换句话说，该态射是：
 \[(\cat{C}\times{}\cat{C})(\Delta\ c, \langle a, b \rangle)\]
-If that mapping exists, we conclude that there exists the right adjoint
-to the diagonal functor. That functor defines a product.
+如果该映射存在，则我们得出结论对角函子的右伴随存在。该函子定义一个积。
 
-In Haskell, we can always construct the inverse of the
-\code{factorizer} by composing \code{m} with, respectively,
-\code{fst} and \code{snd}.
+在 Haskell 中，我们可以通过分别与 \code{fst} 和 \code{snd} 组合构造 \code{factorizer} 的逆函数。
 
 \begin{snip}{haskell}
-p = fst . m
-q = snd . m
+  p = fst . m
+  q = snd . m
 \end{snip}
-To complete the proof of the equivalence of the two ways of defining a
-product we also need to show that the mapping between hom-sets is
-natural in $a$, $b$, and $c$. I will leave this as
-an exercise for the dedicated reader.
+要完成两种定义积方式的等价性证明，我们还需要证明同态集之间的映射在 $a$，$b$ 和 $c$ 上是自然的。我将此留作给有志读者的练习。
 
-To summarize what we have done: A categorical product may be defined
-globally as the \newterm{right adjoint} of the diagonal functor:
+总结我们所做的：一个范畴积可以全局定义为对角函子的\newterm{右伴随}：
 \[(\cat{C}\times{}\cat{C})(\Delta c, \langle a, b \rangle) \cong \cat{C}(c, a\times{}b)\]
-Here, $a\times{}b$ is the result of the action of our right adjoint
-functor $\mathit{Product}$ on the pair
-$\langle a, b \rangle$. Notice that any functor from
-$\cat{C}\times{}\cat{C}$ is a bifunctor, so $\mathit{Product}$ is a bifunctor. In
-Haskell, the $\mathit{Product}$ bifunctor is written simply as
-\code{(,)}. You can apply it to two types and get their product type,
-for instance:
+这里 $a\times{}b$ 是我们右伴随函子 $\mathit{Product}$ 对对象对 $\langle a, b \rangle$ 的作用结果。请注意，任何从 $\cat{C}\times{}\cat{C}$ 到 $\cat{C}$ 的函子都是一个双函子（bifunctor），因此 $\mathit{Product}$ 是一个双函子。在 Haskell 中，$\mathit{Product}$ 双函子简单地表示为 \code{(,)}。你可以将它应用于两个类型并得到它们的积类型，例如：
 
 \src{snippet09}
 
-\section{Exponential from Adjunction}
+\section{从伴随到指数对象（Exponential from Adjunction）}
 
-The exponential $b^a$, or the function object $a \Rightarrow b$, can be
-defined using a \hyperref[function-types]{universal
-  construction}. This construction, if it exists for all pairs of objects,
-can be seen as an adjunction. Again, the trick is to concentrate on the
-statement:
+指数对象 $b^a$ 或函数对象 $a \Rightarrow b$ 可以使用\hyperref[function-types]{通用构造}来定义。如果这种构造存在于所有对象对中，它可以看作一个伴随。再一次，诀窍是集中注意以下声明：
 
 \begin{quote}
-  For any other object $z$ with a morphism $g \Colon z\times{}a \to b$
-  there is a unique morphism $h \Colon z \to (a \Rightarrow b)$
+  对于任何其他对象 $z$ 及其态射 $g \Colon z\times{}a \to b$，存在一个唯一的态射 $h \Colon z \to (a \Rightarrow b)$
 \end{quote}
-This statement establishes a mapping between hom-sets.
+该声明建立了同态集之间的映射。
 
-In this case, we are dealing with objects in the same category, so the
-two adjoint functors are endofunctors. The left (endo-)functor
-$L$, when acting on object $z$, produces $z\times{}a$.
-It's a functor that corresponds to taking a product with some fixed
-$a$.
+在这种情况下，我们处理的是同一范畴中的对象，因此两个伴随函子是自函子。左（自）函子 $L$ 作用在对象 $z$ 上生成 $z\times{}a$。这是一个对应于固定某个 $a$ 的积函子。
 
-The right (endo-)functor $R$, when acting on $b$ produces
-the function object $a \Rightarrow b$ (or $b^a$). Again, $a$ is
-fixed. The adjunction between these two functors is often written as:
+右（自）函子 $R$ 作用在对象 $b$ 上生成函数对象 $a \Rightarrow b$（或 $b^a$）。再一次，$a$ 是固定的。该伴随函子通常写为：
 \[-\times{}a \dashv (-)^a\]
-The mapping of hom-sets that underlies this adjunction is best seen by
-redrawing the diagram that we used in the universal construction.
+该伴随函子下同态集的映射在我们用通用构造的图中最好体现出来。
 
 \begin{figure}[H]
   \centering
@@ -546,40 +284,30 @@ redrawing the diagram that we used in the universal construction.
 \end{figure}
 
 \noindent
-Notice that the $\mathit{eval}$ morphism\footnote{See ch.9 on \hyperref[function-types]{universal
-    construction}.} is nothing else but the counit of
-this adjunction:
+注意到 $\mathit{eval}$ 态射\footnote{参见第 9 章 \hyperref[function-types]{通用构造}。}其实就是这个伴随的余单位：
 \[(a \Rightarrow b)\times{}a \to b\]
-where:
+其中：
 \[(a \Rightarrow b)\times{}a = (L \circ R) b\]
-I have previously mentioned that a universal construction defines a
-unique object, up to isomorphism. That's why we have ``the'' product and
-``the'' exponential. This property translates to adjunctions as well: if
-a functor has an adjoint, this adjoint is unique up to isomorphism.
+我之前提到过，通用构造定义了一个唯一的对象，至多是同构的。这就是为什么我们有“积”和“指数对象”。这个属性也适用于伴随：如果一个函子有一个伴随，这个伴随至多是同构的。
 
-\section{Challenges}
+\section{挑战}
 
 \begin{enumerate}
   \tightlist
   \item
-        Derive the naturality square for $\psi$, the transformation
-        between the two (contravariant) functors:
-        \begin{gather*}
-          a \to \cat{C}(L a, b) \\
-          a \to \cat{D}(a, R b)
-        \end{gather*}
+  推导出自然变换 $\psi$ 的自然性方框，该变换作用于以下两个（逆变）函子之间：
+  \begin{gather*}
+    a \to \cat{C}(L a, b) \\
+    a \to \cat{D}(a, R b)
+  \end{gather*}
   \item
-        Derive the counit $\varepsilon$ starting from the hom-sets isomorphism in
-        the second definition of the adjunction.
+  从伴随的第二个定义中同态集同构开始推导余单位 $\varepsilon$。
   \item
-        Complete the proof of equivalence of the two definitions of the
-        adjunction.
+  完成伴随的两种定义等价性的证明。
   \item
-        Show that the coproduct can be defined by an adjunction. Start with
-        the definition of the factorizer for a coproduct.
+  证明可以通过一个伴随来定义余积。从余积的因子化定义开始。
   \item
-        Show that the coproduct is the left adjoint of the diagonal functor.
+  证明余积是对角函子的左伴随。
   \item
-        Define the adjunction between a product and a function object in
-        Haskell.
+  在 Haskell 中定义一个积与函数对象之间的伴随关系。
 \end{enumerate}

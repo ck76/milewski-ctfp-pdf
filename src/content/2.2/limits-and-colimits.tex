@@ -1,11 +1,6 @@
 % !TEX root = ../../ctfp-print.tex
 
-\lettrine[lhang=0.17]{I}{t seems like in category theory} everything is related to everything and
-everything can be viewed from many angles. Take for instance the
-universal construction of the \hyperref[products-and-coproducts]{product}.
-Now that we know more about \hyperref[functors]{functors} and
-\hyperref[natural-transformations]{natural transformations}, can we simplify and, possibly, generalize it? Let us
-try.
+\lettrine[lhang=0.17]{看}{起来在范畴论中}，一切都与一切相关，所有事物都可以从多角度进行观察。以 \hyperref[products-and-coproducts]{积} 的普遍构造为例。现在我们对 \hyperref[functors]{函子} 和 \hyperref[natural-transformations]{自然变换} 有了更多了解，我们能简化并可能推广它吗？让我们试试看。
 
 \begin{figure}[H]
   \centering
@@ -13,27 +8,9 @@ try.
 \end{figure}
 
 \noindent
-The construction of a product starts with the selection of two objects
-$a$ and $b$, whose product we want to construct. But what
-does it mean to \emph{select objects}? Can we rephrase this action in
-more categorical terms? Two objects form a pattern --- a very simple
-pattern. We can abstract this pattern into a category --- a very simple
-category, but a category nevertheless. It's a category that we'll call
-$\cat{2}$. It contains just two objects, $1$ and $2$, and no morphisms
-other than the two obligatory identities. Now we can rephrase the
-selection of two objects in $\cat{C}$ as the act of defining a functor $D$
-from the category $\cat{2}$ to $\cat{C}$. A functor maps objects to
-objects, so its image is just two objects (or it could be one, if the
-functor collapses objects, which is fine too). It also maps morphisms
---- in this case it simply maps identity morphisms to identity
-morphisms.
+积的构造从选择两个对象 $a$ 和 $b$ 开始，这两个对象是我们希望构造其积的对象。但是，\emph{选择对象} 意味着什么？我们能否用更范畴化的术语来重新表达这一操作？两个对象形成一个模式——一个非常简单的模式。我们可以将这个模式抽象为一个范畴——一个非常简单的范畴，但仍然是一个范畴。我们称之为 $\cat{2}$。它只包含两个对象，$1$ 和 $2$，没有其他态射，只有两个必需的恒等态射。现在，我们可以将选择 $\cat{C}$ 中的两个对象重新表述为从范畴 $\cat{2}$ 到 $\cat{C}$ 的函子 $D$ 的定义。一个函子将对象映射到对象，因此它的像只是两个对象（或者如果函子合并对象，这也是可以的）。它还映射态射——在这种情况下，它只是将恒等态射映射到恒等态射。
 
-What's great about this approach is that it builds on categorical
-notions, eschewing the imprecise descriptions like ``selecting
-objects,'' taken straight from the hunter-gatherer lexicon of our
-ancestors. And, incidentally, it is also easily generalized, because
-nothing can stop us from using categories more complex than $\cat{2}$
-to define our patterns.
+这种方法的伟大之处在于，它建立在范畴概念之上，避开了像“选择对象”这样从我们祖先的猎人-采集者词汇中直接借用的模糊描述。而且，顺便说一句，它也很容易推广，因为没有什么能阻止我们使用比 $\cat{2}$ 更复杂的范畴来定义我们的模式。
 
 \begin{figure}[H]
   \centering
@@ -41,15 +18,7 @@ to define our patterns.
 \end{figure}
 
 \noindent
-But let's continue. The next step in the definition of a product is the
-selection of the candidate object $c$. Here again, we could
-rephrase the selection in terms of a functor from a singleton category.
-And indeed, if we were using Kan extensions, that would be the right
-thing to do. But since we are not ready for Kan extensions yet, there is
-another trick we can use: a constant functor $\Delta$ from the same category
-$\cat{2}$ to $\cat{C}$. The selection of $c$ in $\cat{C}$ can be
-done with $\Delta_c$. Remember, $\Delta_c$ maps all
-objects into $c$ and all morphisms into $\idarrow[c]$.
+但让我们继续。积定义的下一步是选择候选对象 $c$。在这里，我们可以再次用单一对象范畴的函子来重新表述选择的操作。实际上，如果我们在使用 Kan 扩展，那将是正确的做法。但由于我们还没有准备好 Kan 扩展，我们可以使用另一种技巧：从相同的范畴 $\cat{2}$ 到 $\cat{C}$ 的常值函子 $\Delta$。在 $\cat{C}$ 中选择 $c$ 可以通过 $\Delta_c$ 来完成。记住，$\Delta_c$ 将所有对象映射到 $c$，并将所有态射映射到 $\idarrow[c]$。
 
 \begin{figure}[H]
   \centering
@@ -57,22 +26,7 @@ objects into $c$ and all morphisms into $\idarrow[c]$.
 \end{figure}
 
 \noindent
-Now we have two functors, $\Delta_c$ and $D$ going between
-$\cat{2}$ and $\cat{C}$ so it's only natural to ask about natural
-transformations between them. Since there are only two objects in
-$\cat{2}$, a natural transformation will have two components. Object $1$
-in $\cat{2}$ is mapped to $c$ by $\Delta_c$ and to
-$a$ by $D$. So the component of a natural transformation between
-$\Delta_c$ and $D$ at $1$ is a morphism from $c$ to
-$a$. We can call it $p$. Similarly, the second component
-is a morphism $q$ from $c$ to $b$ --- the image of
-the object $2$ in $\cat{2}$ under $D$. But these are exactly like the two
-projections we used in our original definition of the product. So
-instead of talking about selecting objects and projections, we can just
-talk about picking functors and natural transformations. It so happens
-that in this simple case the naturality condition for our transformation
-is trivially satisfied, because there are no morphisms (other than the
-identities) in $\cat{2}$.
+现在我们有了两个函子，$\Delta_c$ 和 $D$，它们都在 $\cat{2}$ 和 $\cat{C}$ 之间，所以自然要问它们之间是否存在自然变换。由于 $\cat{2}$ 中只有两个对象，自然变换将有两个分量。$\cat{2}$ 中的对象 $1$ 由 $\Delta_c$ 映射到 $c$，由 $D$ 映射到 $a$。因此，$\Delta_c$ 和 $D$ 之间的自然变换在 $1$ 处的分量是一个从 $c$ 到 $a$ 的态射。我们可以称之为 $p$。同样，第二个分量是从 $c$ 到 $b$ 的态射——即 $\cat{2}$ 中对象 $2$ 在 $D$ 下的像。但这些与我们在最初的积定义中使用的两个投影完全相同。所以与其谈论选择对象和投影，我们可以只谈论选择函子和自然变换。在这个简单的情况下，自然变换的自然性条件是平凡的，因为在 $\cat{2}$ 中没有态射（除恒等态射外）。
 
 \begin{figure}[H]
   \centering
@@ -80,23 +34,9 @@ identities) in $\cat{2}$.
 \end{figure}
 
 \noindent
-A generalization of this construction to categories other than
-$\cat{2}$ --- ones that, for instance, contain non-trivial morphisms
---- will impose naturality conditions on the transformation between
-$\Delta_c$ and $D$. We call such a transformation a \emph{cone},
-because the image of $\Delta$ is the apex of a cone/pyramid whose sides are
-formed by the components of the natural transformation. The image of $D$
-forms the base of the cone.
+这种构造的一般化可以扩展到其他比 $\cat{2}$ 更复杂的范畴——例如，包含非平凡态射的范畴。这将对 $\Delta_c$ 和 $D$ 之间的变换施加自然性条件。我们称这种变换为 \emph{锥}，因为 $\Delta$ 的像是锥/金字塔的顶点，其侧面由自然变换的分量构成。$D$ 的像构成了锥的底部。
 
-In general, to build a cone, we start with a category $\cat{I}$ that
-defines the pattern. It's a small, often finite category. We pick a
-functor $D$ from $\cat{I}$ to $\cat{C}$ and call it (or its image) a
-\emph{diagram}. We pick some $c$ in $\cat{C}$ as the apex of our
-cone. We use it to define the constant functor $\Delta_c$ from
-$\cat{I}$ to $\cat{C}$. A natural transformation from $\Delta_c$
-to $D$ is then our cone. For a finite $\cat{I}$ it's just a bunch of
-morphisms connecting $c$ to the diagram: the image of $\cat{I}$
-under $D$.
+一般来说，构建一个锥，我们从一个定义模式的范畴 $\cat{I}$ 开始。它是一个小的，通常是有限的范畴。我们选择一个从 $\cat{I}$ 到 $\cat{C}$ 的函子 $D$，并称其为（或其像）一个 \emph{图}。我们在 $\cat{C}$ 中选择某个 $c$ 作为我们锥的顶点。我们用它来定义从 $\cat{I}$ 到 $\cat{C}$ 的常值函子 $\Delta_c$。从 $\Delta_c$ 到 $D$ 的自然变换就是我们的锥。对于有限的 $\cat{I}$，它只是连接 $c$ 和图（$\cat{I}$ 在 $D$ 下的像）的态射的集合。
 
 \begin{figure}[H]
   \centering
@@ -104,14 +44,7 @@ under $D$.
 \end{figure}
 
 \noindent
-Naturality requires that all triangles (the walls of the pyramid) in
-this diagram commute. Indeed, take any morphism $f$ in $\cat{I}$.
-The functor $D$ maps it to a morphism $D f$ in $\cat{C}$, a
-morphism that forms the base of some triangle. The constant functor
-$\Delta_c$ maps $f$ to the identity morphism on
-$c$. $\Delta$ squishes the two ends of the morphism into one object, and
-the naturality square becomes a commuting triangle. The two arms of this
-triangle are the components of the natural transformation.
+自然性要求该图中的所有三角形（即金字塔的墙面）都交换。确实，取 $\cat{I}$ 中的任意态射 $f$。函子 $D$ 将其映射到 $\cat{C}$ 中的态射 $D f$，这条态射构成了某个三角形的底边。常值函子 $\Delta_c$ 将 $f$ 映射到 $c$ 上的恒等态射。$\Delta$ 将态射的两个端点压缩成一个对象，自然性方块变成了一个交换三角形。该三角形的两个边是自然变换的分量。
 
 \begin{figure}[H]
   \centering
@@ -119,22 +52,11 @@ triangle are the components of the natural transformation.
 \end{figure}
 
 \noindent
-So that's one cone. What we are interested in is the \newterm{universal
-  cone} --- just like we picked a universal object for our definition of a
-product.
+所以这是一个锥。我们感兴趣的是 \newterm{普遍锥} ——就像我们在定义积时选择了一个普遍对象一样。
 
-There are many ways to go about it. For instance, we may define a
-\emph{category of cones} based on a given functor $D$. Objects in that
-category are cones. Not every object $c$ in $\cat{C}$ can be an
-apex of a cone, though, because there may be no natural transformation
-between $\Delta_c$ and $D$.
+有很多方法可以实现它。例如，我们可以基于给定的函子 $D$ 定义一个 \emph{锥的范畴}。该范畴中的对象是锥。然而，并不是 $\cat{C}$ 中的每个对象 $c$ 都可以作为一个锥的顶点，因为可能不存在 $\Delta_c$ 和 $D$ 之间的自然变换。
 
-To make it a category, we also have to define morphisms between cones.
-These would be fully determined by morphisms between their apexes. But
-not just any morphism will do. Remember that, in our construction of the
-product, we imposed the condition that the morphisms between candidate
-objects (the apexes) must be common factors for the projections. For
-instance:
+要构成一个范畴，我们还必须定义锥之间的态射。这些将完全由它们的顶点之间的态射决定。但并不是任何态射都可以。记住，在我们构造积时，我们规定候选对象（顶点）之间的态射必须是投影的公因子。例如：
 
 \src{snippet01}
 
@@ -143,92 +65,41 @@ instance:
   \includegraphics[width=0.35\textwidth]{images/productranking.jpg}
 \end{figure}
 
-This condition translates, in the general case, to the condition that
-the triangles whose one side is the factorizing morphism all commute.
+这一条件在一般情况下转化为这样的条件：三角形的一边是因式分解态射的因子，它们都交换。
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.35\textwidth]{images/conecommutativity.jpg}
-  \caption{The commuting triangle connecting two cones, with the factorizing
-    morphism $h$ (here, the lower cone is the universal one, with
-    $\Lim[D]$ as its apex)}
+  \caption{连接两个锥的交换三角形，其中因式分解态射为 $h$（此处，下锥为普遍锥，顶点为 $\Lim[D]$）}
 \end{figure}
 
 \noindent
-We'll take those factorizing morphisms as the morphisms in our category
-of cones. It's easy to check that those morphisms indeed compose, and
-that the identity morphism is a factorizing morphism as well. Cones
-therefore form a category.
+我们将这些因式分解态射作为锥范畴中的态射。很容易验证这些态射确实可以组合，并且恒等态射也是因式分解态射。因此锥形成了一个范畴。
 
-Now we can define the universal cone as the \emph{terminal object} in
-the category of cones. The definition of the terminal object states that
-there is a unique morphism from any other object to that object. In our
-case it means that there is a unique factorizing morphism from the apex
-of any other cone to the apex of the universal cone. We call this
-universal cone the \emph{limit} of the diagram $D$, $\Lim[D]$ (in
-the literature, you'll often see a left arrow pointing towards $I$
-under the $\Lim$ sign). Often, as a shorthand, we call the apex of
-this cone the limit (or the limit object).
+现在我们可以将普遍锥定义为锥范畴中的 \emph{终对象}。终对象的定义表明，从任何其他对象到该对象都有一个唯一的态射。在我们的情况下，这意味着从任何其他锥的顶点到普遍锥的顶点都有一个唯一的因式分解态射。我们将此普遍锥称为图 $D$ 的 \emph{极限}，记为 $\Lim[D]$（在文献中，你会经常看到 $\Lim$ 符号下方指向 $I$ 的左箭头）。通常，作为简写，我们称该锥的顶点为极限（或极限对象）。
 
-The intuition is that the limit embodies the properties of the whole
-diagram in a single object. For instance, the limit of our two-object
-diagram is the product of two objects. The product (together with the
-two projections) contains the information about both objects. And being
-universal means that it has no extraneous junk.
+直觉上，极限在一个对象中体现了整个图的性质。例如，我们的两个对象图的极限就是两个对象的积。积（连同两个投影）包含了关于这两个对象的信息。作为普遍的对象，它没有多余的部分。
 
-\section{Limit as a Natural Isomorphism}
+\section{作为自然同构的极限}
 
-There is still something unsatisfying about this definition of a limit.
-I mean, it's workable, but we still have this commutativity condition
-for the triangles that are linking any two cones. It would be so much
-more elegant if we could replace it with some naturality condition. But
-how?
+关于极限的这一定义，仍有一些不尽如人意的地方。我的意思是，它是可行的，但我们仍然有关于链接任何两个锥的三角形的交换性条件。如果我们能够用某种自然性条件来替换它，那将是多么优雅。但该怎么做呢？
 
-We are no longer dealing with one cone but with a whole collection (in
-fact, a category) of cones. If the limit exists (and --- let's make it
-clear --- there's no guarantee of that), one of those cones is the
-universal cone. For every other cone we have a unique factorizing
-morphism that maps its apex, let's call it $c$, to the apex of
-the universal cone, which we named $\Lim[D]$. (In fact, I can skip
-the word ``other'', because the identity morphism maps the universal
-cone to itself and it trivially factorizes through itself.) Let me
-repeat the important part: given any cone, there is a unique morphism of
-a special kind. We have a mapping of cones to special morphisms, and
-it's a one-to-one mapping.
+我们不再仅仅处理一个锥，而是处理一个整合集合（实际上是一个范畴）的锥。如果极限存在（让我们明确一点，这没有任何保证），其中一个锥就是普遍锥。对于每一个其他锥，我们都有一个唯一的因式分解态射将其顶点（我们称之为 $c$）映射到普遍锥的顶点，我们称之为 $\Lim[D]$。（实际上，我可以省略“其他”这个词，因为恒等态射将普遍锥映射到自身，并且它可以通过自身平凡地因式分解。）让我重复一下重要部分：给定任何锥，都有一种特殊类型的唯一态射。我们有一个从锥到特殊态射的一对一映射。
 
-This special morphism is a member of the hom-set $\cat{C}(c, \Lim[D])$.
-The other members of this hom-set are less fortunate, in the sense that
-they don't factorize the mapping of the two cones. What we want is to be able to
-pick, for each $c$, one morphism from the set
-$\cat{C}(c, \Lim[D])$ --- a morphism that satisfies the particular
-commutativity condition. Does that sound like defining a natural
-transformation? It most certainly does!
+这个特殊态射是 $\cat{C}(c, \Lim[D])$ 中的一个元素。这个同态集的其他元素不那么幸运，因为它们不能因式分解两个锥的映射。我们想要的是能够为每个 $c$ 从集合 $\cat{C}(c, \Lim[D])$ 中选择一个态射——满足特定交换性条件的态射。这听起来像是在定义自然变换吗？的确如此！
 
-But what are the functors that are related by this transformation?
+但是什么函子与此变换有关呢？
 
-One functor is the mapping of $c$ to the set
-$\cat{C}(c, \Lim[D])$. It's a functor from $\cat{C}$ to $\Set$ ---
-it maps objects to sets. In fact it's a contravariant functor. Here's
-how we define its action on morphisms: Let's take a morphism $f$
-from $c'$ to $c$:
+一个函子是将 $c$ 映射到集合 $\cat{C}(c, \Lim[D])$。这是一个从 $\cat{C}$ 到 $\Set$ 的函子——它将对象映射到集合。实际上，它是一个反变函子。以下是我们定义它对态射的作用的方法：假设我们有一个从 $c'$ 到 $c$ 的态射 $f$：
 \[f \Colon c' \to c\]
-Our functor maps $c'$ to the set
-$\cat{C}(c', \Lim[D])$. To define the action of this functor on
-$f$ (in other words, to lift $f$), we have to define the
-corresponding mapping between $\cat{C}(c, \Lim[D])$ and
-$\cat{C}(c', \Lim[D])$. So let's pick one element $u$ of
-$\cat{C}(c, \Lim[D])$ and see if we can map it to some element of
-$\cat{C}(c', \Lim[D])$. An element of a hom-set is a morphism, so
-we have:
+我们的函子将 $c'$ 映射到集合 $\cat{C}(c', \Lim[D])$。为了定义该函子对 $f$ 的作用（换句话说，提升 $f$），我们必须定义 $\cat{C}(c, \Lim[D])$ 和 $\cat{C}(c', \Lim[D])$ 之间相应的映射。假设我们选择 $\cat{C}(c, \Lim[D])$ 的一个元素 $u$，看看我们是否可以将其映射到 $\cat{C}(c', \Lim[D])$ 的某个元素。一个同态集的元素是一个态射，因此我们有：
 \[u \Colon c \to \Lim[D]\]
-We can precompose $u$ with $f$ to get:
+我们可以将 $u$ 和 $f$ 进行预组合得到：
 \[u \circ f \Colon c' \to \Lim[D]\]
-And that's an element of $\cat{C}(c', \Lim[D])$--- so indeed, we
-have found a mapping of morphisms:
+这就是 $\cat{C}(c', \Lim[D])$ 的一个元素——所以确实，我们找到了态射的一个映射：
 
 \src{snippet02}
-Notice the inversion in the order of $c$ and $c'$
-characteristic of a \emph{contravariant} functor.
+注意 $c$ 和 $c'$ 的顺序颠倒了，这正是 \emph{反变} 函子的特征。
 
 \begin{figure}[H]
   \centering
@@ -236,33 +107,19 @@ characteristic of a \emph{contravariant} functor.
 \end{figure}
 
 \noindent
-To define a natural transformation, we need another functor that's also
-a mapping from $\cat{C}$ to $\Set$. But this time we'll consider a
-set of cones. Cones are just natural transformations, so we are looking
-at the set of natural transformations $\mathit{Nat}(\Delta_c, D)$. The mapping
-from $c$ to this particular set of natural transformations is a
-(contravariant) functor. How can we show that? Again, let's define its
-action on a morphism:
+为了定义自然变换，我们需要另一个从 $\cat{C}$ 到 $\Set$ 的函子。但这次我们考虑的是一组锥。锥只是自然变换，因此我们关注的是自然变换集 $\mathit{Nat}(\Delta_c, D)$。将 $c$ 映射到这一特定自然变换集的映射是一个（反变）函子。我们如何证明这一点呢？再次，我们定义其对态射的作用：
 \[f \Colon c' \to c\]
-The lifting of $f$ should be a mapping of natural transformations
-between two functors that go from $\cat{I}$ to $\cat{C}$:
+对 $f$ 的提升应该是一个自然变换之间的映射，这两个函子从 $\cat{I}$ 到 $\cat{C}$：
 \[\mathit{Nat}(\Delta_c, D) \to \mathit{Nat}(\Delta_{c'}, D)\]
-How do we map natural transformations? Every natural transformation is a
-selection of morphisms --- its components --- one morphism per element
-of $\cat{I}$. A component of some $\alpha$ (a member of $\mathit{Nat}(\Delta_c, D)$) at
-$a$ (an object in $\cat{I}$) is a morphism:
+我们如何映射自然变换呢？每个自然变换都是态射的选择——它的分量，每个 $\cat{I}$ 的元素有一个态射。某个 $\alpha$（$\mathit{Nat}(\Delta_c, D)$ 的一个成员）在 $a$（$\cat{I}$ 中的一个对象）的分量是一个态射：
 \[\alpha_a \Colon \Delta_c a \to D a\]
-or, using the definition of the constant functor $\Delta$,
+或者使用常值函子 $\Delta$ 的定义，
 \[\alpha_a \Colon c \to D a\]
-Given $f$ and $\alpha$, we have to construct a $\beta$, a member of
-$\mathit{Nat}(\Delta_{c'}, D)$. Its component at $a$ should be a
-morphism:
+给定 $f$ 和 $\alpha$，我们必须构造一个 $\beta$，$\mathit{Nat}(\Delta_{c'}, D)$ 的成员。它在 $a$ 处的分量应该是一个态射：
 \[\beta_a \Colon c' \to D a\]
-We can easily get the latter ($\beta_a$) from the former ($\alpha_a$) by precomposing it with
-$f$:
+我们可以通过与 $f$ 预组合来轻松地从前者（$\alpha_a$）得到后者（$\beta_a$）：
 \[\beta_a = \alpha_a \circ f\]
-It's relatively easy to show that those components indeed add up to a
-natural transformation.
+很容易证明这些分量确实构成了一个自然变换。
 
 \begin{figure}[H]
   \centering
@@ -270,240 +127,136 @@ natural transformation.
 \end{figure}
 
 \noindent
-Given our morphism $f$, we have thus built a mapping between two
-natural transformations, component-wise. This mapping defines
-\code{contramap} for the functor:
+给定我们的态射 $f$，我们就这样逐个分量地构建了两个自然变换之间的映射。此映射定义了函子的 \code{contramap}：
 \[c \to \mathit{Nat}(\Delta_c, D)\]
-What I have just done is to show you that we have two (contravariant)
-functors from $\cat{C}$ to $\Set$. I haven't made any assumptions
---- these functors always exist.
+我刚才做的是向你展示我们有两个从 $\cat{C}$ 到 $\Set$ 的（反变）函子。我没有做任何假设——这些函子总是存在的。
 
-Incidentally, the first of these functors plays an important role in
-category theory, and we'll see it again when we talk about Yoneda's
-lemma. There is a name for contravariant functors from any category
-$\cat{C}$ to $\Set$: they are called ``presheaves''. This one is
-called a \newterm{representable presheaf}. The second functor is also a
-presheaf.
+顺便说一下，第一个函子在范畴论中起着重要作用，当我们谈到 Yoneda 引理时，我们会再次看到它。任何从范畴 $\cat{C}$ 到 $\Set$ 的反变函子都有一个名称：它们被称为“预层”。而这个被称为 \newterm{表示预层}。第二个函子也是一个预层。
 
-Now that we have two functors, we can talk about natural transformations
-between them. So without further ado, here's the conclusion: A functor
-$D$ from $\cat{I}$ to $\cat{C}$ has a limit $\Lim[D]$ if and
-only if there is a natural isomorphism between the two functors I have
-just defined:
+现在我们有了两个函子，我们可以谈论它们之间的自然变换。所以不再赘述，结论如下：从 $\cat{I}$ 到 $\cat{C}$ 的函子 $D$ 只有在存在两个我刚刚定义的函子之间的自然同构时才有极限：
 \[\cat{C}(c, \Lim[D]) \simeq \mathit{Nat}(\Delta_c, D)\]
-Let me remind you what a natural isomorphism is. It's a natural
-transformation whose every component is an isomorphism, that is to say
-an invertible morphism.
+让我提醒你什么是自然同构。它是一个自然变换，其每个分量都是一个同构态射，也就是说是一个可逆态射。
 
-I'm not going to go through the proof of this statement. The procedure
-is pretty straightforward if not tedious. When dealing with natural
-transformations, you usually focus on components, which are morphisms.
-In this case, since the target of both functors is $\Set$, the
-components of the natural isomorphism will be functions. These are
-higher order functions, because they go from the hom-set to the set of
-natural transformations. Again, you can analyze a function by
-considering what it does to its argument: here the argument will be a
-morphism --- a member of $\cat{C}(c, \Lim[D])$ --- and the result will
-be a natural transformation --- a member of $\mathit{Nat}(\Delta_c, D)$, or
-what we have called a cone. This natural transformation, in turn, has
-its own components, which are morphisms. So it's morphisms all the way
-down, and if you can keep track of them, you can prove the statement.
+我不会详细讨论这一声明的证明过程。这个过程相当直接，但有点繁琐。当处理自然变换时，通常关注的是态射的分量。在这种情况下，由于两个函子的目标都是 $\Set$，自然同构的分量将是函数。这些是高阶函数，因为它们从同态集映射到自然变换集。同样，你可以通过考虑函数对其参数的操作来分析一个函数：在这里，参数将是一个态射——$\cat{C}(c, \Lim[D])$ 的成员——结果将是一个自然变换——$\mathit{Nat}(\Delta_c, D)$ 的成员，或我们称之为锥的东西。这个自然变换依次有其自己的分量，这些分量也是态射。因此，自始至终都是态射，如果你能跟踪它们，你就可以证明这一声明。
 
-The most important result is that the naturality condition for this
-isomorphism is exactly the commutativity condition for the mapping of
-cones.
+最重要的结果是，此同构的自然性条件恰好是锥映射的交换性条件。
 
-As a preview of coming attractions, let me mention that the set
-$\mathit{Nat}(\Delta_c, D)$ can be thought of as a hom-set in the functor
-category; so our natural isomorphism relates two hom-sets, which points
-at an even more general relationship called an adjunction.
+作为即将到来的预告，让我提到，$\mathit{Nat}(\Delta_c, D)$ 集可以看作是函子范畴中的同态集；所以我们的自然同构关系着两个同态集，这指向了一个更普遍的关系，称为伴随。
 
-\section{Examples of Limits}
+\section{极限的示例}
 
-We've seen that the categorical product is a limit of a diagram
-generated by a simple category we called $\cat{2}$.
+我们已经看到，范畴积是由我们称为 $\cat{2}$ 的简单范畴生成的图的极限。
 
-There is an even simpler example of a limit: the terminal object. The
-first impulse would be to think of a singleton category as leading to a
-terminal object, but the truth is even starker than that: the terminal
-object is a limit generated by an empty category. A functor from an
-empty category selects no object, so a cone shrinks to just the apex.
-The universal cone is the lone apex that has a unique morphism coming to
-it from any other apex. You will recognize this as the definition of the
-terminal object.
+有一个更简单的极限示例：终对象。第一个冲动可能是认为单一对象范畴会导致终对象，但事实甚至比这更简洁：终对象是由空范畴生成的极限。从空范畴到某个范畴的函子不选择任何对象，因此锥缩小为仅顶点的情况。普遍锥是唯一具有从任何其他顶点到它的唯一态射的顶点。你会认出这是终对象的定义。
 
-The next interesting limit is called the \emph{equalizer}. It's a limit
-generated by a two-element category with two parallel morphisms going
-between them (and, as always, the identity morphisms). This category
-selects a diagram in $\cat{C}$ consisting of two objects, $a$ and
-$b$, and two morphisms:
+下一个有趣的极限称为 \emph{等化子}。它是由一个两元素范畴生成的极限，该范畴中有两个平行的态射在它们之间（以及总是存在的恒等态射）。这个范畴选择了 $\cat{C}$ 中由两个对象 $a$ 和 $b$ 以及两个态射组成的图：
 
 \src{snippet03}
 
-To build a cone over this diagram, we have to add the apex, $c$
-and two projections:
+要在此图之上构建一个锥，我们必须添加顶点 $c$ 和两个投影：
 
 \src{snippet04}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.35\textwidth]{images/equalizercone.jpg}
-\end{figure}
+  \endfigure}
 
 \noindent
-We have two triangles that must commute:
+我们有两个必须交换的三角形：
 
 \src{snippet05}
 
-This tells us that $q$ is uniquely determined by one of these
-equations, say, \code{q = f . p}, and we can omit it from the
-picture. So we are left with just one condition:
+这告诉我们，$q$ 由这些方程中的一个唯一决定，比如 \code{q = f . p}，我们可以省略它。因此我们只剩下一个条件：
 
 \src{snippet06}
 
-The way to think about it is that, if we restrict our attention to
-$\Set$, the image of the function $p$ selects a subset of
-$a$. When restricted to this subset, the functions $f$ and
-$g$ are equal.
+想法是，如果我们将注意力集中在 $\Set$ 上，函数 $p$ 的像选择了 $a$ 的一个子集。当限制在该子集上时，函数 $f$ 和 $g$ 是相等的。
 
-For instance, take $a$ to be the two-dimensional plane
-parameterized by coordinates $x$ and $y$. Take $b$
-to be the real line, and take:
+例如，假设 $a$ 是由坐标 $x$ 和 $y$ 参数化的二维平面。$b$ 是实数线，并且：
 
 \src{snippet07}
 
-The equalizer for these two functions is the set of real numbers (the
-apex, $c$) and the function:
+这两个函数的等化子是实数集（顶点 $c$）和函数：
 
 \src{snippet08}
 
-Notice that $(p~t)$ defines a straight line in the
-two-dimensional plane. Along this line, the two functions are equal.
+注意 $(p~t)$ 定义了二维平面中的一条直线。沿着这条直线，这两个函数是相等的。
 
-Of course, there are other sets $c'$ and functions
-$p'$ that may lead to the equality:
+当然，还有其他的集合 $c'$ 和函数 $p'$ 可能会导致相等：
 
 \src{snippet09}
 
-but they all uniquely factor out through $p$. For instance, we
-can take the singleton set $\cat{()}$ as $c'$ and the
-function:
+但它们都唯一地因式分解通过 $p$。例如，我们可以将单元素集 $\cat{()}$ 作为 $c'$，并选择函数：
 
 \src{snippet10}
 
-It's a good cone, because $f (0, 0) = g (0, 0)$. But it's
-not universal, because of the unique factorization through $h$:
+这是一个很好的锥，因为 $f (0, 0) = g (0, 0)$。但它不是普遍的，因为它通过 $h$ 唯一因式分解：
 
 \src{snippet11}
 
-with
+其中
 
 \src{snippet12}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.35\textwidth]{images/equilizerlimit.jpg}
-\end{figure}
+\centering
+\includegraphics[width=0.35\textwidth]{images/equilizerlimit.jpg}
+\endfigure}
 
 \noindent
-An equalizer can thus be used to solve equations of the type
-$f~x = g~x$. But it's much more general, because it's defined
-in terms of objects and morphisms rather than algebraically.
+因此，等化子可用于解决 $f~x = g~x$ 类型的方程。但它更为一般，因为它是用对象和态射定义的，而不是代数地定义的。
 
-An even more general idea of solving an equation is embodied in another
-limit --- the pullback. Here, we still have two morphisms that we want
-to equate, but this time their domains are different. We start with a
-three-object category of the shape:
-$1\rightarrow2\leftarrow3$. The diagram corresponding to
-this category consists of three objects, $a$, $b$, and
-$c$, and two morphisms:
+解决方程的一个更一般的想法体现在另一种极限——拉回。这里，我们仍然有两个想要等式化的态射，但这次它们的定义域不同。我们从一个形状为 $1\rightarrow2\leftarrow3$ 的三对象范畴开始。此范畴对应的图由三个对象 $a$、$b$ 和 $c$ 以及两个态射组成：
 
 \src{snippet13}
 
-This diagram is often called a \emph{cospan}.
+此图通常称为 \emph{余弦图}。
 
-A cone built on top of this diagram consists of the apex, $d$,
-and three morphisms:
+在此图之上构建的锥由顶点 $d$ 和三个态射组成：
 
 \src{snippet14}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.35\textwidth]{images/pullbackcone.jpg}
-\end{figure}
+\centering
+\includegraphics[width=0.35\textwidth]{images/pullbackcone.jpg}
+\endfigure}
 
 \noindent
-Commutativity conditions tell us that $r$ is completely
-determined by the other morphisms, and can be omitted from the picture.
-So we are only left with the following condition:
+交换性条件告诉我们 $r$ 是完全由其他态射决定的，因此可以从图中省略。所以我们只剩下以下条件：
 
 \src{snippet15}
-A pullback is a universal cone of this shape.
+
+拉回是这种形状的普遍锥。
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.35\textwidth]{images/pullbacklimit.jpg}
-\end{figure}
+\centering
+\includegraphics[width=0.35\textwidth]{images/pullbacklimit.jpg}
+\endfigure}
 
 \noindent
-Again, if you narrow your focus down to sets, you can think of the
-object $d$ as consisting of pairs of elements from $a$ and
-$c$ for which $f$ acting on the first component is equal
-to $g$ acting on the second component. If this is still too
-general, consider the special case in which $g$ is a constant
-function, say $g~\_ = 1.23$ (assuming that $b$ is a set
-of real numbers). Then you are really solving the equation:
+再次，如果你将焦点缩小到集合，可以认为对象 $d$ 由一对来自 $a$ 和 $c$ 的元素组成，其中第一个分量上的 $f$ 等于第二个分量上的 $g$。如果这仍然太过一般，考虑一个特殊情况，其中 $g$ 是常函数，比如 $g~\_ = 1.23$（假设 $b$ 是实数集）。那么你实际上是在解决方程：
 
 \src{snippet16}
 
-In this case, the choice of $c$ is irrelevant (as long as it's
-not an empty set), so we can take it to be a singleton set. The set
-$a$ could, for instance, be the set of three-dimensional vectors,
-and $f$ the vector length. Then the pullback is the set of pairs
-$(v, ())$, where $v$ is a vector of length 1.23 (a
-solution to the equation $\sqrt{(x^{2}+y^{2}+z^{2})} = 1.23$), and
-$()$ is the dummy element of the singleton set.
+在这种情况下，$c$ 的选择无关紧要（只要它不是一个空集），所以我们可以将其视为一个单元素集。集合 $a$ 可以是三维向量的集合，$f$ 是向量的长度。然后拉回是对 $(v, ())$ 的集合，其中 $v$ 是长度为 1.23 的向量（$\sqrt{(x^{2}+y^{2}+z^{2})} = 1.23$ 的解），$()$ 是单元素集的虚拟元素。
 
-But pullbacks have more general applications, also in programming. For
-instance, consider C++ classes as a category in which morphism are
-arrows that connect subclasses to superclasses. We'll consider
-inheritance a transitive property, so if \code{C} inherits from \code{B} and \code{B}
-inherits from \code{A} then we'll say that \code{C} inherits from \code{A} (after all, you
-can pass a pointer to \code{C} where a pointer to \code{A} is expected). Also, we'll
-assume that \code{C} inherits from \code{C}, so we have the identity arrow for every
-class. This way subclassing is aligned with subtyping. C++ also supports
-multiple inheritance, so you can construct a diamond inheritance diagram
-with two classes \code{B} and \code{C} inheriting from \code{A}, and a fourth class \code{D}
-multiply inheriting from \code{B} and \code{C}. Normally, \code{D} would get two copies of \code{A},
-which is rarely desirable; but you can use virtual inheritance to have
-just one copy of \code{A} in \code{D}.
+但拉回在编程中有更广泛的应用。例如，将 C++ 类视为一个范畴，其中态射是将子类连接到超类的箭头。我们将继承视为一种传递性属性，所以如果 \code{C} 继承自 \code{B}，并且 \code{B} 继承自 \code{A}，那么我们会说 \code{C} 继承自 \code{A}（毕竟，你可以在需要指向 \code{A} 的地方传递指向 \code{C} 的指针）。此外，我们将假设 \code{C} 继承自 \code{C}，因此我们为每个类设置了恒等箭头。通过这种方式，子类化与子类型化对齐。C++ 还支持多重继承，因此你可以构建一个菱形继承图，其中两个类 \code{B} 和 \code{C} 继承自 \code{A}，第四个类 \code{D} 多重继承自 \code{B} 和 \code{C}。通常情况下，\code{D} 会有两个 \code{A} 的副本，这通常不是我们想要的；但你可以使用虚拟继承，在 \code{D} 中只有一个 \code{A} 的副本。
 
-What would it mean to have \code{D} be a pullback in this diagram? It would
-mean that any class \code{E} that multiply inherits from \code{B} and \code{C} is also a
-subclass of \code{D}. This is not directly expressible in C++, where subtyping
-is nominal (the C++ compiler wouldn't infer this kind of class
-relationship --- it would require ``duck typing''). But we could go
-outside of the subtyping relationship and instead ask whether a cast
-from \code{E} to \code{D} would be safe or not. This cast would be safe if \code{D} were the
-bare-bone combination of \code{B} and \code{C}, with no additional data and no
-overriding of methods. And, of course, there would be no pullback if
-there is a name conflict between some methods of \code{B} and \code{C}.
+在这种图中，\code{D} 是一个拉回意味着什么？这意味着从 \code{B} 和 \code{C} 多重继承的任何类 \code{E} 也是 \code{D} 的子类。这在 C++ 中并不能直接表达，因为子类型化是名义上的（C++ 编译器不会推断这种类关系——它需要“鸭子类型”）。但我们可以超越子类型化关系，改为询问从 \code{E} 到 \code{D} 的转换是否安全。如果 \code{D} 是 \code{B} 和 \code{C} 的裸骨组合，没有额外的数据和方法重载，那么这个转换就是安全的。当然，如果 \code{B} 和 \code{C} 的某些方法存在名称冲突，那么就不会有拉回。
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.25\textwidth]{images/classes.jpg}
-\end{figure}
+\centering
+\includegraphics[width=0.25\textwidth]{images/classes.jpg}
+\endfigure}
 
 \noindent
-There's also a more advanced use of a pullback in type inference. There
-is often a need to \emph{unify} types of two expressions. For instance,
-suppose that the compiler wants to infer the type of a function:
+在类型推断中还有一个更高级的拉回用法。通常需要\emph{统一}两个表达式的类型。例如，假设编译器想要推断函数的类型：
 
 \begin{snip}{haskell}
 twice f x = f (f x)
 \end{snip}
-It will assign preliminary types to all variables and sub-expressions.
-In particular, it will assign:
+它会给所有变量和子表达式分配初步类型。特别是，它将分配：
 
 \begin{snip}{haskell}
 f       :: t0
@@ -511,162 +264,100 @@ x       :: t1
 f x     :: t2
 f (f x) :: t3
 \end{snip}
-from which it will deduce that:
+由此推导出：
 
 \begin{snip}{haskell}
 twice :: t0 -> t1 -> t3
 \end{snip}
-It will also come up with a set of constraints resulting from the rules
-of function application:
+它还会生成一组由函数应用规则产生的约束：
 
 \begin{snip}{haskell}
-t0 = t1 -> t2 -- because f is applied to x
-t0 = t2 -> t3 -- because f is applied to (f x)
+t0 = t1 -> t2 -- 因为 f 应用于 x
+t0 = t2 -> t3 -- 因为 f 应用于 (f x)
 \end{snip}
-These constraints have to be unified by finding a set of types (or type
-variables) that, when substituted for the unknown types in both
-expressions, produce the same type. One such substitution is:
+这些约束必须通过找到一组类型（或类型变量）来统一，这些类型在代入两个表达式中的未知类型时会产生相同的类型。一个这样的代入是：
 
 \begin{snip}{haskell}
 t1 = t2 = t3 = Int
 twice :: (Int -> Int) -> Int -> Int
 \end{snip}
-but, obviously, it's not the most general one. The most general
-substitution is obtained using a pullback. I won't go into the details,
-because they are beyond the scope of this book, but you can convince
-yourself that the result should be:
+但显然，这不是最一般的。最一般的代入是通过拉回获得的。我不会详细讨论其细节，因为它们超出了本书的范围，但你可以相信，结果应该是：
 
 \begin{snip}{haskell}
 twice :: (t -> t) -> t -> t
 \end{snip}
-with \code{t} a free type variable.
+其中 \code{t} 是一个自由类型变量。
 
-\section{Colimits}
+\section{余极限}
 
-Just like all constructions in category theory, limits have their dual
-image in opposite categories. When you invert the direction of all
-arrows in a cone, you get a co-cone, and the universal one of those is
-called a colimit. Notice that the inversion also affects the factorizing
-morphism, which now flows from the universal co-cone to any other
-co-cone.
+就像范畴论中的所有构造一样，极限在对偶范畴中有其对偶图像。当你反转锥中的所有箭头方向时，你得到一个余锥，而这些锥的普遍锥称为余极限。注意，反转也会影响因式分解态射，现在它从普遍余锥流向任何其他余锥。
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.35\textwidth]{images/colimit.jpg}
-  \caption{Cocone with a factorizing morphism $h$ connecting two apexes.}
-\end{figure}
+\centering
+\includegraphics[width=0.35\textwidth]{images/colimit.jpg}
+\caption{一个余锥及连接两个顶点的因式分解态射 $h$。}
+\endfigure}
 
 \noindent
-A typical example of a colimit is a coproduct, which corresponds to the
-diagram generated by $\cat{2}$, the category we've used in the
-definition of the product.
+余积对应于由 $\cat{2}$ 生成的图，是余极限的典型示例，这是我们在定义积时使用的范畴。
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.35\textwidth]{images/coproductranking.jpg}
-\end{figure}
+\centering
+\includegraphics[width=0.35\textwidth]{images/coproductranking.jpg}
+\endfigure}
 
 \noindent
-Both the product and the coproduct embody the essence of a pair of
-objects, each in a different way.
+积和余积都体现了一对对象的本质，但每种方式不同。
 
-Just like the terminal object was a limit, so the initial object is a
-colimit corresponding to the diagram based on an empty category.
+就像终对象是极限一样，初对象是基于空范畴的图的余极限。
 
-The dual of the pullback is called the \emph{pushout}. It's based on a
-diagram called a span, generated by the category
-$1\leftarrow2\rightarrow3$.
+拉回的对偶称为 \emph{推送}。它基于一个图，称为跨越图，由范畴 $1\leftarrow2\rightarrow3$ 生成。
 
-\section{Continuity}
+\section{连续性}
 
-I said previously that functors come close to the idea of continuous
-mappings of categories, in the sense that they never break existing
-connections (morphisms). The actual definition of a \emph{continuous
-  functor} $F$ from a category $\cat{C}$ to $\cat{C'}$ includes the
-requirement that the functor preserve limits. Every diagram $D$
-in $\cat{C}$ can be mapped to a diagram $F \circ D$ in $\cat{C'}$ by
-simply composing two functors. The continuity condition for $F$
-states that, if the diagram $D$ has a limit $\Lim[D]$, then
-the diagram $F \circ D$ also has a limit, and it is equal to
-$F (\Lim[D])$.
+我之前说过，函子非常接近连续映射范畴的思想，因为它们永远不会破坏现有的连接（态射）。实际上，从范畴 $\cat{C}$ 到 $\cat{C'}$ 的 \emph{连续函子} $F$ 的定义包括函子保留极限的要求。$\cat{C}$ 中的任意图 $D$ 可以通过简单地组合两个函子映射到 $\cat{C'}$ 中的图 $F \circ D$。$F$ 的连续性条件规定，如果图 $D$ 有一个极限 $\Lim[D]$，则图 $F \circ D$ 也有一个极限，并且它等于 $F (\Lim[D])$。
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.6\textwidth]{images/continuity.jpg}
-\end{figure}
+\centering
+\includegraphics[width=0.6\textwidth]{images/continuity.jpg}
+\endfigure}
 
 \noindent
-Notice that, because functors map morphisms to morphisms, and
-compositions to compositions, an image of a cone is always a cone. A
-commuting triangle is always mapped to a commuting triangle (functors
-preserve composition). The same is true for the factorizing morphisms:
-the image of a factorizing morphism is also a factorizing morphism. So
-every functor is \emph{almost} continuous. What may go wrong is the
-uniqueness condition. The factorizing morphism in $\cat{C'}$ might not be
-unique. There may also be other ``better cones'' in $\cat{C'}$ that were
-not available in $\cat{C}$.
+注意，由于函子将态射映射到态射，并将组合映射到组合，因此锥的像始终是一个锥。交换三角形总是被映射为交换三角形（函子保留组合）。对于因式分解态射也是如此：因式分解态射的像也是因式分解态射。因此，每个函子都\emph{几乎}是连续的。可能出现的问题是唯一性条件。$\cat{C'}$ 中的因式分解态射可能不是唯一的。在 $\cat{C}$ 中可能没有其他“更好的锥”。
 
-A hom-functor is an example of a continuous functor. Recall that the
-hom-functor, $\cat{C}(a, b)$, is contravariant in the first variable
-and covariant in the second. In other words, it's a functor:
+同态函子是连续函子的一个例子。回想一下，同态函子 $\cat{C}(a, b)$ 在第一个变量中是反变的，而在第二个变量中是协变的。换句话说，这是一个函子：
 \[\cat{C}^\mathit{op} \times \cat{C} \to \Set\]
-When its second argument is fixed, the hom-set functor (which becomes
-the representable presheaf) maps colimits in $\cat{C}$ to limits in
-$\Set$; and when its first argument is fixed, it maps limits to
-limits.
+当其第二个参数固定时，同态集函子（它成为表示预层）将 $\cat{C}$ 中的余极限映射到 $\Set$ 中的极限；当其第一个参数固定时，它将极限映射到极限。
 
-In Haskell, a hom-functor is the mapping of any two types to a function
-type, so it's just a parameterized function type. When we fix the second
-parameter, let's say to \code{String}, we get the contravariant
-functor:
+在 Haskell 中，同态函子是将任意两个类型映射到一个函数类型的映射，因此它只是一个参数化的函数类型。当我们将第二个参数固定时，例如固定为 \code{String}，我们得到反变函子：
 
 \src{snippet17}
-Continuity means that when \code{ToString} is applied to a colimit,
-for instance a coproduct \code{Either b c}, it will produce a limit;
-in this case a product of two function types:
+连续性意味着当 \code{ToString} 应用于余极限（例如一个余积 \code{Either b c}）时，它将生成一个极限；在本例中，是两个函数类型的积：
 
 \src{snippet18}
-Indeed, any function of \code{Either b c} is implemented as a case
-statement with the two cases being serviced by a pair of functions.
+确实，任何 \code{Either b c} 的函数都实现为一个 case 语句，该语句由一对函数服务两个情况。
 
-Similarly, when we fix the first argument of the hom-set, we get the
-familiar reader functor. Its continuity means that, for instance, any
-function returning a product is equivalent to a product of functions; in
-particular:
+同样，当我们固定同态集的第一个参数时，我们得到熟悉的 reader 函子。其连续性意味着例如任何返回积的函数都等价于函数的积；特别是：
 
 \src{snippet19}
-I know what you're thinking: You don't need category theory to figure
-these things out. And you're right! Still, I find it amazing that such
-results can be derived from first principles with no recourse to bits
-and bytes, processor architectures, compiler technologies, or even
-lambda calculus.
+我知道你在想什么：你不需要范畴论就能弄清楚这些东西。你是对的！然而，我仍然感到惊讶的是，这样的结果可以从第一个原则推导出来，而无需借助比特与字节、处理器架构、编译器技术，甚至 lambda 演算。
 
-If you're curious where the names ``limit'' and ``continuity'' come
-from, they are a generalization of the corresponding notions from
-calculus. In calculus limits and continuity are defined in terms of open
-neighborhoods. Open sets, which define topology, form a category (a
-poset).
+如果你对“极限”和“连续性”这些名称的来源感到好奇，它们是从微积分中相应概念推广而来的。在微积分中，极限和连续性是用开邻域定义的。开集定义了拓扑，形成一个范畴（一个偏序集）。
 
-\section{Challenges}
+\section{挑战}
 
 \begin{enumerate}
-  \tightlist
-  \item
-        How would you describe a pushout in the category of C++ classes?
-  \item
-        Show that the limit of the identity functor
-        $\mathbf{Id} \Colon \cat{C} \to \cat{C}$ is the initial object.
-  \item
-        Subsets of a given set form a category. A morphism in that category is
-        defined to be an arrow connecting two sets if the first is the subset
-        of the second. What is a pullback of two sets in such a category?
-        What's a pushout? What are the initial and terminal objects?
-  \item
-        Can you guess what a coequalizer is?
-  \item
-        Show that, in a category with a terminal object, a pullback towards
-        the terminal object is a product.
-  \item
-        Similarly, show that a pushout from an initial object (if one exists)
-        is the coproduct.
+\tightlist
+\item
+你如何在 C++ 类范畴中描述推送？
+\item
+证明恒等函子 $\mathbf{Id} \Colon \cat{C} \to \cat{C}$ 的极限是初对象。
+\item
+给定集合的子集形成一个范畴。在该范畴中，如果第一个子集是第二个子集的子集，则定义为一个箭头。这样的范畴中两个集合的拉回是什么？推送是什么？初对象和终对象是什么？
+\item
+你能猜到等化子的对偶是什么吗？
+\item
+证明在具有终对象的范畴中，指向终对象的拉回是积。
+\item
+同样地，证明来自初对象的推送（如果存在）是余积。
 \end{enumerate}

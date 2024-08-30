@@ -1,121 +1,47 @@
 % !TEX root = ../../ctfp-print.tex
 
-\lettrine[lhang=0.17]{T}{here is no good place} to end a book on category theory. There's always
-more to learn. Category theory is a vast subject. At the same time, it's
-obvious that the same themes, concepts, and patterns keep showing up
-over and over again. There is a saying that all concepts are Kan
-extensions and, indeed, you can use Kan extensions to derive limits,
-colimits, adjunctions, monads, the Yoneda lemma, and much more. The
-notion of a category itself arises at all levels of abstraction, and so
-does the concept of a monoid and a monad. Which one is the most basic?
-As it turns out they are all interrelated, one leading to another in a
-never-ending cycle of abstractions. I decided that showing these
-interconnections might be a good way to end this book.
+\lettrine[lhang=0.17]{现}{在已经没有一个完美的地方} 可以结束关于范畴论的书籍。总有更多的内容可以学习。范畴论是一个庞大的学科。同时，很明显的是，相同的主题、概念和模式不断地反复出现。有一种说法认为，所有的概念都是Kan扩张（Kan extension），事实上，你可以用Kan扩张推导极限（limit）、余极限（colimit）、伴随（adjunction）、单子（monad）、Yoneda引理（Yoneda lemma）以及更多内容。范畴的概念本身在所有抽象层次上都出现，单子和单子的概念也是如此。那么，哪一个是最基础的呢？结果表明，它们彼此关联，相互引导，在一个永无止境的抽象循环中相互作用。我决定展示这些相互联系，可能是结束这本书的一个好方法。
 
-\section{Bicategories}
+\section{双范畴（Bicategories）}
 
-One of the most difficult aspects of category theory is the constant
-switching of perspectives. Take the category of sets, for instance. We
-are used to defining sets in terms of elements. An empty set has no
-elements. A singleton set has one element. A Cartesian product of two
-sets is a set of pairs, and so on. But when talking about the category
-$\Set$ I asked you to forget about the contents of sets and
-instead concentrate on morphisms (arrows) between them. You were
-allowed, from time to time, to peek under the covers to see what a
-particular universal construction in $\Set$ described in terms of
-elements. The terminal object turned out to be a set with one element,
-and so on. But these were just sanity checks.
+范畴论最困难的方面之一就是不断转换视角。以集合范畴（$\Set$）为例。我们习惯于用元素来定义集合。空集没有元素，单元素集有一个元素，两个集合的笛卡尔积（Cartesian product）是一个对的集合，等等。但是，当我们讨论集合范畴（$\Set$）时，我让你忘记集合的内容，而是专注于它们之间的态射（箭头）。你可以偶尔窥视一下集合中的具体内容，以便理解范畴中的某个通用构造。终对象（terminal object）原来是一个只有一个元素的集合，等等。但这些只是一些验证检查。
 
-A functor is defined as a mapping of categories. It's natural to
-consider a mapping as a morphism in a category. A functor turned out to
-be a morphism in the category of categories (small categories, if we
-want to avoid questions about size). By treating a functor as an arrow,
-we forfeit the information about its action on the internals of a
-category (its objects and morphisms), just like we forfeit the
-information about the action of a function on elements of a set when we
-treat it as an arrow in $\Set$. But functors between any two
-categories also form a category. This time you are asked to consider
-something that was an arrow in one category to be an object in another.
-In a functor category functors are objects and natural transformations
-are morphisms. We have discovered that the same thing can be an arrow in
-one category and an object in another. The naive view of objects as
-nouns and arrows as verbs doesn't hold.
+函子（Functor）被定义为范畴之间的映射。自然地，可以将映射视为一个范畴中的态射。函子实际上是范畴范畴（category of categories）中的态射（箭头），如果我们希望避免关于大小的问题，应该说是小范畴（small categories）。通过将函子视为箭头，我们丢弃了关于它在范畴内部（对象和态射）作用的信息，就像我们在集合范畴中将函数视为箭头时丢弃了关于它对集合元素作用的信息一样。然而，两个范畴之间的函子也构成一个范畴。这一次，我要求你考虑在一个范畴中作为箭头的东西在另一个范畴中作为对象。在函子范畴中，函子是对象，自然变换是态射。我们发现，同样的东西在一个范畴中是箭头，在另一个范畴中是对象。物体作为名词和箭头作为动词的朴素观点并不成立。
 
-Instead of switching between two views, we can try to merge them into
-one. This is how we get the concept of a $\cat{2}$-category, in which objects
-are called $0$-cells, morphisms are $1$-cells, and morphisms between
-morphisms are $2$-cells.
+我们可以尝试将两种视角合并为一种，这样我们就得到了$\cat{2}$-范畴（2-category）的概念，在这种范畴中，对象称为$0$-胞元（0-cells），态射称为$1$-胞元（1-cells），态射之间的态射称为$2$-胞元（2-cells）。
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.35\textwidth]{images/twocat.png}
-  \caption{$0$-cells $a, b$; $1$-cells $f, g$; and a $2$-cell $\alpha$.}
+  \caption{$0$-胞元 $a, b$；$1$-胞元 $f, g$；以及$2$-胞元 $\alpha$。}
 \end{figure}
 
 \noindent
-The category of categories $\Cat$ is an immediate example. We have
-categories as $0$-cells, functors as $1$-cells, and natural transformations
-as $2$-cells. The laws of a $\cat{2}$-category tell us that $1$-cells between any
-two $0$-cells form a category (in other words, $\cat{C}(a, b)$ is a
-hom-category rather than a hom-set). This fits nicely with our earlier
-assertion that functors between any two categories form a functor
-category.
+范畴的范畴 $\Cat$ 是一个直接的例子。我们有范畴作为$0$-胞元，函子作为$1$-胞元，自然变换作为$2$-胞元。$\cat{2}$-范畴的规则告诉我们，任何两个$0$-胞元之间的$1$-胞元构成一个范畴（换句话说，$\cat{C}(a, b)$ 是一个同态范畴（hom-category），而不是同态集（hom-set））。这与我们早先的断言相吻合，即任何两个范畴之间的函子构成一个函子范畴。
 
-In particular, $1$-cells from any $0$-cell back to itself also form a
-category, the hom-category $\cat{C}(a, a)$; but that category has even
-more structure. Members of $\cat{C}(a, a)$ can be viewed as arrows in
-$\cat{C}$ or as objects in $\cat{C}(a, a)$. As arrows, they can be
-composed with each other. But when we look at them as objects, the
-composition becomes a mapping from a pair of objects to an object. In
-fact it looks very much like a product --- a tensor product to be
-precise. This tensor product has a unit: the identity $1$-cell. It turns
-out that, in any $\cat{2}$-category, a hom-category $\cat{C}(a, a)$ is
-automatically a monoidal category with the tensor product defined as
-composition of $1$-cells. Associativity and unit laws simply fall out from
-the corresponding category laws.
+特别地，从任何$0$-胞元回到自身的$1$-胞元也构成一个范畴，即同态范畴 $\cat{C}(a, a)$，但这个范畴具有更丰富的结构。$\cat{C}(a, a)$ 的成员可以看作是在范畴 $\cat{C}$ 中的箭头，或在 $\cat{C}(a, a)$ 中的对象。作为箭头，它们可以相互组合。但当我们将它们视为对象时，组合就变成了从一对对象到一个对象的映射。事实上，它看起来非常像一个积——确切地说，是一个张量积（tensor product）。这个张量积有一个单位元：即$1$-胞元中的恒等元。事实证明，在任何$\cat{2}$-范畴中，同态范畴$\cat{C}(a, a)$自动成为一个幺半范畴（monoidal category），其中张量积由$1$-胞元的组合定义。结合律（associativity）和单位律（unit laws）简单地由相应的范畴法则推导出来。
 
-Let's see what this means in our canonical example of a $\cat{2}$-category
-$\Cat$. The hom-category $\Cat(a, a)$ is the category of
-endofunctors on $a$. Endofunctor composition plays the role of a
-tensor product in it. The identity functor is the unit with respect to
-this product. We've seen before that endofunctors form a monoidal
-category (we used this fact in the definition of a monad), but now we
-see that this is a more general phenomenon: endo-$1$-cells in any
-$\cat{2}$-category form a monoidal category. We'll come back to it later when we
-generalize monads.
+让我们看看这在我们的标准$\cat{2}$-范畴$\Cat$的例子中意味着什么。$\Cat(a, a)$的同态范畴是关于$A$的自函子（endofunctor）范畴，其中自函子组合作为它的张量积，恒等函子是与此张量积相关的单位元。我们之前已经看到，自函子形成一个幺半范畴（我们在定义单子（monad）时使用了这个事实），但现在我们看到，这是一个更普遍的现象：任何$\cat{2}$-范畴中的endo-$1$-胞元形成一个幺半范畴。稍后我们会回到这一点，当我们推广单子时。
 
-You might recall that, in a general monoidal category, we did not insist
-on the monoid laws being satisfied on the nose. It was often enough for
-the unit laws and the associativity laws to be satisfied up to
-isomorphism. In a $\cat{2}$-category, monoidal laws in $\cat{C}(a, a)$ follow
-from composition laws for $1$-cells. These laws are strict, so we will
-always get a strict monoidal category. It is, however, possible to relax
-these laws as well. We can say, for instance, that a composition of the
-identity $1$-cell $\idarrow[a]$ with another $1$-cell,
-$f \Colon a \to b$, is isomorphic, rather than equal,
-to $f$. Isomorphism of $1$-cells is defined using $2$-cells. In other
-words, there is a $2$-cell:
-\[\rho \Colon f \circ \idarrow[a] \to f\]
-that has an inverse.
+你可能还记得，在一般的幺半范畴中，我们没有坚持必须严格满足幺半群律（monoid laws）。通常来说，只需在自然同构（isomorphism）下满足结合律（associativity）和单位律（unit laws）就可以了。在$\cat{2}$-范畴中，$\cat{C}(a, a)$中的幺半群律直接由$1$-胞元的组合法则推导出来。这些法则是严格的，所以我们将始终得到一个严格的幺半范畴。然而，也可以放宽这些法则。我们可以说，例如，恒等$1$-胞元$\idarrow[a]$与另一个$1$-胞元$f \Colon a \to b$的组合是同构的，而不是相等的。同构的$1$-胞元通过$2$-胞元定义。换句话说，有一个$2$-胞元：
+
+$$\rho \Colon f \circ \idarrow[a] \to f$$
+
+该$2$-胞元具有逆元。
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.35\textwidth]{images/bicat.png}
-  \caption{Identity law in a bicategory holds up to isomorphism (an invertible
-    $2$-cell $\rho$).}
+  \caption{在双范畴中的恒等律在同构（一个可逆的$2$-胞元$\rho$）下成立。}
 \end{figure}
 
 \noindent
-We can do the same for the left identity and associativity laws. This
-kind of relaxed $\cat{2}$-category is called a bicategory (there are some
-additional coherency laws, which I will omit here).
+我们可以对左恒等律（left identity）和结合律（associativity laws）做同样的处理。这种放宽后的$\cat{2}$-范畴称为双范畴（bicategory）（还有一些附加的相干律，这里我将省略）。
 
-As expected, endo-$1$-cells in a bicategory form a general monoidal
-category with non-strict laws.
+正如预期的那样，双范畴中的endo-$1$-胞元形成一个一般的幺半范畴，具有非严格的法则。
 
-An interesting example of a bicategory is the category of spans. A span
-between two objects $a$ and $b$ is an object $x$
-and a pair of morphisms:
+双范畴的一个有趣例子是跨范畴（category of spans）。两个对象$a$和$b$之间的跨（span）是一个对象$x$和一对态射：
+
 \begin{gather*}
   f \Colon x \to a \\
   g \Colon x \to b
@@ -127,10 +53,8 @@ and a pair of morphisms:
 \end{figure}
 
 \noindent
-You might recall that we used spans in the definition of a categorical
-product. Here, we want to look at spans as $1$-cells in a bicategory. The
-first step is to define a composition of spans. Suppose that we have an
-adjoining span:
+你可能还记得我们在定义笛卡尔积（categorical product）时使用了跨。在这里，我们希望将跨视为双范畴中的$1$-胞元。第一步是定义跨的组合。假设我们有一个相邻的跨：
+
 \begin{gather*}
   f' \Colon y \to b \\
   g' \Colon y \to c
@@ -142,17 +66,18 @@ adjoining span:
 \end{figure}
 
 \noindent
-The composition would be a third span, with some apex $z$. The
-most natural choice for it is the pullback of $g$ along
-$f'$. Remember that a pullback is the object $z$
-together with two morphisms:
+组合将是第三个跨，顶点是某个$z$。最自然的选择是$f'$沿$g$的拉回（pullback）。记住，拉回是对象$z$以及两个态射：
+
 \begin{align*}
   h  & \Colon z \to x \\
   h' & \Colon z \to y
 \end{align*}
-such that:
-\[g \circ h = f' \circ h'\]
-which is universal among all such objects.
+
+使得：
+
+$$g \circ h = f' \circ h'$$
+
+并且在所有这样的对象中是通用的。
 
 \begin{figure}[H]
   \centering
@@ -160,50 +85,32 @@ which is universal among all such objects.
 \end{figure}
 
 \noindent
-For now, let's concentrate on spans over the category of sets. In that
-case, the pullback is just a set of pairs $(p, q)$ from the
-Cartesian product $x \times y$ such that:
-\[g\ p = f'\ q\]
-A morphism between two spans that share the same endpoints is defined as
-a morphism $h$ between their apices, such that the appropriate
-triangles commute.
+目前，我们集中讨论集合范畴中的跨。在这种情况下，拉回只是笛卡尔积$x \times y$中的对的集合$(p, q)$，使得：
+
+$$g\ p = f'\ q$$
+
+两个共享相同终点的跨之间的态射被定义为其顶点之间的一个态射$h$，使得适当的三角形交换。
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.4\textwidth]{images/morphspan.png}
-  \caption{A $2$-cell in $\cat{Span}$.}
+  \caption{$\cat{Span}$中的$2$-胞元。}
 \end{figure}
 
 \noindent
-To summarize, in the bicategory $\cat{Span}$: $0$-cells are sets, $1$-cells
-are spans, $2$-cells are span morphisms. An identity $1$-cell is a
-degenerate span in which all three objects are the same, and the two
-morphisms are identities.
+总结一下，在双范畴$\cat{Span}$中：$0$-胞元是集合，$1$-胞元是跨，$2$-胞元是跨的态射。一个恒等$1$-胞元是一个退化的跨，其中所有三个对象都是相同的，两个态射是恒等态射。
 
-We've seen another example of a bicategory before: the bicategory
-$\cat{Prof}$ of
-\hyperref[ends-and-coends]{profunctors},
-where 0-cells are categories, 1-cells are profunctors, and 2-cells are
-natural transformations. The composition of profunctors was given by a
-coend.
+我们之前还看到了双范畴的另一个例子：$\cat{Prof}$双范畴，其中$0$-胞元是范畴，$1$-胞元是函子，$2$-胞元是自然变换。函子的组合由余积（coend）给出。
 
-\section{Monads}
+\section{单子（Monads）}
 
-By now you should be pretty familiar with the definition of a monad as a
-monoid in the category of endofunctors. Let's revisit this definition
-with the new understanding that the category of endofunctors is just one
-small hom-category of endo-$1$-cells in the bicategory $\Cat$. We
-know it's a monoidal category: the tensor product comes from the
-composition of endofunctors. A monoid is defined as an object in a
-monoidal category --- here it will be an endofunctor $T$ ---
-together with two morphisms. Morphisms between endofunctors are natural
-transformations. One morphism maps the monoidal unit --- the identity
-endofunctor --- to $T$:
-\[\eta \Colon I \to T\]
-The second morphism maps the tensor product of $T \otimes T$ to
-$T$. The tensor product is given by endofunctor composition, so
-we get:
-\[\mu \Colon T \circ T \to T\]
+到目前为止，你应该对单子作为自函子范畴中的幺半群的定义非常熟悉了。让我们用新的理解重新审视这个定义，即自函子范畴只是双范畴$\Cat$中的一个小的endo-$1$-胞元范畴。我们知道它是一个幺半范畴：张量积来自于自函子的组合。幺半群被定义为幺半范畴中的一个对象——在这里它将是一个自函子$T$——连同两个态射。自函子之间的态射是自然变换。一个态射将幺半元，即恒等自函子，映射到$T$：
+
+$$\eta \Colon I \to T$$
+
+第二个态射将$T \otimes T$的张量积映射到$T$。张量积由自函子组合给出，所以我们得到：
+
+$$\mu \Colon T \circ T \to T$$
 
 \begin{figure}[H]
   \centering
@@ -211,20 +118,16 @@ we get:
 \end{figure}
 
 \noindent
-We recognize these as the two operations defining a monad (they are
-called \code{return} and \code{join} in Haskell), and we know that
-monoid laws turn to monad laws.
+我们将这些视为定义单子的两个操作（在Haskell中，它们被称为\code{return}和\code{join}），我们知道幺半群律转化为单子律。
 
-Now let's remove all mention of endofunctors from this definition. We
-start with a bicategory $\cat{C}$ and pick a $0$-cell $a$ in it.
-As we've seen earlier, the hom-category $\cat{C}(a, a)$ is a monoidal
-category. We can therefore define a monoid in $\cat{C}(a, a)$ by
-picking a $1$-cell, $T$, and two $2$-cells:
+现在让我们从这个定义中删除所有提到自函子的内容。我们从一个双范畴$\cat{C}$开始，并选择一个$0$-胞元$a$。如前所述，同态范畴$\cat{C}(a, a)$是一个幺半范畴。因此，我们可以通过选择一个$1$-胞元$T$和两个$2$-胞元来定义$\cat{C}(a, a)$中的幺半群：
+
 \begin{align*}
-  \eta & \Colon I \to T         \\
+  \eta & \Colon I \to T \\
   \mu  & \Colon T \circ T \to T
 \end{align*}
-satisfying the monoid laws. We call \emph{this} a monad.
+
+满足幺半群律。我们称之为单子。
 
 \begin{figure}[H]
   \centering
@@ -232,16 +135,10 @@ satisfying the monoid laws. We call \emph{this} a monad.
 \end{figure}
 
 \noindent
-That's a much more general definition of a monad using only $0$-cells,
-$1$-cells, and $2$-cells. It reduces to the usual monad when applied to the
-bicategory $\Cat$. But let's see what happens in other
-bicategories.
+这是一个更广义的单子的定义，仅使用$0$-胞元、$1$-胞元和$2$-胞元。在应用于双范畴$\Cat$时，它将归结为通常的单子。但是让我们看看在其他双范畴中会发生什么。
 
-Let's construct a monad in $\cat{Span}$. We pick a $0$-cell, which is a
-set that, for reasons that will become clear soon, I will call
-$\mathit{Ob}$. Next, we pick an endo-$1$-cell: a span from $\mathit{Ob}$ back
-to $\mathit{Ob}$. It has a set at the apex, which I will call $\mathit{Ar}$,
-equipped with two functions:
+让我们在$\cat{Span}$中构造一个单子。我们选择一个$0$-胞元，它是一个集合，出于将要解释的原因，我将其称为$\mathit{Ob}$。接下来，我们选择一个endo-$1$-胞元：从$\mathit{Ob}$返回到$\mathit{Ob}$的一个跨。它在顶点处有一个集合，我将其称为$\mathit{Ar}$，它配备了两个函数：
+
 \begin{align*}
   \mathit{dom} & \Colon \mathit{Ar} \to \mathit{Ob} \\
   \mathit{cod} & \Colon \mathit{Ar} \to \mathit{Ob}
@@ -253,18 +150,10 @@ equipped with two functions:
 \end{figure}
 
 \noindent
-Let's call the elements of the set $\mathit{Ar}$ ``arrows.'' If I also
-tell you to call the elements of $\mathit{Ob}$ ``objects,'' you might get
-a hint where this is leading to. The two functions $\mathit{dom}$ and
-$\mathit{cod}$ assign the domain and the codomain to an ``arrow.''
+让我们称$\mathit{Ar}$集合中的元素为“箭头”。如果我还告诉你称$\mathit{Ob}$集合中的元素为“对象”，你可能会明白这指向哪里。两个函数$\mathit{dom}$和$\mathit{cod}$为每个“箭头”分配了一个“对象”的域和余域。
 
-To make our span into a monad, we need two $2$-cells, $\eta$ and
-$\mu$. The monoidal unit, in this case, is the trivial span from
-$\mathit{Ob}$ to $\mathit{Ob}$ with the apex at $\mathit{Ob}$ and two identity
-functions. The $2$-cell $\eta$ is a function between the apices
-$\mathit{Ob}$ and $\mathit{Ar}$. In other words, $\eta$ assigns an
-``arrow'' to every ``object.'' A $2$-cell in $\cat{Span}$ must satisfy
-commutation conditions --- in this case:
+为了使我们的跨成为一个单子，我们需要两个$2$-胞元$\eta$和$\mu$。在这种情况下，幺半元是一个从$\mathit{Ob}$到$\mathit{Ob}$的平凡跨，其顶点位于$\mathit{Ob}$，两个态射是恒等态射。$2$-胞元$\eta$是$\mathit{Ob}$和$\mathit{Ar}$之间的一个函数。换句话说，$\eta$为每个“对象”分配了一个“箭头”。$\cat{Span}$中的$2$-胞元必须满足交换条件——在这种情况下：
+
 \begin{align*}
   \mathit{dom} & \circ \eta = \id \\
   \mathit{cod} & \circ \eta = \id
@@ -276,20 +165,17 @@ commutation conditions --- in this case:
 \end{figure}
 
 \noindent
-In components, this becomes:
-\[\mathit{dom}\ (\eta\ \mathit{ob}) = \mathit{ob} = \mathit{cod}\ (\eta\ \mathit{ob})\]
-where $\mathit{ob}$ is an ``object'' in $\mathit{Ob}$. In other words,
-$\eta$ assigns to every ``object'' and ``arrow'' whose domain and
-codomain are that ``object.'' We'll call this special ``arrow'' the
-``identity arrow.''
+在组件中，这变为：
 
-The second $2$-cell $\mu$ acts on the composition of the span
-$\mathit{Ar}$ with itself. The composition is defined as a pullback, so
-its elements are pairs of elements from $\mathit{Ar}$ --- pairs of
-``arrows'' $(a_1, a_2)$. The pullback condition is:
-\[\mathit{cod}\ a_1 = \mathit{dom}\ a_2\]
-We say that $a_1$ and $a_2$ are ``composable,'' because the
-domain of one is the codomain of the other.
+$$\mathit{dom}\ (\eta\ \mathit{ob}) = \mathit{ob} = \mathit{cod}\ (\eta\ \mathit{ob})$$
+
+其中$\mathit{ob}$是$\mathit{Ob}$中的一个“对象”。换句话说，$\eta$为每个“对象”分配了一个“箭头”，其域和余域都是该“对象”。我们称这个特殊的“箭头”为“恒等箭头”。
+
+第二个$2$-胞元$\mu$作用于跨$\mathit{Ar}$与自身的组合。组合定义为拉回（pullback），因此其元素是$\mathit{Ar}$中的一对箭头$(a_1, a_2)$，其中满足拉回条件：
+
+$$\mathit{cod}\ a_1 = \mathit{dom}\ a_2$$
+
+我们说$a_1$和$a_2$是“可组合的”，因为一个的余域是另一个的域。
 
 \begin{figure}[H]
   \centering
@@ -297,44 +183,31 @@ domain of one is the codomain of the other.
 \end{figure}
 
 \noindent
-The $2$-cell $\mu$ is a function that maps a pair of composable
-arrows $(a_1, a_2)$ to a single arrow $a_3$ from
-$\mathit{Ar}$. In other words $\mu$ defines composition of arrows.
+$2$-胞元$\mu$是一个函数，它将一对可组合的箭头$(a_1, a_2)$映射到一个箭头$a_3$。换句话说，$\mu$定义了箭头的组合。
 
-It's easy to check that monad laws correspond to identity and
-associativity laws for arrows. We have just defined a category (a small
-category, mind you, in which objects and arrows form sets).
+很容易验证单子律对应于箭头的恒等律和结合律。我们刚刚定义了一个范畴（一个小范畴，注意，其中对象和箭头构成集合）。
 
-So, all told, a category is just a monad in the bicategory of spans.
+因此，总而言之，一个范畴只是一个在跨双范畴中的单子。
 
-What is amazing about this result is that it puts categories on the same
-footing as other algebraic structures like monads and monoids. There is
-nothing special about being a category. It's just two sets and four
-functions. In fact we don't even need a separate set for objects,
-because objects can be identified with identity arrows (they are in
-one-to-one correspondence). So it's really just a set and a few
-functions. Considering the pivotal role that category theory plays in
-all of mathematics, this is a very humbling realization.
+这项工作的令人惊奇之处在于，它将范畴置于与单子和幺半群等其他代数结构相同的地位。成为一个范畴并没有什么特别之处。它只是两个集合和几个函数。事实上，我们甚至不需要为对象单独设立一个集合，因为对象可以与恒等箭头同一视角（它们是一一对应的）。所以它实际上只是一个集合和一些函数。考虑到范畴论在整个数学中的核心作用，这是一个非常令人谦卑的认识。
 
-\section{Challenges}
+\section{挑战（Challenges）}
 
 \begin{enumerate}
   \tightlist
   \item
-        Derive unit and associativity laws for the tensor product defined as
-        composition of endo-$1$-cells in a bicategory.
+  推导双范畴中endo-$1$-胞元组合定义的张量积的单位律和结合律。
   \item
-        Check that monad laws for a monad in $\cat{Span}$ correspond to
-        identity and associativity laws in the resulting category.
+  检查双范畴中一个单子的单子律是否对应于生成范畴中的恒等律和结合律。
   \item
-        Show that a monad in $\cat{Prof}$ is an identity-on-objects functor.
+  展示在$\cat{Prof}$双范畴中的一个单子是一个对象上的恒等函子。
   \item
-        What's a monad algebra for a monad in $\cat{Span}$?
+  在$\cat{Span}$双范畴中的单子的单子代数（monad algebra）是什么？
 \end{enumerate}
 
-\section{Bibliography}
+\section{参考文献（Bibliography）}
 \begin{enumerate}
   \tightlist
   \item
-        \urlref{https://graphicallinearalgebra.net/2017/04/16/a-monoid-is-a-category-a-category-is-a-monad-a-monad-is-a-monoid/}{Paweł Sobociński’s blog}.
+  \urlref{https://graphicallinearalgebra.net/2017/04/16/a-monoid-is-a-category-a-category-is-a-monad-a-monad-is-a-monoid/}{Paweł Sobociński’s blog}.
 \end{enumerate}

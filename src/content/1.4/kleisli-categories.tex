@@ -1,446 +1,292 @@
 % !TEX root = ../../ctfp-print.tex
 
-\lettrine[lhang=0.17]{Y}{ou've seen how to model} types and pure functions as a category. I also
-mentioned that there is a way to model side effects, or non-pure
-functions, in category theory. Let's have a look at one such example:
-functions that log or trace their execution. Something that, in an
-imperative language, would likely be implemented by mutating some global
-state, as in:
+\lettrine[lhang=0.17]{你}{已经看到了如何将} 类型和纯函数建模为范畴。我还提到过在范畴论中有一种方法可以建模副作用（side effects）或非纯函数。让我们看看这样一个例子：记录或跟踪执行过程的函数。在命令式语言中，这可能会通过修改某些全局状态来实现，例如：
 
 \begin{snip}{cpp}
-string logger;
+  string logger;
 
-bool negate(bool b) {
+  bool negate(bool b) {
     logger += "Not so! ";
     return !b;
-}
+  }
 \end{snip}
-You know that this is not a pure function, because its memoized version
-would fail to produce a log. This function has \newterm{side effects}.
+你知道这不是一个纯函数，因为它的记忆化版本将无法生成日志。此函数具有\newterm{副作用}。
 
-In modern programming, we try to stay away from global mutable state as
-much as possible --- if only because of the complications of
-concurrency. And you would never put code like this in a library.
+在现代编程中，我们尽量避免全局可变状态——仅仅是因为并发的复杂性。而且你永远不会在库中编写这样的代码。
 
-Fortunately for us, it's possible to make this function pure. You just
-have to pass the log explicitly, in and out. Let's do that by adding a
-string argument, and pairing regular output with a string that contains
-the updated log:
+幸运的是，我们可以让这个函数变成纯函数。你只需显式传递日志，输入和输出日志。让我们通过添加一个字符串参数，并将常规输出与包含更新日志的字符串配对来实现这一点：
 
 \begin{snip}{cpp}
-pair<bool, string> negate(bool b, string logger) {
+  pair<bool, string> negate(bool b, string logger) {
     return make_pair(!b, logger + "Not so! ");
-}
+  }
 \end{snip}
-This function is pure, it has no side effects, it returns the same pair
-every time it's called with the same arguments, and it can be memoized
-if necessary. However, considering the cumulative nature of the log,
-you'd have to memoize all possible histories that can lead to a given
-call. There would be a separate memo entry for:
+这个函数是纯函数，没有副作用，每次用相同的参数调用时都会返回相同的对（pair），并且如果需要可以将其记忆化。然而，考虑到日志的累积性质，你将不得不记忆化所有可能导致给定调用的历史记录。将会有一个单独的记忆条目用于：
 
 \begin{snip}{cpp}
-negate(true, "It was the best of times. ");
+  negate(true, "It was the best of times. ");
 \end{snip}
-and
+以及
 
 \begin{snip}{cpp}
-negate(true, "It was the worst of times. ");
+  negate(true, "It was the worst of times. ");
 \end{snip}
-and so on.
+等等。
 
-It's also not a very good interface for a library function. The callers
-are free to ignore the string in the return type, so that's not a huge
-burden; but they are forced to pass a string as input, which might be
-inconvenient.
+这对于库函数来说也不是一个很好的接口。调用者可以选择忽略返回类型中的字符串，因此这不是一个巨大的负担；但它们被迫传递一个字符串作为输入，这可能会带来不便。
 
-Is there a way to do the same thing less intrusively? Is there a way to
-separate concerns? In this simple example, the main purpose of the
-function \code{negate} is to turn one Boolean into another. The
-logging is secondary. Granted, the message that is logged is specific to
-the function, but the task of aggregating the messages into one
-continuous log is a separate concern. We still want the function to
-produce a string, but we'd like to unburden it from producing a log. So
-here's the compromise solution:
+有没有一种更不显眼的方式来实现相同的效果？有没有办法分离关注点？在这个简单的例子中，函数 \code{negate} 的主要目的是将一个布尔值转换为另一个布尔值。记录日志是次要的。当然，记录的消息是函数特有的，但将消息聚合成一个连续日志的任务是一个单独的关注点。我们仍然希望函数生成一个字符串，但我们希望解除它生成日志的负担。因此，这里有一个折衷的解决方案：
 
 \begin{snip}{cpp}
-pair<bool, string> negate(bool b) {
+  pair<bool, string> negate(bool b) {
     return make_pair(!b, "Not so! ");
-}
+  }
 \end{snip}
-The idea is that the log will be aggregated \emph{between} function
-calls.
+这个想法是，日志将在函数调用之间被聚合。
 
-To see how this can be done, let's switch to a slightly more realistic
-example. We have one function from string to string that turns lower
-case characters to upper case:
+为了看看如何做到这一点，让我们切换到一个稍微现实一点的例子。我们有一个从字符串到字符串的函数，它将小写字符转换为大写字符：
 
 \begin{snip}{cpp}
-string toUpper(string s) {
+  string toUpper(string s) {
     string result;
     int (*toupperp)(int) = &toupper; // toupper is overloaded
     transform(begin(s), end(s), back_inserter(result), toupperp);
     return result;
-}
+  }
 \end{snip}
-and another that splits a string into a vector of strings, breaking it
-on whitespace boundaries:
+还有另一个函数，它将字符串拆分为字符串向量，按空白边界拆分：
 
 \begin{snip}{cpp}
-vector<string> toWords(string s) {
+  vector<string> toWords(string s) {
     return words(s);
-}
+  }
 \end{snip}
-The actual work is done in the auxiliary function \code{words}:
+实际工作在辅助函数 \code{words} 中完成：
 
 \begin{snip}{cpp}
-vector<string> words(string s) {
+  vector<string> words(string s) {
     vector<string> result{""};
     for (auto i = begin(s); i != end(s); ++i)
-    {
-        if (isspace(*i))
-            result.push_back(""); 
-        else
-            result.back() += *i;
+      {
+      if (isspace(*i))
+      result.push_back("");
+      else
+      result.back() += *i;
     }
     return result;
-}
+  }
 \end{snip}
-We want to modify the functions \code{toUpper} and \code{toWords} so
-that they piggyback a message string on top of their regular return
-values.
+我们希望修改函数 \code{toUpper} 和 \code{toWords}，使它们能够在常规返回值的基础上附加一条消息字符串。
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.3\textwidth]{images/piggyback.jpg}
 \end{figure}
 \noindent
-We will ``embellish'' the return values of these functions. Let's do it
-in a generic way by defining a template \code{Writer} that
-encapsulates a pair whose first component is a value of arbitrary type
-\code{A} and the second component is a string:
+我们将“修饰”这些函数的返回值。让我们通过定义一个模板 \code{Writer} 来以通用的方式做到这一点，该模板封装了一个对，其第一个组件是任意类型 \code{A} 的值，第二个组件是一个字符串：
 
 \begin{snip}{cpp}
-template<class A>
-using Writer = pair<A, string>;
+  template<class A>
+  using Writer = pair<A, string>;
 \end{snip}
-Here are the embellished functions:
+以下是修饰后的函数：
 
 \begin{snip}{cpp}
-Writer<string> toUpper(string s) {
+  Writer<string> toUpper(string s) {
     string result;
     int (*toupperp)(int) = &toupper;
     transform(begin(s), end(s), back_inserter(result), toupperp);
-    return make_pair(result, "toUpper "); 
-}
+    return make_pair(result, "toUpper ");
+  }
 
-Writer<vector<string>> toWords(string s) { 
+  Writer<vector<string>> toWords(string s) {
     return make_pair(words(s), "toWords ");
-}
+  }
 \end{snip}
-We want to compose these two functions into another embellished function
-that uppercases a string and splits it into words, all the while
-producing a log of those actions. Here's how we may do it:
+我们希望将这两个函数组合成另一个修饰过的函数，该函数将字符串转换为大写并将其拆分为单词，同时生成这些操作的日志。以下是我们可能的实现方式：
 
 \begin{snip}{cpp}
-Writer<vector<string>> process(string s) {
+  Writer<vector<string>> process(string s) {
     auto p1 = toUpper(s);
     auto p2 = toWords(p1.first);
     return make_pair(p2.first, p1.second + p2.second);
-}
+  }
 \end{snip}
-We have accomplished our goal: The aggregation of the log is no longer
-the concern of the individual functions. They produce their own
-messages, which are then, externally, concatenated into a larger log.
+我们已经达到了目标：日志的聚合不再是各个函数的关注点。它们生成自己的消息，然后在外部将其连接成更大的日志。
 
-Now imagine a whole program written in this style. It's a nightmare of
-repetitive, error-prone code. But we are programmers. We know how to
-deal with repetitive code: we abstract it! This is, however, not your
-run of the mill abstraction --- we have to abstract \newterm{function
-  composition} itself. But composition is the essence of category theory,
-so before we write more code, let's analyze the problem from the
-categorical point of view.
+现在想象一个完全以这种方式编写的程序。这是一个充满重复性、易出错的代码的噩梦。但我们是程序员。我们知道如何处理重复的代码：我们将其抽象化！然而，这不是你一般的抽象——我们必须抽象\newterm{函数组合}本身。但组合是范畴论的本质，因此在编写更多代码之前，让我们从范畴的角度分析这个问题。
 
-\section{The Writer Category}
+\section{Writer 范畴 (The Writer Category)}
 
-The idea of embellishing the return types of a bunch of functions in
-order to piggyback some additional functionality turns out to be very
-fruitful. We'll see many more examples of it. The starting point is our
-regular category of types and functions. We'll leave the types as
-objects, but redefine our morphisms to be the embellished functions.
+通过修饰一组函数的返回类型以附加一些额外的功能的想法证明是非常有用的。我们将看到更多的例子。起点是我们常规的类型和函数的范畴。我们将类型保留为对象，但将态射重新定义为修饰后的函数。
 
-For instance, suppose that we want to embellish the function
-\code{isEven} that goes from \code{int} to \code{bool}. We turn it
-into a morphism that is represented by an embellished function. The
-important point is that this morphism is still considered an arrow
-between the objects \code{int} and \code{bool}, even though the
-embellished function returns a pair:
+例如，假设我们要修饰从 \code{int} 到 \code{bool} 的函数 \code{isEven}。我们将其转换为一个态射，该态射由修饰后的函数表示。重要的一点是，这个态射仍然被认为是对象 \code{int} 和 \code{bool} 之间的箭头，尽管修饰后的函数返回的是一个对：
 
 \begin{snip}{cpp}
-pair<bool, string> isEven(int n) {
+  pair<bool, string> isEven(int n) {
     return make_pair(n % 2 == 0, "isEven ");
-}
+  }
 \end{snip}
-By the laws of a category, we should be able to compose this morphism
-with another morphism that goes from the object \code{bool} to
-whatever. In particular, we should be able to compose it with our
-earlier \code{negate}:
+根据范畴的定律，我们应该能够将这个态射与另一个从对象 \code{bool} 到任意对象的态射组合。特别是，我们应该能够将其与我们之前的 \code{negate} 组合：
 
 \begin{snip}{cpp}
-pair<bool, string> negate(bool b) {
+  pair<bool, string> negate(bool b) {
     return make_pair(!b, "Not so! ");
-}
+  }
 \end{snip}
-Obviously, we cannot compose these two morphisms the same way we compose
-regular functions, because of the input/output mismatch. Their
-composition should look more like this:
+显然，我们不能以组合常规函数的方式组合这两个态射，因为输入/输出不匹配。它们的组合应该看起来更像这样：
 
 \begin{snip}{cpp}
-pair<bool, string> isOdd(int n) {
+  pair<bool, string> isOdd(int n) {
     pair<bool, string> p1 = isEven(n);
     pair<bool, string> p2 = negate(p1.first);
     return make_pair(p2.first, p1.second + p2.second);
-}
+  }
 \end{snip}
-So here's the recipe for the composition of two morphisms in this new
-category we are constructing:
+所以这是我们正在构建的新范畴中两个态射的组合的配方：
 
 \begin{enumerate}
   \tightlist
   \item
-        Execute the embellished function corresponding to the first morphism
+  执行与第一个态射对应的修饰函数
   \item
-        Extract the first component of the result pair and pass it to the
-        embellished function corresponding to the second morphism
+  提取结果对的第一个组件，并将其传递给与第二个态射对应的修饰函数
   \item
-        Concatenate the second component (the string) of the first result
-        and the second component (the string) of the second result
+  连接第一个结果的第二个组件（字符串）和第二个结果的第二个组件（字符串）
   \item
-        Return a new pair combining the first component of the final result
-        with the concatenated string.
+  返回一个新对，将最终结果的第一个组件与连接后的字符串组合在一起。
 \end{enumerate}
 
-If we want to abstract this composition as a higher order function in
-C++, we have to use a template parameterized by three types
-corresponding to three objects in our category. It should take two
-embellished functions that are composable according to our rules, and
-return a third embellished function:
+如果我们希望将这种组合抽象为 C++ 中的高阶函数，则必须使用由三个类型参数化的模板，这三个类型对应于我们范畴中的三个对象。它应接受根据我们的规则可以组合的两个修饰函数，并返回第三个修饰函数：
 
 \begin{snip}{cpp}
-template<class A, class B, class C>
-function<Writer<C>(A)> compose(function<Writer<B>(A)> m1,
-                               function<Writer<C>(B)> m2)
-{
+  template<class A, class B, class C>
+  function<Writer<C>(A)> compose(function<Writer<B>(A)> m1,
+  function<Writer<C>(B)> m2)
+    {
     return [m1, m2](A x) {
-        auto p1 = m1(x);
-        auto p2 = m2(p1.first);
-        return make_pair(p2.first, p1.second + p2.second); 
+      auto p1 = m1(x);
+      auto p2 = m2(p1.first);
+      return make_pair(p2.first, p1.second + p2.second);
     };
-}
+  }
 \end{snip}
-Now we can go back to our earlier example and implement the composition
-of \code{toUpper} and \code{toWords} using this new template:
+现在我们可以回到前面的例子，使用这个新模板来实现 \code{toUpper} 和 \code{toWords} 的组合：
 
 \begin{snip}{cpp}
-Writer<vector<string>> process(string s) { 
+  Writer<vector<string>> process(string s) {
     return compose<string, string, vector<string>>(toUpper, toWords)(s);
-}
+  }
 \end{snip}
-There is still a lot of noise with the passing of types to the
-\code{compose} template. This can be avoided as long as you have a
-C++14-compliant compiler that supports generalized lambda functions with
-return type deduction (credit for this code goes to Eric Niebler):
+在向 \code{compose} 模板传递类型时仍有很多噪音。如果你有一个支持返回类型推导的泛型lambda函数的 C++14 兼容编译器，这种噪音可以避免（此代码的贡献归于 Eric Niebler）：
 
 \begin{snip}{cpp}
-auto const compose = [](auto m1, auto m2) { 
-    return [m1, m2](auto x) { 
-        auto p1 = m1(x);
-        auto p2 = m2(p1.first);
-        return make_pair(p2.first, p1.second + p2.second);
+  auto const compose = [](auto m1, auto m2) {
+    return [m1, m2](auto x) {
+      auto p1 = m1(x);
+      auto p2 = m2(p1.first);
+      return make_pair(p2.first, p1.second + p2.second);
     };
-};
+  };
 \end{snip}
-In this new definition, the implementation of \code{process}
-simplifies to:
+在这个新定义中，\code{process} 的实现简化为：
 
 \begin{snip}{cpp}
-Writer<vector<string>> process(string s) {
+  Writer<vector<string>> process(string s) {
     return compose(toUpper, toWords)(s);
-}
+  }
 \end{snip}
-But we are not finished yet. We have defined composition in our new
-category, but what are the identity morphisms? These are not our regular
-identity functions! They have to be morphisms from type A back to type
-A, which means they are embellished functions of the form:
+但我们还没有完成。我们已经在新范畴中定义了组合，但是恒等态射是什么？它们不是我们常规的恒等函数！它们必须是从类型 A 返回到类型 A 的态射，这意味着它们是如下形式的修饰函数：
 
 \begin{snip}{cpp}
-Writer<A> identity(A);
+  Writer<A> identity(A);
 \end{snip}
-They have to behave like units with respect to composition. If you look
-at our definition of composition, you'll see that an identity morphism
-should pass its argument without change, and only contribute an empty
-string to the log:
+它们必须像组合的单位元一样运作。如果你看一下我们定义的组合，你会看到一个恒等态射应该传递其参数而不做任何更改，并且只向日志中贡献一个空字符串：
 
 \begin{snip}{cpp}
-template<class A> Writer<A> identity(A x) {
+  template<class A> Writer<A> identity(A x) {
     return make_pair(x, "");
-}
+  }
 \end{snip}
-You can easily convince yourself that the category we have just defined
-is indeed a legitimate category. In particular, our composition is
-trivially associative. If you follow what's happening with the first
-component of each pair, it's just a regular function composition, which
-is associative. The second components are being concatenated, and
-concatenation is also associative.
+你可以很容易地说服自己，我们刚刚定义的范畴确实是一个合法的范畴。特别是，我们的组合是平凡的结合的。如果你跟踪每个对的第一个组件所发生的事情，它只是一个常规函数组合，这是结合的。第二个组件正在连接，而连接也是结合的。
 
-An astute reader may notice that it would be easy to generalize this
-construction to any monoid, not just the string monoid. We would use
-\code{mappend} inside \code{compose} and \code{mempty} inside
-\code{identity} (in place of \code{+} and \code{""}). There really
-is no reason to limit ourselves to logging just strings. A good library
-writer should be able to identify the bare minimum of constraints that
-make the library work --- here the logging library's only requirement is
-that the log have monoidal properties.
+一个聪明的读者可能会注意到，很容易将此构造推广到任何幺半群，而不仅仅是字符串幺半群。我们可以在 \code{compose} 中使用 \code{mappend}，在 \code{identity} 中使用 \code{mempty}（代替 \code{+} 和 \code{""}）。实际上，我们没有理由仅限于记录字符串。一个好的库编写者应该能够识别出使库工作的最小约束——这里记录库的唯一要求是日志具有幺半群属性。
 
-\section{Writer in Haskell}
+\section{Haskell 中的 Writer 范畴 (Writer in Haskell)}
 
-The same thing in Haskell is a little more terse, and we also get a lot
-more help from the compiler. Let's start by defining the \code{Writer}
-type:
+在 Haskell 中做同样的事情更简洁一些，并且我们还得到了编译器的更多帮助。让我们从定义 \code{Writer} 类型开始：
 
 \src{snippet01}
-Here I'm just defining a type alias, an equivalent of a \code{typedef}
-(or \code{using}) in C++. The type \code{Writer} is parameterized by
-a type variable \code{a} and is equivalent to a pair of \code{a} and
-\code{String}. The syntax for pairs is minimal: just two items in
-parentheses, separated by a comma.
+这里我只是在定义一个类型别名，相当于 C++ 中的 \code{typedef}（或 \code{using}）。\code{Writer} 类型由类型变量 \code{a} 参数化，相当于 \code{a} 和 \code{String} 的对。对的语法是最简的：只是两个用逗号分隔的项目放在括号中。
 
-Our morphisms are functions from an arbitrary type to some
-\code{Writer} type:
+我们的态射是从任意类型到某个 \code{Writer} 类型的函数：
 
 \src{snippet02}
-We'll declare the composition as a funny infix operator, sometimes
-called the ``fish'':
+我们将声明组合为一个有趣的中缀运算符，有时称为“鱼”：
 
 \src{snippet03}
-It's a function of two arguments, each being a function on its own, and
-returning a function. The first argument is of the type
-\code{(a -> Writer b)}, the second is
-\code{(b -> Writer c)}, and the result is
-\code{(a -> Writer c)}.
+这是一个有两个参数的函数，每个参数都是一个函数，并返回一个函数。第一个参数的类型是 \code{(a -> Writer b)}，第二个参数是 \code{(b -> Writer c)}，结果是 \code{(a -> Writer c)}。
 
-Here's the definition of this infix operator --- the two arguments
-\code{m1} and \code{m2} appearing on either side of the fishy
-symbol:
+以下是这个中缀运算符的定义——两个参数 \code{m1} 和 \code{m2} 出现在鱼符号的两边：
 
 \src{snippet04}
-The result is a lambda function of one argument \code{x}. The lambda
-is written as a backslash --- think of it as the Greek letter $\lambda$ with an
-amputated leg.
+结果是一个参数为 \code{x} 的 lambda 函数。lambda 写作反斜杠——将其视为希腊字母 $\lambda$ 的一条截肢腿。
 
-The \code{let} expression lets you declare auxiliary variables. Here
-the result of the call to \code{m1} is pattern matched to a pair of
-variables \code{(y, s1)}; and the result of the call to \code{m2},
-with the argument \code{y} from the first pattern, is matched to
-\code{(z, s2)}.
+\code{let} 表达式允许你声明辅助变量。这里调用 \code{m1} 的结果与一对变量 \code{(y, s1)} 进行模式匹配；调用 \code{m2} 的结果，使用第一个模式中的参数 \code{y}，与 \code{(z, s2)} 进行匹配。
 
-It is common in Haskell to pattern match pairs, rather than use
-accessors, as we did in C++. Other than that there is a pretty
-straightforward correspondence between the two implementations.
+在 Haskell 中，通常匹配对而不是使用访问器，就像我们在 C++ 中所做的那样。除此之外，两种实现之间有一个相当直接的对应关系。
 
-The overall value of the \code{let} expression is specified in its
-\code{in} clause: here it's a pair whose first component is \code{z}
-and the second component is the concatenation of two strings,
-\code{s1++s2}.
+\code{let} 表达式的整体值在其 \code{in} 子句中指定：这里是一个对，其第一个组件是 \code{z}，第二个组件是两个字符串 \code{s1++s2} 的连接。
 
-I will also define the identity morphism for our category, but for
-reasons that will become clear much later, I will call it
-\code{return}.
+我还将在我们的范畴中定义恒等态射，但由于某些原因，这些原因将在后面详细解释，我将其称为 \code{return}。
 
 \src{snippet05}
-For completeness, let's have the Haskell versions of the embellished
-functions \code{upCase} and \code{toWords}:
+为了完整性，我们来看一下 Haskell 版本的修饰函数 \code{upCase} 和 \code{toWords}：
 
 \src{snippet06}
-The function \code{map} corresponds to the C++ \code{transform}. It
-applies the character function \code{toUpper} to the string
-\code{s}. The auxiliary function \code{words} is defined in the
-standard Prelude library.
+函数 \code{map} 对应于 C++ 中的 \code{transform}。它将字符函数 \code{toUpper} 应用于字符串 \code{s}。辅助函数 \code{words} 定义在标准 Prelude 库中。
 
-Finally, the composition of the two functions is accomplished with the
-help of the fish operator:
+最后，两个函数的组合使用鱼运算符完成：
 
 \src{snippet07}
 
-\section{Kleisli Categories}
+\section{Kleisli 范畴 (Kleisli Categories)}
 
-You might have guessed that I haven't invented this category on the
-spot. It's an example of the so called Kleisli category --- a category
-based on a monad. We are not ready to discuss monads yet, but I wanted
-to give you a taste of what they can do. For our limited purposes, a
-Kleisli category has, as objects, the types of the underlying
-programming language. Morphisms from type $A$ to type $B$ are functions that
-go from $A$ to a type derived from $B$ using the particular embellishment.
-Each Kleisli category defines its own way of composing such morphisms,
-as well as the identity morphisms with respect to that composition.
-(Later we'll see that the imprecise term ``embellishment'' corresponds
-to the notion of an endofunctor in a category.)
+你可能已经猜到我没有临时发明这个范畴。它是所谓的 Kleisli 范畴的一个例子——一个基于单子的范畴。我们还没有准备好讨论单子，但我想让你了解它们可以做什么。对于我们的有限目的，Kleisli 范畴的对象是底层编程语言的类型。从类型 $A$ 到类型 $B$ 的态射是从 $A$ 到使用特定修饰从 $B$ 派生出的类型的函数。每个 Kleisli 范畴定义了它自己的组合这些态射的方法，以及相对于该组合的恒等态射。（稍后我们将看到，不精确的术语“修饰”对应于范畴中的端函子概念。）
 
-The particular monad that I used as the basis of the category in this
-chapter is called the \newterm{writer monad} and it's used for logging or
-tracing the execution of functions. It's also an example of a more
-general mechanism for embedding effects in pure computations. You've
-seen previously that we could model programming-language types and
-functions in the category of sets (disregarding bottoms, as usual). Here
-we have extended this model to a slightly different category, a category
-where morphisms are represented by embellished functions, and their
-composition does more than just pass the output of one function to the
-input of another. We have one more degree of freedom to play with: the
-composition itself. It turns out that this is exactly the degree of
-freedom which makes it possible to give simple denotational semantics to
-programs that in imperative languages are traditionally implemented
-using side effects.
+我在本章中用作范畴基础的特定单子称为\newterm{Writer 单子}，它用于记录或跟踪函数的执行。它也是将效果嵌入纯计算中的更一般机制的一个例子。你之前已经看到，我们可以在集合范畴中建模编程语言的类型和函数（像往常一样，忽略底层）。在这里，我们将此模型扩展到一个略有不同的范畴，其中态射由修饰函数表示，并且它们的组合不仅仅是将一个函数的输出传递给另一个函数的输入。我们有了一个额外的自由度：组合本身。事实证明，这正是使得能够为在命令式语言中传统上使用副作用实现的程序提供简单指称语义的自由度。
 
-\section{Challenge}
+\section{挑战 (Challenge)}
 
-A function that is not defined for all possible values of its argument
-is called a partial function. It's not really a function in the
-mathematical sense, so it doesn't fit the standard categorical mold. It
-can, however, be represented by a function that returns an embellished
-type \code{optional}:
+一个未定义其参数所有可能值的函数称为部分函数（partial function）。从数学意义上讲，它并不是真正的函数，因此它不符合标准的范畴模型。然而，它可以通过返回一个修饰类型 \code{optional} 的函数来表示：
 
 \begin{snip}{cpp}
-template<class A> class optional {
+  template<class A> class optional {
     bool _isValid;
     A _value;
-public: 
+    public:
     optional()    : _isValid(false) {}
     optional(A v) : _isValid(true), _value(v) {}
     bool isValid() const { return _isValid; }
     A value() const { return _value; }
-};
+  };
 \end{snip}
-For example, here's the implementation of the embellished function
-\code{safe\_root}:
+例如，下面是修饰函数 \code{safe\_root} 的实现：
 
 \begin{snip}{cpp}
-optional<double> safe_root(double x) {
-    if (x >= 0) return optional<double>{sqrt(x)}; 
+  optional<double> safe_root(double x) {
+    if (x >= 0) return optional<double>{sqrt(x)};
     else return optional<double>{};
-}
+  }
 \end{snip}
-Here's the challenge:
+挑战如下：
 
 \begin{enumerate}
   \tightlist
   \item
-        Construct the Kleisli category for partial functions (define
-        composition and identity).
+  构造部分函数的 Kleisli 范畴（定义组合和恒等态射）。
   \item
-        Implement the embellished function \code{safe\_reciprocal} that
-        returns a valid reciprocal of its argument, if it's different from
-        zero.
+  实现修饰函数 \code{safe\_reciprocal}，该函数返回其参数的有效倒数（reciprocal），如果它不为零。
   \item
-        Compose the functions \code{safe\_root} and \code{safe\_reciprocal} to implement
-        \code{safe\_root\_reciprocal} that calculates \code{sqrt(1/x)}
-        whenever possible.
+  组合函数 \code{safe\_root} 和 \code{safe\_reciprocal} 以实现 \code{safe\_root\_reciprocal}，该函数在可能的情况下计算 \code{sqrt(1/x)}。
 \end{enumerate}

@@ -1,326 +1,162 @@
 % !TEX root = ../../ctfp-print.tex
 
-\lettrine[lhang=0.17]{P}{rogrammers have developed} a whole mythology around monads. It's
-supposed to be one of the most abstract and difficult concepts in
-programming. There are people who ``get it'' and those who don't. For
-many, the moment when they understand the concept of the monad is like a
-mystical experience. The monad abstracts the essence of so many diverse
-constructions that we simply don't have a good analogy for it in
-everyday life. We are reduced to groping in the dark, like those blind
-men touching different parts of the elephant end exclaiming
-triumphantly: ``It's a rope,'' ``It's a tree trunk,'' or ``It's a
-burrito!''
+\lettrine[lhang=0.17]{程}{序员们围绕 monad} 发展出了一整套神话。它被认为是编程中最抽象和最难理解的概念之一。有些人“明白了”，而有些人则不然。对于许多人来说，理解 monad 的那一刻就像是一种神秘的体验。Monad 抽象了许多不同构造的本质，以至于我们在日常生活中没有一个好的比喻来描述它。我们只能像那些盲人摸象一样，触摸大象的不同部分，然后胜利地宣称：“它是一根绳子”、“它是一棵树干”或“它是一个墨西哥卷饼！”
 
-Let me set the record straight: The whole mysticism around the monad is
-the result of a misunderstanding. The monad is a very simple concept.
-It's the diversity of applications of the monad that causes the
-confusion.
+让我把事情说清楚：围绕 monad 的所有神秘感其实是由于误解。Monad 是一个非常简单的概念。造成混淆的是 monad 的应用多种多样。
 
-As part of research for this post I looked up duct tape (a.k.a., duck
-tape) and its applications. Here's a little sample of things that you
-can do with it:
+作为这篇文章的研究内容的一部分，我查阅了胶带（又称鸭绒胶带）及其应用。以下是你可以用它做的一些事情的小样本：
 
 \begin{itemize}
   \tightlist
-  \item
-        sealing ducts
-  \item
-        fixing CO\textsubscript{2} scrubbers on board Apollo 13
-  \item
-        wart treatment
-  \item
-        fixing Apple's iPhone 4 dropped call issue
-  \item
-        making a prom dress
-  \item
-        building a suspension bridge
+  \item 密封管道
+  \item 修理阿波罗13号上的 CO\textsubscript{2} 清洁器
+  \item 疣的治疗
+  \item 修复苹果 iPhone 4 的掉话问题
+  \item 制作舞会礼服
+  \item 建造悬索桥
 \end{itemize}
 
 \noindent
-Now imagine that you didn't know what duct tape was and you were trying
-to figure it out based on this list. Good luck!
+现在想象一下，如果你不知道胶带是什么，并试图根据这份清单弄清楚它是什么。祝你好运！
 
-So I'd like to add one more item to the collection of ``the monad is
-like\ldots{}'' clichés: The monad is like duct tape. Its applications
-are widely diverse, but its principle is very simple: it glues things
-together. More precisely, it composes things.
+因此，我想补充一项内容到“monad 就像……”的陈词滥调中：monad 就像胶带。它的应用范围广泛，但其原理非常简单：它将事物粘合在一起。更确切地说，它将事物组合起来。
 
-This partially explains the difficulties a lot of programmers,
-especially those coming from the imperative background, have with
-understanding the monad. The problem is that we are not used to thinking
-of programming in terms of function composition. This is understandable.
-We often give names to intermediate values rather than pass them
-directly from function to function. We also inline short segments of
-glue code rather than abstract them into helper functions. Here's an
-imperative-style implementation of the vector-length function in C:
+这在一定程度上解释了许多程序员，尤其是那些来自命令式背景的程序员，理解 monad 的困难。问题在于我们不习惯于将编程视为函数组合的过程。这是可以理解的。我们经常给中间值命名，而不是直接将它们从一个函数传递到另一个函数。我们也会内联短段的胶合代码，而不是将其抽象为辅助函数。以下是用 C 语言编写的矢量长度函数的命令式实现：
 
 \begin{snip}{cpp}
-double vlen(double * v) {
+  double vlen(double * v) {
     double d = 0.0;
     int n;
     for (n = 0; n < 3; ++n)
-        d += v[n] * v[n];
+    d += v[n] * v[n];
     return sqrt(d);
-}
+  }
 \end{snip}
-Compare this with the (stylized) Haskell version that makes function
-composition explicit:
+将此与 Haskell 的一个（风格化的）版本相比，该版本明确了函数组合：
 
 \src{snippet01}
-(Here, to make things even more cryptic, I partially applied the
-exponentiation operator \code{(\^{})} by setting its second argument
-to \code{2}.)
+（这里，为了让事情变得更加神秘，我通过将第二个参数设置为 \code{2} 来部分应用指数运算符 \code{(\^{})}。）
 
-I'm not arguing that Haskell's point-free style is always better, just
-that function composition is at the bottom of everything we do in
-programming. And even though we are effectively composing functions,
-Haskell does go to great lengths to provide imperative-style syntax
-called the \code{do} notation for monadic composition. We'll see its
-use later. But first, let me explain why we need monadic composition in
-the first place.
+我并不是在争论 Haskell 的无点风格总是更好，只是说函数组合是我们在编程中所做的一切的基础。尽管我们实际上是在组合函数，Haskell 确实尽了很大的努力，提供了名为 \code{do} 语法糖的命令式风格语法，用于 monad 组合。稍后我们将看到它的使用。但首先，让我解释为什么我们首先需要 monad 组合。
 
-\section{The Kleisli Category}
+\section{Kleisli 范畴（The Kleisli Category）}
 
-We have previously arrived at the
-\hyperref[kleisli-categories]{writer
-  monad} by embellishing regular functions. The particular embellishment
-was done by pairing their return values with strings or, more generally,
-with elements of a monoid. We can now recognize that such an embellishment
-is a functor:
+我们之前通过装饰普通函数得到了 \hyperref[kleisli-categories]{writer monad}。特别的装饰是通过将它们的返回值与字符串或更一般的，单态元素配对完成的。现在我们可以认识到这种装饰是一个函子：
 
 \src{snippet02}
-We have subsequently found a way of composing embellished functions, or
-Kleisli arrows, which are functions of the form:
+随后我们找到了组合装饰函数或 Kleisli 箭头的方法，Kleisli 箭头是形如：
 
 \src{snippet03}
-It was inside the composition that we implemented the accumulation of
-the log.
+的函数。我们在组合内部实现了日志的累积。
 
-We are now ready for a more general definition of the Kleisli category.
-We start with a category $\cat{C}$ and an endofunctor $m$. The
-corresponding Kleisli category $\cat{K}$ has the same objects as
-$\cat{C}$, but its morphisms are different. A morphism between two
-objects $a$ and $b$ in $\cat{K}$ is implemented as a
-morphism:
-\[a \to m\ b\]
-in the original category $\cat{C}$. It's important to keep in mind that
-we treat a Kleisli arrow in $\cat{K}$ as a morphism between $a$
-and $b$, and not between $a$ and $m\ b$.
+我们现在准备好给出 Kleisli 范畴的更一般定义。我们从一个范畴 $\cat{C}$ 和一个自函子 $m$ 开始。对应的 Kleisli 范畴 $\cat{K}$ 具有与 $\cat{C}$ 相同的对象，但它的态射不同。在 $\cat{K}$ 中两个对象 $a$ 和 $b$ 之间的态射由原范畴 $\cat{C}$ 中的态射 $a \to m\ b$ 实现。需要注意的是，我们将 $\cat{K}$ 中的 Kleisli 箭头视为 $a$ 和 $b$ 之间的态射，而不是 $a$ 和 $m\ b$ 之间的态射。
 
-In our example, $m$ was specialized to \code{Writer w}, for
-some fixed monoid \code{w}.
+在我们的例子中，$m$ 被专门化为某个固定的幺半群 \code{w} 的 \code{Writer w}。
 
-Kleisli arrows form a category only if we can define proper composition
-for them. If there is a composition, which is associative and has an
-identity arrow for every object, then the functor $m$ is called a
-\newterm{monad}, and the resulting category is called the Kleisli category.
+只有当我们能为 Kleisli 箭头定义合适的组合时，它们才能形成一个范畴。如果存在一个组合，它是结合的，并且每个对象都有一个单位箭头，那么函子 $m$ 就称为 \newterm{monad（单子）}，结果范畴称为 Kleisli 范畴。
 
-In Haskell, Kleisli composition is defined using the fish operator
-\code{>=>}, and the identity arrow is a
-polymorphic function called \code{return}. Here's the definition of a
-monad using Kleisli composition:
+在 Haskell 中，Kleisli 组合使用鱼算子 \code{>=>} 定义，单位箭头是一个多态函数，称为 \code{return}。以下是使用 Kleisli 组合定义 monad 的方法：
 
 \src{snippet04}
-Keep in mind that there are many equivalent ways of defining a monad,
-and that this is not the primary one in the Haskell ecosystem. I like it
-for its conceptual simplicity and the intuition it provides, but there
-are other definitions that are more convenient when programming. We'll
-talk about them momentarily.
+请记住，有许多等效的方式来定义 monad，而这并不是 Haskell 生态系统中的主要定义。我喜欢它的概念简单性和它提供的直觉，但还有其他定义在编程时更为方便。我们稍后会讨论它们。
 
-In this formulation, monad laws are very easy to express. They cannot be
-enforced in Haskell, but they can be used for equational reasoning. They
-are simply the standard composition laws for the Kleisli category:
+在这种形式中，monad 定律很容易表达。它们不能在 Haskell 中强制执行，但它们可以用于等式推理。它们只是 Kleisli 范畴的标准组合定律：
 
 \begin{snip}{haskell}
-(f >=> g) >=> h = f >=> (g >=> h) -- associativity
-return >=> f = f                  -- left unit
-f >=> return = f                  -- right unit
+(f >=> g) >=> h = f >=> (g >=> h) -- 结合性
+return >=> f = f                  -- 左单位
+f >=> return = f                  -- 右单位
 \end{snip}
-This kind of a definition also expresses what a monad really is: it's a
-way of composing embellished functions. It's not about side effects or
-state. It's about composition. As we'll see later, embellished functions
-may be used to express a variety of effects or state, but that's not
-what the monad is for. The monad is the sticky duct tape that ties one
-end of an embellished function to the other end of an embellished
-function.
+这种定义还表达了 monad 的真正含义：它是一种组合装饰函数的方法。这与副作用或状态无关。它关乎组合。正如我们稍后将看到的，装饰函数可以用来表达各种效应或状态，但这不是 monad 的用途。monad 是将一个装饰函数的末端与另一个装饰函数的末端捆绑在一起的粘性胶带。
 
-Going back to our \code{Writer} example: The logging functions (the
-Kleisli arrows for the \code{Writer} functor) form a category because
-\code{Writer} is a monad:
+回到我们的 \code{Writer} 例子：记录函数（\code{Writer} 函子的 Kleisli 箭头）形成一个范畴，因为 \code{Writer} 是一个 monad：
 
 \src{snippet05}
-Monad laws for \code{Writer w} are satisfied as long as monoid laws
-for \code{w} are satisfied (they can't be enforced in Haskell either).
+只要 \code{w} 的幺半群定律得到满足，\code{Writer w} 的 monad 定律也就满足了（这些定律在 Haskell 中也不能强制执行）。
 
-There's a useful Kleisli arrow defined for the \code{Writer} monad
-called \code{tell}. It's sole purpose is to add its argument to the
-log:
+对于 \code{Writer} monad，有一个名为 \code{tell} 的有用的 Kleisli 箭头。它的唯一目的是将其参数添加到日志中：
 
 \src{snippet06}
-We'll use it later as a building block for other monadic functions.
+我们稍后将其作为其他 monadic 函数的构建块使用。
 
-\section{Fish Anatomy}
+\section{鱼的解剖（Fish Anatomy）}
 
-When implementing the fish operator for different monads you quickly
-realize that a lot of code is repeated and can be easily factored out.
-To begin with, the Kleisli composition of two functions must return a
-function, so its implementation may as well start with a lambda taking
-an argument of type \code{a}:
+在为不同的 monad 实现鱼算子时，你会很快意识到许多代码是重复的，可以很容易地提取出来。首先，两个函数的 Kleisli 组合必须返回一个函数，因此它的实现不妨从一个接受类型为 \code{a} 的参数的 lambda 开始：
 
 \src{snippet07}
-The only thing we can do with this argument is to pass it to \code{f}:
+我们能对这个参数做的唯一事情是将其传递给 \code{f}：
 
 \src{snippet08}
-At this point we have to produce the result of type \code{m c},
-having at our disposal an object of type \code{m b} and a function
-\code{g :: b -> m c}. Let's define a function that
-does that for us. This function is called \emph{bind} and is usually written in
-the form of an infix operator:
+在这一点上，我们必须在拥有类型为 \code{m b} 的对象和函数 \code{g :: b -> m c} 的情况下，生成类型为 \code{m c} 的结果。让我们定义一个为我们完成此任务的函数。这个函数称为 \emph{bind（绑定）}，通常以中缀运算符的形式书写：
 
 \src{snippet09}
-For every monad, instead of defining the fish operator, we may instead
-define bind. In fact the standard Haskell definition of a monad uses
-bind:
+对于每个 monad，我们可以不定义鱼算子，而是定义 bind。实际上，Haskell 的标准 monad 定义使用 bind：
 
 \src{snippet10}
-Here's the definition of bind for the \code{Writer} monad:
+以下是 \code{Writer} monad 的 bind 定义：
 
 \src{snippet11}
-It is indeed shorter than the definition of the fish operator.
+它确实比鱼算子的定义短。
 
-It's possible to further dissect bind, taking advantage of the fact that
-\code{m} is a functor. We can use \code{fmap} to apply the function
-\code{a -> m b} to the contents of \code{m a}. This
-will turn \code{a} into \code{m b}. The result of the application
-is therefore of type \code{m (m b)}. This is not exactly what we
-want --- we need the result of type \code{m b} --- but we're close.
-All we need is a function that collapses or flattens the double
-application of \code{m}. Such a function is called \code{join}:
+进一步拆解 bind 是可能的，利用 \code{m} 是一个函子的事实。我们可以使用 \code{fmap} 将函数 \code{a -> m b} 应用于 \code{m a} 的内容。这将把 \code{a} 变成 \code{m b}。应用的结果因此是类型 \code{m (m b)}。这不是我们想要的结果——我们需要类型为 \code{m b} 的结果——但我们已经很接近了。我们所需要的只是一个可以压缩或展平 \code{m} 的双重应用的函数。这个函数称为 \code{join}：
 
 \src{snippet12}
-Using \code{join}, we can rewrite bind as:
+使用 \code{join}，我们可以将 bind 重写为：
 
 \src{snippet13}
-That leads us to the third option for defining a monad:
+这引导我们到定义 monad 的第三种选择：
 
 \src{snippet14}
-Here we have explicitly requested that \code{m} be a \code{Functor}.
-We didn't have to do that in the previous two definitions of the monad.
-That's because any type constructor \code{m} that either supports the
-fish or bind operator is automatically a functor. For instance, it's
-possible to define \code{fmap} in terms of bind and \code{return}:
+在这里，我们显式要求 \code{m} 是一个 \code{Functor（函子）}。在之前的两个 monad 定义中，我们不必这样做。这是因为任何支持鱼算子或 bind 运算符的类型构造函数 \code{m} 都自动是一个函子。例如，可以用 bind 和 \code{return} 来定义 \code{fmap}：
 
 \src{snippet15}
-For completeness, here's \code{join} for the \code{Writer} monad:
+为了完整性，这里是 \code{Writer} monad 的 \code{join}：
 
 \src{snippet16}
 
-\section{The \texttt{do} Notation}
+\section{\texttt{do} 语法（The \texttt{do} Notation）}
 
-One way of writing code using monads is to work with Kleisli arrows ---
-composing them using the fish operator. This mode of programming is the
-generalization of the point-free style. Point-free code is compact and
-often quite elegant. In general, though, it can be hard to understand,
-bordering on cryptic. That's why most programmers prefer to give names
-to function arguments and intermediate values.
+一种使用 monad 编写代码的方法是使用 Kleisli 箭头——使用鱼算子组合它们。这种编程模式是无点风格的泛化。无点风格的代码紧凑而且通常相当优雅。但总的来说，它可能难以理解，几乎是神秘的。这就是为什么大多数程序员更喜欢给函数参数和中间值命名。
 
-When dealing with monads it means favoring the bind operator over the
-fish operator. Bind takes a monadic value and returns a monadic value.
-The programmer may choose to give names to those values. But that's
-hardly an improvement. What we really want is to pretend that we are
-dealing with regular values, not the monadic containers that encapsulate
-them. That's how imperative code works --- side effects, such as
-updating a global log, are mostly hidden from view. And that's what the
-\code{do} notation emulates in Haskell.
+当处理 monad 时，这意味着更喜欢 bind 运算符而不是鱼算子。Bind 接受一个 monadic 值并返回一个 monadic 值。程序员可以选择为这些值命名。但这几乎没有改进。我们真正想要的是假装我们正在处理常规值，而不是封装它们的 monadic 容器。这就是命令式代码的工作方式——副作用，如更新全局日志，通常是隐藏的。这就是 Haskell 中 \code{do} 语法的仿效方式。
 
-You might be wondering then, why use monads at all? If we want to make
-side effects invisible, why not stick to an imperative language? The
-answer is that the monad gives us much better control over side effects.
-For instance, the log in the \code{Writer} monad is passed from
-function to function and is never exposed globally. There is no
-possibility of garbling the log or creating a data race. Also, monadic
-code is clearly demarcated and cordoned off from the rest of the
-program.
+你可能会想，那么为什么要使用 monad 呢？如果我们想让副作用不可见，为什么不坚持使用命令式语言呢？答案是 monad 给了我们对副作用的更好控制。例如，\code{Writer} monad 中的日志从一个函数传递到另一个函数，从未在全局范围内暴露。不存在混淆日志或创建数据竞争的可能性。此外，monadic 代码清晰地与程序的其余部分隔离开来。
 
-The \code{do} notation is just syntactic sugar for monadic
-composition. On the surface, it looks a lot like imperative code, but it
-translates directly to a sequence of binds and lambda expressions.
+\code{do} 语法只是 monadic 组合的语法糖。从表面上看，它看起来很像命令式代码，但它直接转化为一系列 bind 和 lambda 表达式。
 
-For instance, take the example we used previously to illustrate the
-composition of Kleisli arrows in the \code{Writer} monad. Using our
-current definitions, it could be rewritten as:
+例如，使用我们之前用于说明 \code{Writer} monad 中 Kleisli 箭头组合的示例。使用我们当前的定义，它可以重写为：
 
 \src{snippet17}
-This function turns all characters in the input string to upper case and
-splits it into words, all the while producing a log of its actions.
+这个函数将输入字符串中的所有字符转换为大写，并将其拆分为单词，同时记录它的操作。
 
-In the \code{do} notation it would look like this:
+在 \code{do} 语法中，它看起来像这样：
 
 \src{snippet18}
-Here, \code{upStr} is just a \code{String}, even though
-\code{upCase} produces a \code{Writer}:
+在这里，\code{upStr} 只是一个 \code{String}，尽管 \code{upCase} 生成了一个 \code{Writer}：
 
 \src{snippet19}
-This is because the \code{do} block is desugared by the compiler to:
+这是因为 \code{do} 块由编译器解糖为：
 
 \src{snippet20}
-The monadic result of \code{upCase} is bound to a lambda that takes a
-\code{String}. It's the name of this string that shows up in the
-\code{do} block. When reading the line:
+\code{upCase} 的 monadic 结果被绑定到一个 lambda，该 lambda 接受一个 \code{String}。这个字符串的名字出现在 \code{do} 块中。当读取这一行时：
 
 \src{snippet21}
-we say that \code{upStr} \emph{gets} the result of \code{upCase s}.
+我们说 \code{upStr} \emph{获得} 了 \code{upCase s} 的结果。
 
-The pseudo-imperative style is even more pronounced when we inline
-\code{toWords}. We replace it with the call to \code{tell}, which
-logs the string \code{"toWords "}, followed by the call to
-\code{return} with the result of splitting the string \code{upStr}
-using \code{words}. Notice that \code{words} is a regular function
-working on strings.
+当我们内联 \code{toWords} 时，伪命令式风格更加明显。我们用调用 \code{tell} 替换它，后者记录字符串 \code{"toWords "}，然后调用 \code{return} 并将结果拆分为字符串 \code{upStr} 使用 \code{words}。请注意，\code{words} 是一个作用于字符串的常规函数。
 
 \src{snippet22}
-Here, each line in the do block introduces a new nested bind in the
-desugared code:
+在这里，do 块中的每一行都会在解糖后的代码中引入一个新的嵌套 bind：
 
 \src{snippet23}
-Notice that \code{tell} produces a unit value, so it doesn't have to
-be passed to the following lambda. Ignoring the contents of a monadic
-result (but not its effect --- here, the contribution to the log) is
-quite common, so there is a special operator to replace bind in that
-case:
+请注意，\code{tell} 生成一个单位值，因此不必将其传递给后面的 lambda。忽略 monadic 结果的内容（但不忽略其效果——此处对日志的贡献）是相当常见的，因此有一个特殊运算符可以在这种情况下替换 bind：
 
 \src{snippet24}
-The actual desugaring of our code looks like this:
+我们代码的实际解糖如下所示：
 
 \src{snippet25}
-In general, \code{do} blocks consist of lines (or sub-blocks) that
-either use the left arrow to introduce new names that are then available
-in the rest of the code, or are executed purely for side-effects. Bind
-operators are implicit between the lines of code. Incidentally, it is
-possible, in Haskell, to replace the formatting in the \code{do}
-blocks with braces and semicolons. This provides the justification for
-describing the monad as a way of overloading the semicolon.
+一般来说，\code{do} 块由行（或子块）组成，这些行（或子块）要么使用左箭头引入新名称，然后这些名称在代码的其余部分中可用，要么仅用于副作用而执行。行之间的 bind 运算符是隐式的。顺便说一下，在 Haskell 中，可以用大括号和分号替换 \code{do} 块中的格式。这为将 monad 描述为重载分号的方式提供了依据。
 
-Notice that the nesting of lambdas and bind operators when desugaring
-the \code{do} notation has the effect of influencing the execution of
-the rest of the \code{do} block based on the result of each line. This
-property can be used to introduce complex control structures, for
-instance to simulate exceptions.
+请注意，在解糖 \code{do} 语法时，lambda 和 bind 运算符的嵌套对 do 块其余部分的执行产生了影响，具体取决于每一行的结果。这一特性可以用来引入复杂的控制结构，例如模拟异常。
 
-Interestingly, the equivalent of the \code{do} notation has found its
-application in imperative languages, C++ in particular. I'm talking
-about resumable functions or coroutines. It's not a secret that C++
-\urlref{https://bartoszmilewski.com/2014/02/26/c17-i-see-a-monad-in-your-future/}{futures
-  form a monad}. It's an example of the continuation monad, which we'll
-discuss shortly. The problem with continuations is that they are very
-hard to compose. In Haskell, we use the \code{do} notation to turn the
-spaghetti of ``my handler will call your handler'' into something that
-looks very much like sequential code. Resumable functions make the same
-transformation possible in C++. And the same mechanism can be applied to
-turn the
-\urlref{https://bartoszmilewski.com/2014/04/21/getting-lazy-with-c/}{spaghetti
-  of nested loops} into list comprehensions or ``generators,'' which are
-essentially the \code{do} notation for the list monad. Without the
-unifying abstraction of the monad, each of these problems is typically
-addressed by providing custom extensions to the language. In Haskell,
-this is all dealt with through libraries.
+有趣的是，\code{do} 语法的等价物在命令式语言中得到了应用，特别是在 C++ 中。我指的是可恢复函数或协程。C++ \urlref{https://bartoszmilewski.com/2014/02/26/c17-i-see-a-monad-in-your-future/}{futures 是一个 monad} 并不是秘密。这是 continuation monad 的一个例子，我们将在稍后讨论。continuation 的问题是它们非常难以组合。在 Haskell 中，我们使用 \code{do} 语法将“我的处理程序会调用你的处理程序”的意大利面条式代码转化为非常像顺序代码的东西。可恢复函数使这种转换在 C++ 中成为可能。相同的机制也可以用于将 \urlref{https://bartoszmilewski.com/2014/04/21/getting-lazy-with-c/}{嵌套循环的意大利面条式代码} 转化为列表推导式或“生成器”，它们本质上是列表 monad 的 \code{do} 语法。没有 monad 的统一抽象，每个问题通常通过提供语言的自定义扩展来解决。在 Haskell 中，这些都通过库来处理。
