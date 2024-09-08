@@ -1,0 +1,16 @@
+xelatex -interaction=nonstopmode ctfp-print.tex
+xelatex -interaction=nonstopmode ctfp-print-ocaml.tex
+xelatex -interaction=nonstopmode ctfp-print-reason.tex
+xelatex -interaction=nonstopmode ctfp-print-scala.tex
+
+
+xelatex  -shell-escape -interaction=nonstopmode ctfp-print.tex
+xelatex  -shell-escape -interaction=nonstopmode ctfp-print-ocaml.tex
+xelatex  -shell-escape -interaction=nonstopmode ctfp-print-reason.tex
+xelatex  -shell-escape -interaction=nonstopmode ctfp-print-scala.tex
+
+
+rm -f *.aux *.log *.out *.toc *.pdf *.fdb_latexmk *.fls
+
+latexmk -c
+latexmk -C
