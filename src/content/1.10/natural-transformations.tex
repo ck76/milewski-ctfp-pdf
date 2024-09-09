@@ -83,14 +83,10 @@
 \end{align}
 自然变换是一个对所有类型 \code{a} 都定义的多态函数：
 
-\begin{lstlisting}[language=Haskell]
-alpha :: forall a . F a -> G a
-\end{lstlisting}
+\src{snippet01}
 在 Haskell 中，\code{forall a} 是可选的（实际上需要开启语言扩展 \code{ExplicitForAll}）。通常，你会这样写：
 
-\begin{lstlisting}[language=Haskell]
-alpha :: F a -> G a
-\end{lstlisting}
+\src{snippet02}
 请记住，它实际上是一个以 \code{a} 为参数的函数族。这是 Haskell 语法简洁性的另一个例子。在 C++ 中，一个类似的结构会稍微冗长一些：
 
 \begin{lstlisting}{cpp}
@@ -104,9 +100,7 @@ alpha :: F a -> G a
 
 Haskell 的参数多态性有一个意想不到的后果：任何类型为
 
-\begin{lstlisting}[language=Haskell]
-alpha :: F a -> G a
-\end{lstlisting}
+\src{snippet03}
 的多态函数，其中 \code{F} 和 \code{G} 是函子，自动满足自然性条件。这里是范畴符号中的表示（$f$ 是一个函数 $f \Colon a \to b$）：
 
 \[G f \circ \alpha_a = \alpha_b \circ F f\]
@@ -132,102 +126,59 @@ alpha :: F a -> G a
 
 让我们来看一些 Haskell 中自然变换的例子。第一个例子是列表函子和 \code{Maybe} 函子之间的自然变换。它返回列表的头部，但前提是列表非空：
 
-\begin{lstlisting}[language=Haskell]
-safeHead :: [a] -> Maybe a
-safeHead [] = Nothing
-safeHead (x:xs) = Just x
-\end{lstlisting}
+\src{snippet04}
 这是一个在 \code{a} 上多态的函数。它对任何类型 \code{a} 都有效，没有限制，因此它是参数多态的一个例子。因此，它是两个函子之间的自然变换。但为了让我们信服，让我们验证自然性条件。
 
-\begin{lstlisting}[language=Haskell]
-fmap f . safeHead = safeHead . fmap f
-\end{lstlisting}
+\src{snippet05}
 我们有两种情况需要考虑：一个空列表：
 
-\begin{lstlisting}[language=Haskell]
-fmap f (safeHead []) = fmap f Nothing = Nothing
-\end{lstlisting}
+\src{snippet06}
 
-\begin{lstlisting}[language=Haskell]
-safeHead (fmap f []) = safeHead [] = Nothing
-\end{lstlisting}
+\src{snippet07}
 和一个非空列表：
 
-\begin{lstlisting}[language=Haskell]
-fmap f (safeHead (x:xs)) = fmap f (Just x) = Just (f x)
-\end{lstlisting}
+\src{snippet08}
 
-\begin{lstlisting}[language=Haskell]
-safeHead (fmap f (x:xs)) = safeHead (f x : fmap f xs) = Just (f x)
-\end{lstlisting}
+\src{snippet09}
 我使用了列表的 \code{fmap} 实现：
 
-\begin{lstlisting}[language=Haskell]
-fmap f [] = []
-fmap f (x:xs) = f x : fmap f xs
-\end{lstlisting}
+\src{snippet10}
 和 \code{Maybe} 的：
 
-\begin{lstlisting}[language=Haskell]
-fmap f Nothing = Nothing
-fmap f (Just x) = Just (f x)
-\end{lstlisting}
+\src{snippet11}
 一个有趣的情况是，当其中一个函子是平凡的 \code{Const} 函子时。从或到 \code{Const} 函子的自然变换看起来就像是一个在返回类型或参数类型上多态的函数。
 
 例如，\code{length} 可以被视为从列表函子到 \code{Const Int} 函子的自然变换：
 
-\begin{lstlisting}[language=Haskell]
-length :: [a] -> Const Int a
-length [] = Const 0
-length (x:xs) = Const (1 + unConst (length xs))
-\end{lstlisting}
+\src{snippet12}
 这里使用 \code{unConst} 来剥离 \code{Const} 构造器：
 
-\begin{lstlisting}[language=Haskell]
-unConst :: Const c a -> c
-unConst (Const x) = x
-\end{lstlisting}
+\src{snippet13}
 当然，实际上 \code{length} 是这样定义的：
 
-\begin{lstlisting}[language=Haskell]
-length :: [a] -> Int
-\end{lstlisting}
+\src{snippet14}
 它有效地隐藏了它是自然变换的事实。
 
 找到一个从 \code{Const} 函子 \emph{来的}参数多态函数有点困难，因为它需要从无到有地创建一个值。我们能做的最好的是：
 
-\begin{lstlisting}[language=Haskell]
-scam :: Const Int a -> Maybe a
-scam (Const x) = Nothing
-\end{lstlisting}
+\src{snippet15}
 另一个我们已经见过的常见函子，并将在 Yoneda 引理中发挥重要作用的，是 \code{Reader} 函子。我将重新将其定义为 \code{newtype}：
 
-\begin{lstlisting}[language=Haskell]
-newtype Reader e a = Reader (e -> a)
-\end{lstlisting}
+\src{snippet16}
 它被两个类型参数化，但只在第二个类型上是（协变）函子化的：
 
-\begin{lstlisting}[language=Haskell]
-instance Functor (Reader e) where
-    fmap f (Reader g) = Reader (\x -> f (g x))
-\end{lstlisting}
+\src{snippet17}
 对于每个类型 \code{e}，你可以定义从 \code{Reader e} 到任何其他函子 \code{f} 的自然变换族。稍后我们会看到，这个族的成员总是与 \code{f e} 的元素一一对应（\hyperref[the-yoneda-lemma]{Yoneda 引理}）。
 
 例如，考虑有一个带有一个元素 \code{()} 的稍显平凡的单位类型 \code{()}。函子 \code{Reader ()} 将任何类型 \code{a} 映射为函数类型 \code{() -> a}。这些只是从集合 \code{a} 中选择单个元素的所有函数。它们与 \code{a} 中的元素一样多。现在我们来考虑从这个函子到 \code{Maybe} 函子的自然变换：
 
-\begin{lstlisting}[language=Haskell]
-alpha :: Reader () a -> Maybe a
-\end{lstlisting}
+\src{snippet18}
 只有两个：\code{dumb} 和 \code{obvious}：
 
-\begin{lstlisting}[language=Haskell]
-dumb (Reader _) = Nothing
-\end{lstlisting}
+\src{snippet19}
 和
 
-\begin{lstlisting}[language=Haskell]
-obvious (Reader g) = Just (g ())
-\end{lstlisting}
+\src{snippet20}
 （你唯一能对 \code{g} 做的就是将它应用到单位值 \code{()} 上。）
 
 而且，正如 Yoneda 引理所预测的那样，它们对应于 \code{Maybe ()} 类型的两个元素，即 \code{Nothing} 和 \code{Just ()}。我们稍后会回到 Yoneda 引理——这只是一个小小的预告。
@@ -242,40 +193,25 @@ obvious (Reader g) = Just (g ())
 
 你可能还记得我们之前看过的一个逆变函子的例子：
 
-\begin{lstlisting}[language=Haskell]
-newtype Op r a = Op (a -> r)
-\end{lstlisting}
+\src{snippet21}
 这个函子在 \code{a} 上是逆变的：
 
-\begin{lstlisting}[language=Haskell]
-instance Contravariant (Op r) where
-    contramap f (Op g) = Op (g . f)
-\end{lstlisting}
+\src{snippet22}
 我们可以编写一个从 \code{Op Bool} 到 \code{Op String} 的多态函数：
 
-\begin{lstlisting}[language=Haskell]
-predToStr (Op f) = Op (\x -> if f x then "T" else "F")
-\end{lstlisting}
+\src{snippet23}
 但由于这两个函子不是协变的，这不是一个 $\Hask$ 中的自然变换。然而，由于它们都是逆变的，它们满足“相反”的自然性条件：
 
-\begin{lstlisting}[language=Haskell]
-contramap f . predToStr = predToStr . contramap f
-\end{lstlisting}
+\src{snippet24}[b]
 注意到函数 \code{f} 必须朝与使用 \code{fmap} 相反的方向，因为 \code{contramap} 的签名是：
 
-\begin{lstlisting}[language=Haskell]
-contramap :: (b -> a) -> (Op Bool a -> Op Bool b)
-\end{lstlisting}
+\src{snippet25}
 是否有不是函子的类型构造器，无论是协变的还是逆变的？这里有一个例子：
 
-\begin{lstlisting}[language=Haskell]
-a -> a
-\end{lstlisting}
+\src{snippet26}
 这不是一个函子，因为相同的类型 \code{a} 同时用于负面（逆变）和正面（协变）的位置。你不能为这个类型实现 \code{fmap} 或 \code{contramap}。因此，签名为
 
-\begin{lstlisting}[language=Haskell]
-(a -> a) -> f a
-\end{lstlisting}
+\src{snippet27}
 的函数，其中 \code{f} 是一个任意的函子，不能是自然变换。有趣的是，有一种自然变换的推广，称为双自然变换（dinatural transformations），可以处理这些情况。当我们讨论端（ends）时，我们会涉及到它们。
 
 \section{函子范畴}

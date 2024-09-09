@@ -16,34 +16,21 @@
 \noindent
 对不完全是可交换的：\code{(Int, Bool)} 对不能替换为 \code{(Bool, Int)} 对，尽管它们携带相同的信息。然而，它们是同构（isomorphism）可交换的，所谓同构是指通过 \code{swap} 函数来实现的（该函数是其自身的逆）：
 
-\begin{lstlisting}[language=Haskell]
-swap :: (a, b) -> (b, a)
-swap (x, y) = (y, x)
-\end{lstlisting}
+\src{snippet01}
 你可以认为这两个对只是以不同的格式存储了相同的数据。这就像大端和小端之间的区别。
 
 你可以通过在对中嵌套对来组合任意数量的类型，但有一个更简单的方法：嵌套的对等价于元组（tuples）。这是因为嵌套对的不同方式是同构的。如果你想按顺序组合三种类型 \code{a}、\code{b} 和 \code{c} 的乘积，你可以用两种方式来实现：
 
-\begin{lstlisting}[language=Haskell]
-((a, b), c)
-\end{lstlisting}
+\src{snippet02}
 
 或
-\begin{lstlisting}[language=Haskell]
-(a, (b, c))
-\end{lstlisting}
+\src{snippet03}
 这些类型是不同的——你不能将一种类型传递给期望另一种类型的函数——但它们的元素是一一对应的。有一个函数可以将一种类型映射到另一种类型：
 
-\begin{lstlisting}[language=Haskell]
-alpha :: ((a, b), c) -> (a, (b, c))
-alpha ((x, y), z) = (x, (y, z))
-\end{lstlisting}
+\src{snippet04}
 这个函数是可逆的：
 
-\begin{lstlisting}[language=Haskell]
-alpha_inv :: (a, (b, c)) -> ((a, b), c)
-alpha_inv (x, (y, z)) = ((x, y), z)
-\end{lstlisting}
+\src{snippet05}
 所以它们是同构的。这些只是重新包装相同数据的不同方式。
 
 你可以将创建乘积类型解释为类型上的二元运算。从这个角度来看，上述同构非常类似于我们在幺半群（monoid）中看到的结合律：
@@ -54,52 +41,33 @@ alpha_inv (x, (y, z)) = ((x, y), z)
 
 如果我们可以接受同构，而不坚持严格的相等，我们可以更进一步，证明单位类型 \code{()} 就像 1 是乘法的单位元一样，是乘积的单位元。实际上，将某个类型 \code{a} 的值与一个单位配对并不会增加任何信息。类型：
 
-\begin{lstlisting}[language=Haskell]
-(a, ())
-\end{lstlisting}
+\src{snippet06}
 是同构于 \code{a} 的。下面是这个同构：
 
-\begin{lstlisting}[language=Haskell]
-rho :: (a, ()) -> a
-rho (x, ()) = x
-\end{lstlisting}
+\src{snippet07}
 
-\begin{lstlisting}[language=Haskell]
-rho_inv :: a -> (a, ())
-rho_inv x = (x, ())
-\end{lstlisting}
+\src{snippet08}
 这些观察可以形式化为：$\Set$（集合范畴）是一个\newterm{幺半群范畴}（monoidal category）。这是一种也是幺半群的范畴，意思是你可以对对象进行乘法（这里，取它们的笛卡尔积）。我将在未来详细讨论幺半群范畴，并给出完整的定义。
 
 在 Haskell 中有一种更通用的方式来定义乘积类型，尤其是在它们与和类型结合使用时。它使用了带有多个参数的命名构造器。例如，一对可以定义为：
 
-\begin{lstlisting}[language=Haskell]
-data Pair a b = P a b
-\end{lstlisting}
+\src{snippet09}
 在这里，\code{Pair a b} 是一个由两个其他类型 \code{a} 和 \code{b} 参数化的类型的名称；\code{P} 是数据构造器的名称。你可以通过向 \code{Pair} 类型构造器传递两个类型来定义一个对类型。你可以通过向构造器 \code{P} 传递两个适当类型的值来构造一个对值。例如，定义一个 \code{stmt} 值为 \code{String} 和 \code{Bool} 的对：
 
-\begin{lstlisting}[language=Haskell]
-stmt :: Pair String Bool
-stmt = P "This statement is" False
-\end{lstlisting}
+\src{snippet10}
 第一行是类型声明。它使用类型构造器 \code{Pair}，其中 \code{String} 和 \code{Bool} 替代了 \code{a} 和泛型定义 \code{Pair} 中的 \code{b}。第二行通过将一个具体的字符串和一个具体的布尔值传递给数据构造器 \code{P} 来定义实际值。类型构造器用于构造类型；数据构造器用于构造值。
 
 由于 Haskell 中类型构造器和数据构造器的命名空间是分开的，你会经常看到同样的名字用于这两个部分，如：
 
-\begin{lstlisting}[language=Haskell]
-data Pair a b = Pair a b
-\end{lstlisting}
+\src{snippet11}
 如果你仔细观察，你甚至可以将内置的对类型视为这种声明的一种变体，其中 \code{Pair} 的名称被替换为二元运算符 \code{(,)}。实际上，你可以像其他命名构造器一样使用 \code{(,)} 并用前缀表示法创建对：
 
-\begin{lstlisting}[language=Haskell]
-stmt = (,) "This statement is" False
-\end{lstlisting}
+\src{snippet12}
 类似地，你可以使用 \code{(,,)} 来创建三元组，等等。
 
 除了使用泛型对或元组，你还可以定义特定的命名乘积类型，如：
 
-\begin{lstlisting}[language=Haskell]
-data Stmt = Stmt String Bool
-\end{lstlisting}
+\src{snippet13}
 它只是 \code{String} 和 \code{Bool} 的乘积，但它被赋予了自己的名字和构造器。这种声明方式的优势在于，你可以定义许多具有相同内容但不同意义和功能的类型，并且它们不能相互替换。
 
 用元组和多参数构造器进行编程可能会变得混乱且容易出错——你需要跟踪每个组件代表什么。通常，最好给组件命名。具有命名字段的乘积类型在 Haskell 中称为\newterm{记录}（record），在 C 中称为 \code{struct}。
@@ -108,76 +76,46 @@ data Stmt = Stmt String Bool
 
 让我们看看一个简单的例子。我们想通过组合两个字符串（名称和符号）和一个整数（原子序数）来描述化学元素。我们可以使用一个元组 \code{(String, String, Int)} 并记住每个组件代表什么。我们可以通过模式匹配来提取组件，例如这个检查元素符号是否是其名称前缀的函数（就像\textbf{氦}（He）是\textbf{氦气}（Helium）的前缀）：
 
-\begin{lstlisting}[language=Haskell]
-startsWithSymbol :: (String, String, Int) -> Bool
-startsWithSymbol (name, symbol, _) = isPrefixOf symbol name
-\end{lstlisting}
+\src{snippet14}
 这段代码容易出错，难以阅读和维护。更好的方法是定义一个记录：
 
-\begin{lstlisting}[language=Haskell]
-data Element = Element { name :: String 
-                       , symbol :: String 
-                       , atomicNumber :: Int }
-\end{lstlisting}
+\src{snippet15}
 这两种表示是同构的，这一点可以通过这两个相互逆转的转换函数来证明：
 
-\begin{lstlisting}[language=Haskell]
-tupleToElem :: (String, String, Int) -> Element
-tupleToElem (n, s, a) = Element { name = n 
-                                , symbol = s 
-                                , atomicNumber = a }
-\end{lstlisting}
+\src{snippet16}
 
-\begin{lstlisting}[language=Haskell]
-elemToTuple :: Element -> (String, String, Int)
-elemToTuple e = (name e, symbol e, atomicNumber e)
-\end{lstlisting}
+\src{snippet17}
 注意，记录字段的名称也充当了访问这些字段的函数。例如，\code{atomicNumber e} 从 \code{e} 中检索 \code{atomicNumber} 字段。我们将 \code{atomicNumber} 用作类型为：
 
-\begin{lstlisting}[language=Haskell]
-atomicNumber :: Element -> Int
-\end{lstlisting}
+\src{snippet18}
 使用 \code{Element} 的记录语法后，我们的 \code{startsWithSymbol} 函数变得更加易读：
 
-\begin{lstlisting}[language=Haskell]
-startsWithSymbol :: Element -> Bool
-startsWithSymbol e = isPrefixOf (symbol e) (name e)
-\end{lstlisting}
+\src{snippet19}
 我们甚至可以使用 Haskell 的技巧，通过将函数 \code{isPrefixOf} 用反引号包围将其转换为中缀运算符，并使其看起来几乎像一个句子：
 
-\begin{lstlisting}[language=Haskell]
-startsWithSymbol e = symbol e `isPrefixOf` name e
-\end{lstlisting}
+\src{snippet20}
 在这种情况下可以省略括号，因为中缀运算符的优先级低于函数调用。
 
 \section{和类型 (Sum Types)}
 
 正如集合范畴中的乘积产生了乘积类型，余积产生了和类型。Haskell 中和类型的典型实现是：
 
-\begin{lstlisting}[language=Haskell]
-data Either a b = Left a | Right b
-\end{lstlisting}
+\src{snippet21}
 像对一样，\code{Either} 是（同构的）可交换的，可以嵌套，并且嵌套顺序无关紧要（同构）。因此，我们可以定义一个三元和类型的等价物：
 
-\begin{lstlisting}[language=Haskell]
-data OneOfThree a b c = Sinistral a | Medial b | Dextral c
-\end{lstlisting}
+\src{snippet22}
 等等。
 
 事实证明，$\Set$ 也是一个关于余积的（对称的）幺半群范畴。二元运算的作用由不相交的和（disjoint sum）来扮演，单位元素的作用由初始对象来扮演。在类型方面，我们有 \code{Either} 作为幺半群运算符，\code{Void}，即无值类型，作为其中性元素。你可以将 \code{Either} 看作加法，将 \code{Void} 看作零。实际上，向和类型中添加 \code{Void} 并不会改变它的内容。例如：
 
-\begin{lstlisting}[language=Haskell]
-Either a Void
-\end{lstlisting}
+\src{snippet23}
 与 \code{a} 是同构的。这是因为没有办法构造此类型的 \code{Right} 版本——没有 \code{Void} 类型的值。\code{Either a Void} 的唯一元素是使用 \code{Left} 构造器构造的，它们只是封装了 \code{a} 类型的值。因此，象征性地，$a + 0 = a$。
 
 和类型在 Haskell 中非常常见，但它们在 C++ 中的等价物，联合（union）或变体（variant），则要少得多。这有几个原因。
 
 首先，最简单的和类型只是枚举，并且在 C++ 中使用 \code{enum} 实现。Haskell 和类型的等价物是：
 
-\begin{lstlisting}[language=Haskell]
-data Color = Red | Green | Blue
-\end{lstlisting}
+\src{snippet24}
 而 C++ 的实现是：
 
 \begin{lstlisting}{cpp}
@@ -185,37 +123,24 @@ data Color = Red | Green | Blue
 \end{lstlisting}
 一个更简单的和类型是：
 
-\begin{lstlisting}[language=Haskell]
-data Bool = True | False
-\end{lstlisting}
+\src{snippet25}
 在 C++ 中的原始类型 \code{bool}。
 
 编码值的存在或不存在的简单和类型通常在 C++ 中使用特殊技巧和“无效”值来实现，例如空字符串、负数、空指针等。这种可选性（optionality），如果是故意的，则在 Haskell 中使用 \code{Maybe} 类型表达：
 
-\begin{lstlisting}[language=Haskell]
-data Maybe a = Nothing | Just a
-\end{lstlisting}
+\src{snippet26}
 \code{Maybe} 类型是两个类型的和。你可以看到，如果将两个构造器分成单独的类型，第一个类型看起来像这样：
 
-\begin{lstlisting}[language=Haskell]
-data NothingType = Nothing
-\end{lstlisting}
+\src{snippet27}
 它是一个只有一个值的枚举，称为 \code{Nothing}。换句话说，它是一个单例，与单位类型 \code{()} 等价。第二部分是：
 
-\begin{lstlisting}[language=Haskell]
-data JustType a = Just a
-\end{lstlisting}
+\src{snippet28}
 这只是 \code{a} 类型的封装。我们可以将 \code{Maybe} 编码为：
 
-\begin{lstlisting}[language=Haskell]
-type Maybe a = Either () a
-
-\end{lstlisting}
+\src{snippet29}
 在 C++ 中，复杂的和类型通常用指针伪装。指针可以是空的，或者指向特定类型的值。例如，一个 Haskell 列表类型，它可以定义为一个（递归的）和类型：
 
-\begin{lstlisting}[language=Haskell]
-data List a = Nil | Cons a (List a)
-\end{lstlisting}
+\src{snippet30}
 可以翻译为 C++ 使用空指针技巧来实现空列表：
 
 \begin{lstlisting}{cpp}
@@ -237,11 +162,7 @@ data List a = Nil | Cons a (List a)
 
 \code{List} 数据类型有两个构造器，因此对任意 \code{List} 的分解使用了两个对应于这些构造器的模式。例如，下面是一个关于 \code{List} 的简单函数的定义：
 
-\begin{lstlisting}[language=Haskell]
-maybeTail :: List a -> Maybe (List a)
-maybeTail Nil = Nothing
-maybeTail (Cons _ t) = Just t
-\end{lstlisting}
+\src{snippet31}
 \code{maybeTail} 的定义的第一部分使用 \code{Nil} 构造器作为模式并返回 \code{Nothing}。第二部分使用 \code{Cons} 构造器作为模式。它用通配符替换第一个构造器参数，因为我们对它不感兴趣。将 \code{Cons} 的第二个参数绑定到变量 \code{t}（尽管严格来说，变量永远不会变，因为一旦绑定到表达式，变量就永远不会改变，我还是会称这些东西为变量）。返回值是 \code{Just t}。现在，根据你的 \code{List} 是如何创建的，它将匹配其中一个子句。如果它是使用 \code{Cons} 创建的，那么传递给它的两个参数将被检索（第一个被丢弃）。
 
 在 C++ 中，使用多态类层次结构实现的更复杂的和类型。一组具有共同祖先的类可以被理解为一个变体类型，其中 vtable 充当一个隐藏的标签。在 Haskell 中，通过对构造器进行模式匹配并调用专用代码来完成的事情，在 C++ 中通过基于 vtable 指针调用虚函数来实现。
@@ -262,38 +183,19 @@ maybeTail (Cons _ t) = Just t
 \[a \times (b + c) = a \times b + a \times c\]
 这个性质对于乘积类型和和类型是否成立？是的，它成立——和往常一样，最多是同构。左边对应的类型是：
 
-\begin{lstlisting}[language=Haskell]
-(a, Either b c)
-\end{lstlisting}
+\src{snippet32}
 而右边对应的类型是：
 
-\begin{lstlisting}[language=Haskell]
-Either (a, b) (a, c)
-\end{lstlisting}
+\src{snippet33}
 下面是将它们转换为一个方向的函数：
 
-\begin{lstlisting}[language=Haskell]
-prodToSum :: (a, Either b c) -> Either (a, b) (a, c)
-prodToSum (x, e) =
-    case e of
-      Left  y -> Left  (x, y)
-      Right z -> Right (x, z)
-\end{lstlisting}
+\src{snippet34}
 而这是另一个方向的函数：
 
-\begin{lstlisting}[language=Haskell]
-sumToProd :: Either (a, b) (a, c) -> (a, Either b c)
-sumToProd e =
-    case e of
-      Left  (x, y) -> (x, Left  y)
-      Right (x, z) -> (x, Right z)
-\end{lstlisting}
+\src{snippet35}
 \code{case of} 语句用于函数内部的模式匹配。每个模式后面跟随一个箭头和当模式匹配时要评估的表达式。例如，如果你用值调用 \code{prodToSum}：
 
-\begin{lstlisting}[language=Haskell]
-prod1 :: (Int, Either String Float)
-prod1 = (2, Left "Hi!")
-\end{lstlisting}
+\src{snippet36}
 在 \code{case e of} 中的 \code{e} 将等于 \code{Left "Hi!"}。它将匹配模式 \code{Left y}，将 \code{"Hi!"} 替换为 \code{y}。由于 \code{x} 已经匹配到 \code{2}，因此 \code{case of} 子句的结果，以及整个函数的结果，将是 \code{Left (2, "Hi!")}, 如预期的那样。
 
 我不打算证明这两个函数是彼此的逆，但如果你仔细考虑，它们必须是的！它们只是简单地重新打包了两个数据结构的内容。数据是相同的，只是格式不同。
@@ -317,9 +219,7 @@ prod1 = (2, Left "Hi!")
 \noindent
 列表类型非常有趣，因为它是方程的解。我们正在定义的类型出现在方程的两边：
 
-\begin{lstlisting}[language=Haskell]
-data List a = Nil | Cons a (List a)
-\end{lstlisting}
+\src{snippet37}
 如果我们进行通常的替换，并且还用 \code{x} 替换 \code{List a}，我们会得到方程：
 
 \begin{Verbatim}
