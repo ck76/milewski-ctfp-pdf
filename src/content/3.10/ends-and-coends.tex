@@ -86,9 +86,9 @@ $\pi$ 的分量称为 end 的投影映射：
 \src{snippet06}
 或者，带有类型注释：
 
-\begin{snipv}
-  dimap f id\textsubscript{b} . pi\textsubscript{b} = dimap id\textsubscript{a} f . pi\textsubscript{a}
-\end{snipv}
+\begin{align}
+  \dimap f \id_b \cdot \pi_b &= \dimap \id_a f \cdot \pi_a
+\end{align}
 这两个公式的类型都是：
 
 \src{snippet07}
@@ -159,9 +159,9 @@ coend 的符号是积分符号，“积分变量”位于上标位置：
 
 这就是为什么，在伪 Haskell 中，我们会将 coend 定义为：
 
-\begin{snip}{text}
+\begin{lstlisting}{text}
   exists a. p a a
-\end{snip}
+\end{lstlisting}
 在 Haskell 中编码存在量词的标准方法是使用通用量词的数据构造器。因此我们可以定义：
 
 \src{snippet14}
@@ -192,9 +192,9 @@ coend 是这两个函数的反等化子。反等化子通过识别由同一参�
 \[\Set(\int^x p\ x\ x, c) \cong \int_x \Set(p\ x\ x, c)\]
 让我们在伪 Haskell 中看看它：
 
-\begin{snipv}
+\begin{align}
 (exists x. p x x) -> c \ensuremath{\cong} forall x. p x x -> c
-\end{snipv}
+\end{align}
 它告诉我们，接受存在类型的函数等价于一个多态函数。这非常有意义，因为这样的函数必须准备好处理可能编码在存在类型中的任何一种类型。与此相同的原理告诉我们，接受和类型的函数必须作为 case 语句实现，其中包含一个处理程序元组，每种类型都有一个处理程序。在这里，和类型被 coend 替代，而处理程序族则成为 end 或多态函数。
 
 \section{忍者 Yoneda 引理}
@@ -234,9 +234,9 @@ coend 是这两个函数的反等化子。反等化子通过识别由同一参�
 \src{snippet18}
 这是使用广义代数数据类型（\acronym{GADT} 语法，其中一个自由类型变量（此处为 \code{c}）自动存在量化。数据构造器 \code{Procompose} 因此等价于：
 
-\begin{snip}{text}
+\begin{lstlisting}{text}
   exists c. (q a c, p c b)
-\end{snip}
+\end{lstlisting}
 组合的单位是态射函子——这直接来自于忍者 Yoneda 引理。因此，有意义的是，问是否存在一个范畴，其中预函子作为态射。答案是肯定的，需要注意的是，预函子组合的结合律和单位律仅在自然同构的意义上成立。这样的范畴，法律在同构的基础上成立，被称为双范畴（bicategory），它比 $\cat{2}$-范畴更为普遍。因此我们有一个双范畴 $\cat{Prof}$，其中对象是范畴，态射是预函子，而态射之间的态射（即所谓的二胞元）是自然变换。事实上，我们甚至可以更进一步，因为除了预函子，我们还有常规函子作为范畴之间的态射。具有两种类型态射的范畴称为双范畴。
 
 预函子在 Haskell 镜头库和箭头库中扮演着重要角色。

@@ -253,39 +253,39 @@
 \noindent
 在类型推断中还有一个更高级的拉回用法。通常需要\emph{统一}两个表达式的类型。例如，假设编译器想要推断函数的类型：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
 twice f x = f (f x)
-\end{snip}
+\end{lstlisting}
 它会给所有变量和子表达式分配初步类型。特别是，它将分配：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
 f       :: t0
 x       :: t1
 f x     :: t2
 f (f x) :: t3
-\end{snip}
+\end{lstlisting}
 由此推导出：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
 twice :: t0 -> t1 -> t3
-\end{snip}
+\end{lstlisting}
 它还会生成一组由函数应用规则产生的约束：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
 t0 = t1 -> t2 -- 因为 f 应用于 x
 t0 = t2 -> t3 -- 因为 f 应用于 (f x)
-\end{snip}
+\end{lstlisting}
 这些约束必须通过找到一组类型（或类型变量）来统一，这些类型在代入两个表达式中的未知类型时会产生相同的类型。一个这样的代入是：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
 t1 = t2 = t3 = Int
 twice :: (Int -> Int) -> Int -> Int
-\end{snip}
+\end{lstlisting}
 但显然，这不是最一般的。最一般的代入是通过拉回获得的。我不会详细讨论其细节，因为它们超出了本书的范围，但你可以相信，结果应该是：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
 twice :: (t -> t) -> t -> t
-\end{snip}
+\end{lstlisting}
 其中 \code{t} 是一个自由类型变量。
 
 \section{余极限}

@@ -1,65 +1,65 @@
-\begin{quote}
-  你好啊
+\usepackage{listings}\begin{quote}
+  你好啊CHENG KUN.
   最近一段时间，我一直在酝酿写一本关于范畴论（Category Theory）的书，目标读者是程序员（programmers），注意，不是计算机科学家（computer scientists），而是程序员——工程师（engineers），而不是科学家（scientists）。我知道这听起来很疯狂，而且我也确实感到害怕。我不能否认科学与工程之间存在巨大的差距，因为我在这两方面都有工作经验。但我总是有一种强烈的冲动去解释事物。我对理查德·费曼（Richard Feynman）有着极大的敬佩，他是简明解释的大师。我知道我不是费曼，但我会尽力而为。我首先发布这篇序言，希望能激发读者学习范畴论的兴趣，并希望借此展开讨论并征求反馈意见。\footnote{
     你也可以观看我向现场观众讲授这部分内容的视频，网址为 \href{https://goo.gl/GT2UWU}{https://goo.gl/GT2UWU} （或在 YouTube 上搜索 “bartosz milewski category theory”）。}
 \end{quote}
 
-{Haskell 代码示例0000}
-\begin{lstlisting}[language=Haskell]
-f :: A -> B
-toExp :: (a -> b) -> Exp a b
-fromExp (Lan f (I x)) = \a -> f (a, x)
-instance Functor (FreeF f) where
-    fmap g (FMap h fi) = FMap (g . h) fi
-\end{lstlisting}
+%{Haskell 代码示例0000}
+%\begin{lstlisting}[language=Haskell]
+%f :: A -> B
+%toExp :: (a -> b) -> Exp a b
+%fromExp (Lan f (I x)) = \a -> f (a, x)
+%instance Functor (FreeF f) where
+%    fmap g (FMap h fi) = FMap (g . h) fi
+%\end{lstlisting}
 
-{Haskell 代码示例11111}
-\begin{lstlisting}[language=Haskell]
-f :: A -> B
+%{Haskell 代码示例11111}
+%\begin{lstlisting}[language=Haskell]
+%f :: A -> B
+%
+%toExp :: (a -> b) -> Exp a b
+%toExp f = Lan (f . fst) (I ())
+%
+%fromExp :: Exp a b -> (a -> b)
+%fromExp (Lan f (I x)) = \a -> f (a, x)
+%
+%instance Functor (FreeF f) where
+%    fmap g (FMap h fi) = FMap (g . h) fi
+%\end{lstlisting}
 
-toExp :: (a -> b) -> Exp a b
-toExp f = Lan (f . fst) (I ())
-
-fromExp :: Exp a b -> (a -> b)
-fromExp (Lan f (I x)) = \a -> f (a, x)
-
-instance Functor (FreeF f) where
-    fmap g (FMap h fi) = FMap (g . h) fi
-\end{lstlisting}
-
-{OCaml 代码示例11111}
-\begin{lstlisting}[language=Caml]
-module type Polymorphic_Function_F = sig
-  type a
-  type b
-
-  val f : a -> b
-end
-module FreeFunctor (F : sig
-  type 'a f
-end) : Functor = struct
-  module type F = FreeF with type 'a f = 'a F.f
-
-  type 'a t = (module F with type a = 'a)
-
-  let fmap
-      (type a' b')
-      (f : a' -> b')
-      (module FF : F with type a = a')
-    =
-    (module struct
-      type 'a f = 'a F.f
-      type a = b'
-      type i = FF.i
-
-      let h i = f (FF.h i)
-      let fi = FF.fi
-    end : F
-      with type a = b')
-  ;;
-end
-
-\end{lstlisting}
+%{OCaml 代码示例11111}
+%\begin{lstlisting}[language=Caml]
+%module type Polymorphic_Function_F = sig
+%  type a
+%  type b
+%
+%  val f : a -> b
+%end
+%module FreeFunctor (F : sig
+%  type 'a f
+%end) : Functor = struct
+%  module type F = FreeF with type 'a f = 'a F.f
+%
+%  type 'a t = (module F with type a = 'a)
+%
+%  let fmap
+%      (type a' b')
+%      (f : a' -> b')
+%      (module FF : F with type a = a')
+%    =
+%    (module struct
+%      type 'a f = 'a F.f
+%      type a = b'
+%      type i = FF.i
+%
+%      let h i = f (FF.h i)
+%      let fi = FF.fi
+%    end : F
+%      with type a = b')
+%  ;;
+%end
+%
+%\end{lstlisting}
 
 \lettrine[lhang=0.17]{我}{将尝试}在几段文字中说服你，这本书是为你而写，无论你对在“充裕的业余时间”里学习最抽象的数学分支之一有何反对意见，这些反对意见都是毫无根据的。
 

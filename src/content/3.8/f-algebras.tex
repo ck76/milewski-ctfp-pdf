@@ -83,9 +83,9 @@
 \src{snippet09}
 继续这个过程，我们可以写出一个符号方程：
 
-\begin{snipv}
+\begin{align}
   type RingF\textsubscript{n+1} a = RingF (RingF\textsubscript{n} a)
-\end{snipv}
+\end{align}
 从概念上讲，在重复这个过程无穷次之后，我们最终得到 \code{Expr}。注意 \code{Expr} 不依赖于 \code{a}。我们旅程的起点无关紧要，最终总是到达同一个地方。这并不总是适用于任意范畴中的任意端函子，但在 $\Set$ 范畴中情况较好。
 
 当然，这只是一个牵强的论点，我稍后会对其进行更严格的论证。
@@ -202,9 +202,9 @@ Lambek 定理告诉我们，构造器 \code{Fix} 是同构。我们称其逆运�
 \noindent
 让我们写下这个图的可交换性条件：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
   m = alg . fmap m . unFix
-\end{snip}
+\end{lstlisting}
 我们可以将这个方程解释为 \code{m} 的递归定义。对于由函子 \code{f} 创建的任何有限树，这个递归必然会终止。我们可以通过注意到 \code{fmap m} 在函子 \code{f} 的顶层之下操作来看到这一点。换句话说，它作用于原始树的子节点。子节点总是比原始树浅一层。
 
 当我们将 \code{m} 应用于用 \code{Fix\ f} 构造的树时会发生什么。操作 \code{unFix} 剥去了构造器，暴露了树的顶层。然后我们将 \code{m} 应用于顶节点的所有子节点。这会产生类型为 \code{a} 的结果。最后，我们通过应用非递归求值器 \code{alg} 来组合这些结果。关键点是我们的求值器 \code{alg} 是一个简单的非递归函数。

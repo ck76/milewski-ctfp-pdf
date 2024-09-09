@@ -251,10 +251,10 @@ $\eta$ 被称为单位（unit），而 $\varepsilon$ 被称为余单位（counit
 
 在 Haskell 中，我们可以通过分别与 \code{fst} 和 \code{snd} 组合构造 \code{factorizer} 的逆函数。
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
   p = fst . m
   q = snd . m
-\end{snip}
+\end{lstlisting}
 要完成两种定义积方式的等价性证明，我们还需要证明同态集之间的映射在 $a$，$b$ 和 $c$ 上是自然的。我将此留作给有志读者的练习。
 
 总结我们所做的：一个范畴积可以全局定义为对角函子的\newterm{右伴随}：

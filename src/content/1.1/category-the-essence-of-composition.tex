@@ -15,29 +15,29 @@
 
 在数学中，这样的组合用函数之间的一个小圆圈来表示：$g \circ f$。请注意，组合的顺序是从右到左的。对于某些人来说，这可能有些令人困惑。你可能熟悉 Unix 中的管道符号，如：
 
-\begin{snip}{text}
+\begin{lstlisting}{text}
   lsof | grep Chrome
-\end{snip}
+\end{lstlisting}
 或者在 F\# 中的尖括号 \code{>>}，它们都是从左到右进行操作的。但是在数学和 Haskell 中，函数的组合是从右到左的。如果你将 $g \circ f$ 理解为“f 之后的 g”，这会有所帮助。
 
 让我们通过写一些 C 代码来使这一点更加明确。我们有一个函数 \code{f}，它接受一个类型为 \code{A} 的参数，并返回一个类型为 \code{B} 的值：
 
-\begin{snip}{text}
+\begin{lstlisting}{text}
   B f(A a);
-\end{snip}
+\end{lstlisting}
 还有另一个函数：
 
-\begin{snip}{text}
+\begin{lstlisting}{text}
   C g(B b);
-\end{snip}
+\end{lstlisting}
 它们的组合是：
 
-\begin{snip}{text}
+\begin{lstlisting}{text}
   C g_after_f(A a)
     {
     return g(f(a));
   }
-\end{snip}
+\end{lstlisting}
 这里，你再次看到从右到左的组合：\code{g(f(a))}；这次是在 C 语言中。
 
 我希望我能告诉你，在 C++ 标准库中有一个模板可以接受两个函数并返回它们的组合，但实际上没有。所以我们来试试 Haskell。以下是从 A 到 B 的函数声明：
@@ -51,15 +51,15 @@
 \src{snippet03}
 一旦你看到 Haskell 中的这些东西有多么简单，无法在 C++ 中表达简单的函数概念就有点尴尬了。事实上，Haskell 允许你使用 Unicode 字符，所以你可以这样写组合：
 % 不要“数学化”此代码块
-\begin{snip}{text}
+\begin{lstlisting}{text}
   g ◦ f
-\end{snip}
+\end{lstlisting}
 
 你甚至可以使用 Unicode 的双冒号和箭头：
 % 不要“数学化”此代码块
-\begin{snipv}
+\begin{align}
   f \ensuremath{\Colon} A → B
-\end{snipv}
+\end{align}
 所以这是第一课 Haskell：双冒号表示“类型为\ldots{}”。一个函数类型是通过在两个类型之间插入一个箭头创建的。你通过在两个函数之间插入一个点（或 Unicode 圆圈）来组合它们。
 
 \section{组合的性质 (Properties of Composition)}
@@ -85,9 +85,9 @@
 \end{enumerate}
 在处理函数时，恒等箭头实现为恒等函数（identity function），它仅返回其参数。这个实现对于每种类型都是相同的，这意味着该函数是普遍多态的。在 C++ 中，我们可以将其定义为一个模板：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class T> T id(T x) { return x; }
-\end{snip}
+\end{lstlisting}
 当然，在 C++ 中，事情没有那么简单，因为你不仅要考虑你传递的是什么，还要考虑如何传递（即按值、按引用、按 const 引用、按移动等）。
 
 在 Haskell 中，恒等函数是标准库（Prelude）的一部分。以下是其声明和定义：

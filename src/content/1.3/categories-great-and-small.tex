@@ -58,31 +58,31 @@ Haskell 类不像 C++ 类那么具侵入性。当你定义一个新类型时，�
 
 关于 Haskell 语法的一点说明：任何中缀运算符都可以通过将其括在括号中变成一个二元函数。给定两个字符串，你可以通过在它们之间插入 \code{++} 来连接它们：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
   "Hello " ++ "world!"
-\end{snip}
+\end{lstlisting}
 或通过将它们作为两个参数传递给括号中的 \code{(++)}：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
 (++) "Hello " "world!"
-\end{snip}
+\end{lstlisting}
 注意，函数的参数之间没有逗号，也没有被括号包围。（这可能是学习 Haskell 时最难适应的事情。）
 
 值得强调的是，Haskell 允许你表达函数的相等性，如：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
   mappend = (++)
-\end{snip}
+\end{lstlisting}
 从概念上讲，这与表达函数产生的值的相等性不同，如：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
   mappend s1 s2 = (++) s1 s2
-\end{snip}
+\end{lstlisting}
 前者翻译成 $\Hask$（或忽略底的情况下的 $\Set$）范畴中的态射相等性。这种方程不仅更简洁，而且通常可以推广到其他范畴。后者称为\newterm{外延}（extensional）相等，表示对于任何两个输入字符串，\code{mappend} 和 \code{(++)} 的输出是相同的。由于参数的值有时被称为\newterm{点}（points）（如：$f$ 在点 $x$ 的值），这被称为逐点相等。未指定参数的函数相等被描述为\newterm{无点}（point-free）。（顺便提一下，无点方程通常涉及函数的组合，它用一个点符号表示，所以这对初学者来说可能有点混淆。）
 
 在 C++ 中最接近声明一个幺半群的方法是使用 C++20 标准的 concept 特性。
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class T>
   struct mempty;
 
@@ -94,7 +94,7 @@ Haskell 类不像 C++ 类那么具侵入性。当你定义一个新类型时，�
       { mempty<M>::value() } -> std::same_as<M>;
       { mappend(m, m) } -> std::same_as<M>;
   };
-\end{snip}
+\end{lstlisting}
 第一个定义是一个结构，旨在为每个专门化类型保存中性元素。
 
 关键字 \code{delete} 意味着没有定义默认值：它必须在具体情况下指定。同样，对于 \code{mappend} 也没有默认值。
@@ -103,7 +103,7 @@ concept \code{Monoid} 检查是否存在适当的 \code{mempty} 和 \code{mappen
 
 可以通过提供适当的专门化和重载来实例化 Monoid 概念：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<>
   struct mempty<std::string> {
     static std::string value() { return ""; }
@@ -113,7 +113,7 @@ concept \code{Monoid} 检查是否存在适当的 \code{mempty} 和 \code{mappen
   std::string mappend(std::string s1, std::string s2) {
     return s1 + s2;
   }
-\end{snip}
+\end{lstlisting}
 
 \section{作为范畴的幺半群 (Monoid as Category)}
 
