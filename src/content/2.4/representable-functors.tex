@@ -39,52 +39,19 @@
 \[\cat{C}(a, f) h = f \circ h\]
 由于这个构造在任何范畴中都有效，因此它也必须在 Haskell 类型的范畴中有效。在 Haskell 中，同态函子更为人所知的是 \code{Reader} 函子：
 
-\begin{lstlisting}[language=OCaml]
-type ('a, 'x) reader = 'a -> 'x
+\src{snippet01}
 
-\end{lstlisting}
-
-\begin{lstlisting}[language=OCaml]
-module ReaderFunctor (T : sig
-  type r
-end) : Functor = struct
-  type 'a t = (T.r, 'a) reader
-
-  let fmap f h a = f (h a)
-end
-
-\end{lstlisting}
+\src{snippet02}
 现在让我们考虑，如果不是固定同态集的源，而是固定目标，会发生什么。换句话说，我们在问，映射 $\cat{C}(-, a)$ 是否也是一个函子。它是一个函子，但不是协变的（covariant），而是逆变的（contravariant）。这是因为相同的端到端匹配的态射组合结果是在 $f$ 后组合（postcomposition）；而不是像 $\cat{C}(a, -)$ 那样是前组合（precomposition）。
 
 我们已经在 Haskell 中看到了这个逆变函子。我们称之为 \code{Op}：
 
-\begin{lstlisting}[language=OCaml]
-type ('a, 'x) op = 'x -> 'a
+\src{snippet03}
 
-\end{lstlisting}
-
-\begin{lstlisting}[language=OCaml]
-module OpContravariant (T : sig
-  type r
-end) : Contravariant = struct
-  type 'a t = (T.r, 'a) op
-
-  let contramap f h b = h (f b)
-end
-
-\end{lstlisting}
+\src{snippet04}
 最后，如果我们让两个对象都变化，我们得到一个双函子（profunctor）$\cat{C}(-, =)$，它在第一个参数中是逆变的，而在第二个参数中是协变的（为了强调两个参数可以独立变化，我们在第二个占位符上使用双破折号）。当我们谈论函子性时，我们已经见过这个双函子：
 
-\begin{lstlisting}[language=OCaml]
-module ProfunctorArrow : Profunctor = struct
-  type ('a, 'b) p = 'a -> 'b
-
-  let dimap f g p = compose g (compose p f)
-  let lmap f p = (flip compose) f p
-  let rmap = compose
-end
-
-\end{lstlisting}
+\src{snippet05}
 重要的教训是，这个观察在任何范畴中都成立：对象到同态集的映射是函子性的。由于逆变性等同于从对偶范畴的映射，我们可以简洁地陈述这一事实：
 \[C(-, =) \Colon \cat{C}^\mathit{op} \times \cat{C} \to \Set\]
 
@@ -108,38 +75,16 @@ end
 \[F f \circ \alpha_x = \alpha_y \circ \cat{C}(a, f)\]
 在 Haskell 中，我们会用多态函数替换自然变换：
 
-\begin{lstlisting}[language=OCaml]
-module type NT_AX_FX = sig
-  type a
-  type 'x t
-
-  val alpha : (a -> 'x) -> 'x t
-end
-
-\end{lstlisting}
+\src{snippet06}
 使用可选的 \code{forall} 量词。自然性条件
 
-\begin{lstlisting}[language=OCaml]
-compose (F.fmap f) NT.alpha = compose NT.alpha (F.fmap f)
-
-\end{lstlisting}
+\src{snippet07}
 由于参数化（parametricity）的原因自动满足（这是我之前提到的那些免费的定理之一），理解左边的 \code{fmap} 由函子 $F$ 定义，而右边的由 reader 函子定义。由于 reader 的 \code{fmap} 只是函数前组合（function precomposition），我们可以更明确一点。作用于 $\cat{C}(a, x)$ 的一个元素 $h$，自然性条件简化为：
 
-\begin{lstlisting}[language=OCaml]
-F.fmap f (N.alpha h) = N.alpha (compose f h)
-
-\end{lstlisting}
+\src{snippet08}
 另一个变换 \code{beta} 走相反的方向：
 
-\begin{lstlisting}[language=OCaml]
-module type NT_FX_AX = sig
-  type a
-  type 'x t
-
-  val beta : 'x t -> a -> 'x
-end
-
-\end{lstlisting}
+\src{snippet09}
 它必须满足自然性条件，并且必须是 \code{alpha} 的逆：
 
 \begin{lstlisting}{text}
@@ -149,74 +94,30 @@ end
 
 让我给你一个 Haskell 中的例子，使用列表函子和 \code{Int} 作为 \code{a}。这是一个可以完成任务的自然变换：
 
-\begin{lstlisting}[language=OCaml]
-module NT_Impl (F : Functor with type 'a t = 'a list) :
-  NT_AX_FX with type a = int and type 'x t = 'x list = struct
-  type a = int
-  type 'x t = 'x list
-
-  let alpha : 'x. (int -> 'x) -> 'x list = fun h -> F.fmap h [ 12 ]
-end
-
-\end{lstlisting}
+\src{snippet10}
 我任意选择了数字 12，并用它创建了一个单元素列表。然后我可以对这个列表调用 \code{fmap} 函数 \code{h}，得到一个类型为 \code{h} 返回类型的列表。（实际上，这样的变换与整数列表一样多。）
 
 自然性条件等价于 \code{map}（列表版本的 \code{fmap}）的可组合性：
 
-\begin{lstlisting}[language=OCaml]
-F.fmap f (F.fmap h [12]) = F.fmap (compose f h) [12]
-
-\end{lstlisting}
+\src{snippet11}
 但如果我们试图找到逆变换，我们需要从一个任意类型 \code{x} 的列表到一个返回 \code{x} 的函数：
 
-\begin{lstlisting}[language=OCaml]
-module type NT_ListX_IntX = sig
-  type a = int
-  type 'x t = 'x list
-
-  val beta : 'x t -> a -> 'x
-end
-
-\end{lstlisting}
+\src{snippet12}
 你可能会想到从列表中检索一个 \code{x}，例如，使用 \code{head}，但这对空列表不起作用。注意，这里没有一种类型 \code{a}（代替 \code{Int}）可以奏效。所以列表函子不是可表示的。
 
 还记得我们谈到 Haskell 的（自）函子有点像容器吗？同样，我们可以将可表示函子视为存储函数调用结果的缓存容器（在 Haskell 中，同态集的成员只是函数）。表示对象，$\cat{C}(a, -)$ 中的类型 $a$，被认为是键类型，我们可以用它来访问函数的表格化值。我们称为 \code{alpha} 的变换称为 \code{tabulate}，它的逆变换 \code{beta} 称为 \code{index}。以下是一个（略微简化的）\code{Representable} 类的定义：
 
-\begin{lstlisting}[language=OCaml]
-module type Representable = sig
-  type 'x t
-  type rep (* Representing type 'a' *)
-
-  val tabulate : (rep -> 'x) -> 'x t
-  val index : 'x t -> rep -> 'x
-end
-
-\end{lstlisting}
+\src{snippet13}
 注意，表示类型，即我们所说的 $a$，这里称为 \code{Rep f}，是 \code{Representable} 定义的一部分。星号只是意味着 \code{Rep f} 是一个类型（而不是类型构造器或其他更奇特的种类）。
 
 无限列表或流（streams），不能是空的，是可表示的。
 
-\begin{lstlisting}[language=OCaml]
-type 'a stream = Cons of 'a * 'a stream Lazy.t
-
-\end{lstlisting}
+\src{snippet14}
 你可以将它们视为接受 \code{Integer} 作为参数的函数的缓存值。（严格来说，我应该使用非负自然数，但我不想让代码变得复杂。）
 
 要 \code{tabulate} 这样的函数，你需要创建一个无限的值流。当然，这只能在 Haskell 是惰性求值（lazy evaluation）的情况下实现。值是在需求时计算的。你可以使用 \code{index} 访问缓存的值：
 
-\begin{lstlisting}[language=OCaml]
-module StreamRepresentable : Representable = struct
-  type rep = int
-  type 'x t = 'x stream
-
-  let rec tabulate f = Cons (f 0, lazy (tabulate (compose f succ)))
-
-  let rec index (Cons (b, bs)) n =
-    if n = 0 then b else index (Lazy.force bs) (n - 1)
-  ;;
-end
-
-\end{lstlisting}
+\src{snippet15}
 有趣的是，你可以实现一个单一的缓存机制来覆盖一整个家族的函数，返回类型任意。
 
 逆变函子的可表示性类似定义，不同之处在于我们保持 $\cat{C}(-, a)$ 的第二个参数固定。或者，等效地，我们可以考虑从 $\cat{C}^\mathit{op}$ 到 $\Set$ 的函子，因为 $\cat{C}^\mathit{op}(a, -)$ 与 $\cat{C}(-, a)$ 相同。

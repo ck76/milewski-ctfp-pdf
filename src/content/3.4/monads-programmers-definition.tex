@@ -34,21 +34,7 @@
 \end{lstlisting}
 将此与 Haskell 的一个（风格化的）版本相比，该版本明确了函数组合：
 
-\begin{lstlisting}[language=OCaml]
-(* Depends on OCaml library Core *)
-module Vlen (F : Functor with type 'a t = 'a list) = struct
-  let summable =
-    (module Float : Base__.Container_intf.Summable
-      with type t = float)
-
-
-  let vlen =
-    Float.sqrt
-    <.> List.sum summable ~f:Fn.id
-    <.> F.fmap (flip Float.int_pow 2)
-end
-
-\end{lstlisting}
+\src{snippet01}
 （这里，为了让事情变得更加神秘，我通过将第二个参数设置为 \code{2} 来部分应用指数运算符 \code{(\^{})}。）
 
 我并不是在争论 Haskell 的无点风格总是更好，只是说函数组合是我们在编程中所做的一切的基础。尽管我们实际上是在组合函数，Haskell 确实尽了很大的努力，提供了名为 \code{do} 语法糖的命令式风格语法，用于 monad 组合。稍后我们将看到它的使用。但首先，让我解释为什么我们首先需要 monad 组合。
@@ -57,22 +43,10 @@ end
 
 我们之前通过装饰普通函数得到了 \hyperref[kleisli-categories]{writer monad}。特别的装饰是通过将它们的返回值与字符串或更一般的，单态元素配对完成的。现在我们可以认识到这种装饰是一个函子：
 
-\begin{lstlisting}[language=OCaml]
-module WriterInstance (W : sig
-  type w
-end) : Functor with type 'a t = (W.w, 'a) writer = struct
-  type 'a t = (W.w, 'a) writer
-
-  let fmap f (Writer (a, w)) = Writer (f a, w)
-end
-
-\end{lstlisting}
+\src{snippet02}
 随后我们找到了组合装饰函数或 Kleisli 箭头的方法，Kleisli 箭头是形如：
 
-\begin{lstlisting}[language=OCaml]
-'a -> ('w, 'b) writer
-
-\end{lstlisting}
+\src{snippet03}
 的函数。我们在组合内部实现了日志的累积。
 
 我们现在准备好给出 Kleisli 范畴的更一般定义。我们从一个范畴 $\cat{C}$ 和一个自函子 $m$ 开始。对应的 Kleisli 范畴 $\cat{K}$ 具有与 $\cat{C}$ 相同的对象，但它的态射不同。在 $\cat{K}$ 中两个对象 $a$ 和 $b$ 之间的态射由原范畴 $\cat{C}$ 中的态射 $a \to m\ b$ 实现。需要注意的是，我们将 $\cat{K}$ 中的 Kleisli 箭头视为 $a$ 和 $b$ 之间的态射，而不是 $a$ 和 $m\ b$ 之间的态射。
@@ -83,15 +57,7 @@ end
 
 在 Haskell 中，Kleisli 组合使用鱼算子 \code{>=>} 定义，单位箭头是一个多态函数，称为 \code{return}。以下是使用 Kleisli 组合定义 monad 的方法：
 
-\begin{lstlisting}[language=OCaml]
-module type Monad = sig
-  type 'a m
-
-  val ( >=> ) : ('a -> 'b m) -> ('b -> 'c m) -> 'a -> 'c m
-  val return : 'a -> 'a m
-end
-
-\end{lstlisting}
+\src{snippet04}
 请记住，有许多等效的方式来定义 monad，而这并不是 Haskell 生态系统中的主要定义。我喜欢它的概念简单性和它提供的直觉，但还有其他定义在编程时更为方便。我们稍后会讨论它们。
 
 在这种形式中，monad 定律很容易表达。它们不能在 Haskell 中强制执行，但它们可以用于等式推理。它们只是 Kleisli 范畴的标准组合定律：
@@ -105,123 +71,48 @@ f >=> return = f                  -- 右单位
 
 回到我们的 \code{Writer} 例子：记录函数（\code{Writer} 函子的 Kleisli 箭头）形成一个范畴，因为 \code{Writer} 是一个 monad：
 
-\begin{lstlisting}[language=OCaml]
-module WriterMonad (W : Monoid) :
-  Monad with type 'a m = (W.a, 'a) writer = struct
-  type 'a m = (W.a, 'a) writer
-
-  let ( >=> ) f g a =
-    let (Writer (b, w)) = f a in
-    let (Writer (c, w')) = g b in
-    Writer (c, W.mappend w w')
-
-
-  let return a = Writer (a, W.mempty)
-end
-
-\end{lstlisting}
+\src{snippet05}
 只要 \code{w} 的幺半群定律得到满足，\code{Writer w} 的 monad 定律也就满足了（这些定律在 Haskell 中也不能强制执行）。
 
 对于 \code{Writer} monad，有一个名为 \code{tell} 的有用的 Kleisli 箭头。它的唯一目的是将其参数添加到日志中：
 
-\begin{lstlisting}[language=OCaml]
-let tell w = Writer ((), w)
-
-\end{lstlisting}
+\src{snippet06}
 我们稍后将其作为其他 monadic 函数的构建块使用。
 
 \section{鱼的解剖（Fish Anatomy）}
 
 在为不同的 monad 实现鱼算子时，你会很快意识到许多代码是重复的，可以很容易地提取出来。首先，两个函数的 Kleisli 组合必须返回一个函数，因此它的实现不妨从一个接受类型为 \code{a} 的参数的 lambda 开始：
 
-\begin{lstlisting}[language=OCaml]
-let (>=>) f g = fun a -> ...
-
-\end{lstlisting}
+\src{snippet07}
 我们能对这个参数做的唯一事情是将其传递给 \code{f}：
 
-\begin{lstlisting}[language=OCaml]
-let (>=>) f g = fun a -> 
-  let mb = f a in
-  ...
-
-\end{lstlisting}
+\src{snippet08}
 在这一点上，我们必须在拥有类型为 \code{m b} 的对象和函数 \code{g :: b -> m c} 的情况下，生成类型为 \code{m c} 的结果。让我们定义一个为我们完成此任务的函数。这个函数称为 \emph{bind（绑定）}，通常以中缀运算符的形式书写：
 
-\begin{lstlisting}[language=OCaml]
-val ( >>= ) : 'a m -> ('a -> 'b m) -> 'b m
-
-\end{lstlisting}
+\src{snippet09}
 对于每个 monad，我们可以不定义鱼算子，而是定义 bind。实际上，Haskell 的标准 monad 定义使用 bind：
 
-\begin{lstlisting}[language=OCaml]
-module type Monad_Bind = sig
-  type 'a m
-
-  val ( >>= ) : 'a m -> ('a -> 'b m) -> 'b m
-  val return : 'a -> 'a m
-end
-
-\end{lstlisting}
+\src{snippet10}
 以下是 \code{Writer} monad 的 bind 定义：
 
-\begin{lstlisting}[language=OCaml]
-module WriterMonadBind (W : Monoid) = struct
-  let ( >>= ) (Writer (a, w)) f =
-    let (Writer (b, w')) = f a in
-    Writer (b, W.mappend w w')
-end
-
-\end{lstlisting}
+\src{snippet11}
 它确实比鱼算子的定义短。
 
 进一步拆解 bind 是可能的，利用 \code{m} 是一个函子的事实。我们可以使用 \code{fmap} 将函数 \code{a -> m b} 应用于 \code{m a} 的内容。这将把 \code{a} 变成 \code{m b}。应用的结果因此是类型 \code{m (m b)}。这不是我们想要的结果——我们需要类型为 \code{m b} 的结果——但我们已经很接近了。我们所需要的只是一个可以压缩或展平 \code{m} 的双重应用的函数。这个函数称为 \code{join}：
 
-\begin{lstlisting}[language=OCaml]
-val join : ('a m) m : 'a m
-
-\end{lstlisting}
+\src{snippet12}
 使用 \code{join}，我们可以将 bind 重写为：
 
-\begin{lstlisting}[language=OCaml]
-module BindUsingFunctionAndJoin (F : Functor) = struct
-  type 'a m = 'a F.t
-
-  external join : 'a m m -> 'a m = "%identity"
-  (** Make the type signature of join work 
-  without providing an implementation **)
-
-  let ( >>= ) ma f = join (F.fmap f ma)
-end
-
-\end{lstlisting}
+\src{snippet13}
 这引导我们到定义 monad 的第三种选择：
 
-\begin{lstlisting}[language=OCaml]
-module type Monad_Join = functor (F : Functor) -> sig
-  type 'a m = 'a F.t
-
-  val join : 'a m m -> 'a m
-  val return : 'a -> 'a m
-end
-
-\end{lstlisting}
+\src{snippet14}
 在这里，我们显式要求 \code{m} 是一个 \code{Functor（函子）}。在之前的两个 monad 定义中，我们不必这样做。这是因为任何支持鱼算子或 bind 运算符的类型构造函数 \code{m} 都自动是一个函子。例如，可以用 bind 和 \code{return} 来定义 \code{fmap}：
 
-\begin{lstlisting}[language=OCaml]
-module Fmap_Using_Monad (M : Monad_Bind) = struct
-  let fmap f ma = M.( >>= ) ma (fun a -> M.return (f a))
-end
-
-\end{lstlisting}
+\src{snippet15}
 为了完整性，这里是 \code{Writer} monad 的 \code{join}：
 
-\begin{lstlisting}[language=OCaml]
-module Writer_Join (W : Monoid) = struct
-  let join (Writer (Writer (a, w'), w)) = Writer (a, W.mappend w w')
-end
-
-\end{lstlisting}
+\src{snippet16}
 
 \section{\texttt{do} 语法（The \texttt{do} Notation）}
 
@@ -235,113 +126,35 @@ end
 
 例如，使用我们之前用于说明 \code{Writer} monad 中 Kleisli 箭头组合的示例。使用我们当前的定义，它可以重写为：
 
-\begin{lstlisting}[language=OCaml]
-(* Import Str module using this - #require "str" *)
-let to_words s = Writer (Str.split (Str.regexp "\b") s, "to_words")
-
-module Writer_Process (W : Monad with type 'a m = (string, 'a) writer) =
-struct
-  let process = W.(up_case >=> to_words)
-end
-
-\end{lstlisting}
+\src{snippet17}
 这个函数将输入字符串中的所有字符转换为大写，并将其拆分为单词，同时记录它的操作。
 
 在 \code{do} 语法中，它看起来像这样：
 
-\begin{lstlisting}[language=OCaml]
-module Process_Do
-    (W : Monad_Bind with type 'a m = (string, 'a) writer) =
-struct
-  (* Needs OCaml compiler >= 4.08 *)
-  let ( let* ) = W.( >>= )
-
-  let process s =
-    let* up_str = up_case s in
-    to_words up_str
-end
-
-\end{lstlisting}
+\src{snippet18}
 在这里，\code{upStr} 只是一个 \code{String}，尽管 \code{upCase} 生成了一个 \code{Writer}：
 
-\begin{lstlisting}[language=OCaml]
-let up_case s = Writer (String.uppercase s, "up_case ")
-
-\end{lstlisting}
+\src{snippet19}
 这是因为 \code{do} 块由编译器解糖为：
 
-\begin{lstlisting}[language=OCaml]
-module Process_Bind_Without_Do
-    (W : Monad_Bind with type 'a m = (string, 'a) writer) =
-struct
-  let process s = W.(up_case s >>= fun up_str -> to_words up_str)
-end
-
-\end{lstlisting}
+\src{snippet20}
 \code{upCase} 的 monadic 结果被绑定到一个 lambda，该 lambda 接受一个 \code{String}。这个字符串的名字出现在 \code{do} 块中。当读取这一行时：
 
-\begin{lstlisting}[language=OCaml]
-let* up_str <- up_case s
-
-\end{lstlisting}
+\src{snippet21}
 我们说 \code{upStr} \emph{获得} 了 \code{upCase s} 的结果。
 
 当我们内联 \code{toWords} 时，伪命令式风格更加明显。我们用调用 \code{tell} 替换它，后者记录字符串 \code{"toWords "}，然后调用 \code{return} 并将结果拆分为字符串 \code{upStr} 使用 \code{words}。请注意，\code{words} 是一个作用于字符串的常规函数。
 
-\begin{lstlisting}[language=OCaml]
-module Process_Tell
-    (W : Monad_Bind with type 'a m = (string, 'a) writer) =
-struct
-  (* Needs OCaml compiler >= 4.08 *)
-  let ( let* ) = W.( >>= )
-  let tell w = Writer ((), w)
-
-  let process s =
-    let* up_str = up_case s in
-    let* _ = tell "to_words " in
-    to_words up_str
-end
-
-\end{lstlisting}
+\src{snippet22}
 在这里，do 块中的每一行都会在解糖后的代码中引入一个新的嵌套 bind：
 
-\begin{lstlisting}[language=OCaml]
-module Process_Bind_Without_Do
-    (W : Monad_Bind with type 'a m = (string, 'a) writer) =
-struct
-  let tell w = Writer ((), w)
-
-  let process s =
-    W.(
-      up_case s
-      >>= fun up_str -> tell "to_words" >>= fun _ -> to_words up_str)
-end
-
-\end{lstlisting}
+\src{snippet23}
 请注意，\code{tell} 生成一个单位值，因此不必将其传递给后面的 lambda。忽略 monadic 结果的内容（但不忽略其效果——此处对日志的贡献）是相当常见的，因此有一个特殊运算符可以在这种情况下替换 bind：
 
-\begin{lstlisting}[language=OCaml]
-module Monad_Ops (M : Monad_Bind) = struct
-  let ( >> ) m k = M.(m >>= fun _ -> k)
-end
-
-\end{lstlisting}
+\src{snippet24}
 我们代码的实际解糖如下所示：
 
-\begin{lstlisting}[language=OCaml]
-module Process_Bind_Without_Do
-    (W : Monad_Bind with type 'a m = (string, 'a) writer) =
-struct
-  open Monad_Ops (W)
-
-  let tell w = Writer ((), w)
-
-  let process s =
-    W.(
-      up_case s >>= fun up_str -> tell "to_words" >> to_words up_str)
-end
-
-\end{lstlisting}
+\src{snippet25}
 一般来说，\code{do} 块由行（或子块）组成，这些行（或子块）要么使用左箭头引入新名称，然后这些名称在代码的其余部分中可用，要么仅用于副作用而执行。行之间的 bind 运算符是隐式的。顺便说一下，在 Haskell 中，可以用大括号和分号替换 \code{do} 块中的格式。这为将 monad 描述为重载分号的方式提供了依据。
 
 请注意，在解糖 \code{do} 语法时，lambda 和 bind 运算符的嵌套对 do 块其余部分的执行产生了影响，具体取决于每一行的结果。这一特性可以用来引入复杂的控制结构，例如模拟异常。

@@ -42,40 +42,13 @@
 
 我希望我能告诉你，在 C++ 标准库中有一个模板可以接受两个函数并返回它们的组合，但实际上没有。所以我们来试试 Haskell。以下是从 A 到 B 的函数声明：
 
-\begin{lstlisting}[language=OCaml]
-module type Polymorphic_Function_F = sig
-  type a
-  type b
-
-  val f : a -> b
-end
-
-\end{lstlisting}
+\src{snippet01}
 类似地：
 
-\begin{lstlisting}[language=OCaml]
-module type Polymorphic_Function_G = sig
-  type b
-  type c
-
-  val g : b -> c
-end
-
-\end{lstlisting}
+\src{snippet02}
 它们的组合是：
 
-\begin{lstlisting}[language=OCaml]
-module Compose_Example
-    (F : Polymorphic_Function_F)
-    (G : Polymorphic_Function_G with type b = F.b) =
-struct
-  (** OCaml doesn't have a compose operator. So, creating one. **)
-  let ( >> ) g f x = g (f x)
-
-  let compose : 'a -> 'c = G.g >> F.f
-end
-
-\end{lstlisting}
+\src{snippet03}
 一旦你看到 Haskell 中的这些东西有多么简单，无法在 C++ 中表达简单的函数概念就有点尴尬了。事实上，Haskell 允许你使用 Unicode 字符，所以你可以这样写组合：
 % 不要“数学化”此代码块
 \begin{lstlisting}{text}
@@ -99,18 +72,7 @@ end
   \[h \circ (g \circ f) = (h \circ g) \circ f = h \circ g \circ f\]
   在（伪）Haskell 中：
 
-\begin{lstlisting}[language=OCaml]
-module Compose_Three_GF = functor(F:Polymorphic_Function_F)(G:Polymorphic_Function_G with type b = F.b)(H:Polymorphic_Function_H with type c = G.c) -> struct
-  let compose : 'a -> 'd = H.h >> (G.g >> F.f)
-end
-
-module Compose_Three_HG = functor(F:Polymorphic_Function_F)(G:Polymorphic_Function_G with type b = F.b)(H:Polymorphic_Function_H with type c = G.c) -> struct
-  let compose : 'a -> 'd = (H.h >> G.g) >> F.f
-end
-
-Compose_Three_GF.compose = Compose_Three_HG.compose
-
-\end{lstlisting}
+  \src{snippet04}[b]
   （我说“伪”，因为函数的等号并没有定义。）
 
   当处理函数时，结合性是显而易见的，但在其他范畴中可能并不明显。
@@ -130,10 +92,7 @@ Compose_Three_GF.compose = Compose_Three_HG.compose
 
 在 Haskell 中，恒等函数是标准库（Prelude）的一部分。以下是其声明和定义：
 
-\begin{lstlisting}[language=OCaml]
-let id x = x
-
-\end{lstlisting}
+\src{snippet05}
 正如你所见，在 Haskell 中，多态函数非常简单。在声明中，你只需用类型变量替换类型。诀窍在于：具体类型的名称总是以大写字母开头，类型变量的名称以小写字母开头。所以这里的 \code{a} 代表所有类型。
 
 Haskell 函数定义由函数名和形式参数组成——这里只是一个 \code{x}。函数体在等号后面。对于新手来说，这种简洁性常常令人震惊，但你很快就会发现它是非常合理的。函数定义和函数调用是函数式编程的基础，因此它们的语法被简化到最小。不仅参数列表没有括号，参数之间也没有逗号（稍后你会看到，当我们定义多参数函数时）。
@@ -144,11 +103,7 @@ Haskell 函数定义由函数名和形式参数组成——这里只是一个 \c
 
 恒等条件可以写成（再次在伪 Haskell 中）：
 
-\begin{lstlisting}[language=OCaml]
-f >> id
-id >> f
-
-\end{lstlisting}
+\src{snippet06}
 你可能会问自己：为什么有人会在意恒等函数——一个什么都不做的函数？再想想，为什么我们要在意数字零？零是无的符号。古罗马人的数字系统中没有零，他们依然能够建造出卓越的道路和水渠，其中一些至今仍在使用。
 
 像零或 $\id$ 这样的中立值在处理符号变量时非常有用。这就是为什么古罗马人在代数方面并不擅长，而阿拉伯人和波斯人，由于熟悉零的概念，则擅长代数。所以恒等函数在作为高阶函数的参数或返回值时非常方便。高阶函数使得函数的符号操作成为可能。它们是函数的代数。

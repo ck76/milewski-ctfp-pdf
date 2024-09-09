@@ -4,20 +4,10 @@
 
 你可以在最基本的层面上看到这种差异。组合本身可以以声明式的方式定义；例如，\code{h} 是在 \code{f} 之后的 \code{g} 的组合：
 
-\begin{lstlisting}[language=OCaml]
-(* Assume g and f are already defined *)
-let h = compose g f
-
-\end{lstlisting}
+\src{snippet01}
 或者以命令式的方式；例如，先调用 \code{f}，记住调用的结果，然后用这个结果调用 \code{g}：
 
-\begin{lstlisting}[language=OCaml]
-let h x =
-  let y = f x in
-  g y
-;;
-
-\end{lstlisting}
+\src{snippet02}
 程序的命令式版本通常被描述为按时间顺序排列的一系列动作。特别是，必须在 \code{f} 执行完成后，才能调用 \code{g}。至少，这是概念图——在一个懒惰语言中，使用按需调用参数传递，实际的执行可能有所不同。
 
 事实上，取决于编译器的巧妙程度，声明式和命令式代码在执行上可能几乎没有差异。但是这两种方法在我们解决问题的方式以及由此产生的代码的可维护性和可测试性上存在很大差异。
