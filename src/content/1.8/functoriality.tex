@@ -21,7 +21,15 @@
 
 让我们在 Haskell 中定义一个双函子。在这种情况下，所有三个范畴都是相同的：Haskell 类型的范畴。双函子是一个接受两个类型参数的类型构造器。以下是来自库 \code{Control.Bifunctor} 的 \code{Bifunctor} 类型类的定义：
 
-\src{snippet01}
+\begin{lstlisting}[language=Haskell]
+class Bifunctor f where 
+    bimap :: (a -> c) -> (b -> d) -> f a b -> f c d
+    bimap g h = first g . second h
+    first :: (a -> c) -> f a b -> f c b
+    first g = bimap g id
+    second :: (b -> d) -> f a b -> f a d
+    second = bimap id
+\end{lstlisting}
 
 \begin{figure}[H]
   \centering\includegraphics[width=0.3\textwidth]{images/bimap.jpg}
@@ -56,10 +64,15 @@
 
 双函子的重要例子之一是范畴积——两个对象的积，它由一个\hyperref[products-and-coproducts]{通用构造}定义。如果对于任意一对对象都存在积，那么从这些对象到积的映射是双函子的。这在一般情况下成立，特别是在 Haskell 中也是如此。以下是配对构造器的 \code{Bifunctor} 实例——最简单的积类型：
 
-\src{snippet02}[b]
+\begin{lstlisting}[language=Haskell]
+instance Bifunctor (,) where 
+    bimap f g (x, y) = (f x, g y)
+\end{lstlisting}
 没有太多选择：\code{bimap} 简单地将第一个函数应用于第一个组件，将第二个函数应用于配对的第二个组件。考虑到类型，代码几乎是自动生成的：
 
-\src{snippet03}
+\begin{lstlisting}[language=Haskell]
+bimap :: (a -> c) -> (b -> d) -> (a, b) -> (c, d)
+\end{lstlisting}
 这里双函子的作用是生成类型的对，例如：
 
 \begin{lstlisting}[language=Haskell]
@@ -67,7 +80,11 @@
 \end{lstlisting}
 通过对偶，余积，如果它定义在范畴中的每对对象上，也将是一个双函子。在 Haskell 中，这由 \code{Either} 类型构造器作为 \code{Bifunctor} 实例体现：
 
-\src{snippet04}[b]
+\begin{lstlisting}[language=Haskell]
+instance Bifunctor Either where
+    bimap f _ (Left x) = Left (f x)
+    bimap _ g (Right y) = Right (g y)
+\end{lstlisting}
 这段代码也几乎是自动生成的。
 
 现在，记得我们讨论过的单元范畴吗？单元范畴定义了一个作用于对象的二元操作符，以及一个单位对象。我提到过，相对于笛卡尔积，$\Set$ 是一个单元范畴，单例集合作为单位。而且它也是一个相对于不相交并集的单元范畴，空集合作为单位。我没有提到的是，单元范畴的一个要求是二元操作符是一个双函子。这是一个非常重要的要求——我们希望单元积与范畴的结构兼容，该结构由态射定义。现在我们离单元范畴的完整定义又近了一步（我们还需要学习自然性，然后我们才能到达那里）。
@@ -80,44 +97,68 @@
 
 然后，有些元素只是简单地封装了类型参数本身，比如 \code{Maybe} 中的 \code{Just}。它们等价于恒等函子。我之前提到过恒等函子，作为 \emph{Cat} 中的恒等态射，但没有给出它在 Haskell 中的定义。这里是：
 
-\src{snippet05}
+\begin{lstlisting}[language=Haskell]
+data Identity a = Identity a
+\end{lstlisting}
 
-\src{snippet06}
+\begin{lstlisting}[language=Haskell]
+instance Functor Identity where
+    fmap f (Identity x) = Identity (f x)
+\end{lstlisting}
 你可以将 \code{Identity} 视为始终存储一个类型 \code{a} 的（不可变的）值的最简单的容器。
 
 代数数据结构中的其他所有内容都是使用这些两个原语通过积与和构造的。
 
 有了这个新知识，让我们重新审视 \code{Maybe} 类型构造器：
 
-\src{snippet07}
+\begin{lstlisting}[language=Haskell]
+data Maybe a = Nothing | Just a
+\end{lstlisting}
 它是两个类型的和，而我们现在知道和是函子的。第一部分，\code{Nothing} 可以表示为作用于 \code{a} 的 \code{Const ()}（\code{Const} 的第一个类型参数设置为单位——稍后我们将看到 \code{Const} 的更有趣的用途）。第二部分只是恒等函子的另一个名字。我们可以将 \code{Maybe} 定义为，直到同构为止：
 
-\src{snippet08}
+\begin{lstlisting}[language=Haskell]
+type Maybe a = Either (Const () a) (Identity a)
+\end{lstlisting}
 因此 \code{Maybe} 是双函子 \code{Either} 与两个函子 \code{Const ()} 和 \code{Identity} 的组合。（\code{Const} 实际上是一个双函子，但在这里我们总是部分应用它。）
 
 我们已经看到，函子的组合是一个函子——我们可以很容易地说服自己，同样的道理适用于双函子。我们需要做的就是弄清楚双函子与两个函子的组合如何在态射上起作用。给定两个态射，我们简单地用一个函子提升其中一个，用另一个函子提升另一个态射。然后我们用双函子提升得到的态射对。
 
 我们可以在 Haskell 中表达这个组合。让我们定义一个数据类型，它由双函子 \code{bf} 参数化（它是一个接受两个类型作为参数的类型构造器），两个函子 \code{fu} 和 \code{gu}（每个都接受一个类型变量的类型构造器），以及两个常规类型 \code{a} 和 \code{b}。我们将 \code{fu} 应用于 \code{a}，将 \code{gu} 应用于 \code{b}，然后将 \code{bf} 应用于结果的两个类型：
 
-\src{snippet09}
+\begin{lstlisting}[language=Haskell]
+newtype BiComp bf fu gu a b = BiComp (bf (fu a) (gu b))
+\end{lstlisting}
 这就是对象或类型上的组合。注意在 Haskell 中我们如何将类型构造器应用于类型，就像我们将函数应用于参数一样。语法是相同的。
 
 如果你有点迷失，不妨尝试将 \code{BiComp} 应用于 \code{Either}、\code{Const ()}、\code{Identity}、\code{a} 和 \code{b}，以此顺序。你会恢复我们精简版的 \code{Maybe b}（\code{a} 被忽略）。
 
 新的数据类型 \code{BiComp} 是 \code{a} 和 \code{b} 的双函子，但前提是 \code{bf} 本身是一个 \code{Bifunctor}，而 \code{fu} 和 \code{gu} 是 \code{Functor}s。编译器必须知道在 \code{BiComp} 使用时，将有一个 \code{bimap} 的定义可用，以及 \code{fu} 和 \code{gu} 的 \code{fmap} 的定义。在 Haskell 中，这在实例声明中通过类约束集和双箭头来表达：
 
-\src{snippet10}[b]
+\begin{lstlisting}[language=Haskell]
+instance (Bifunctor bf, Functor fu, Functor gu) =>
+  Bifunctor (BiComp bf fu gu) where
+    bimap f1 f2 (BiComp x) = BiComp (bimap (fmap f1) (fmap f2) x)
+
+\end{lstlisting}
 \code{BiComp} 的 \code{bimap} 的实现是基于 \code{bf} 的 \code{bimap} 和两个 \code{fmap}（对于 \code{fu} 和 \code{gu}）的实现。每当使用 \code{BiComp} 时，编译器会自动推断出所有类型，并选择正确的重载函数。
 
 \code{bimap} 定义中的 \code{x} 具有如下类型：
 
-\src{snippet11}
+\begin{lstlisting}[language=Haskell]
+bf (fu a) (gu b)
+\end{lstlisting}
 这真是有点绕口。外层 \code{bimap} 通过外层 \code{bf} 层次，两个 \code{fmap} 分别深入到 \code{fu} 和 \code{gu} 内部。如果 \code{f1} 和 \code{f2} 的类型是：
 
-\src{snippet12}
+\begin{lstlisting}[language=Haskell]
+f1 :: a -> a'
+f2 :: b -> b'
+\end{lstlisting}
 那么最终结果的类型是 \code{bf (fu a') (gu b')}：
 
-\src{snippet13}[b]
+\begin{lstlisting}[language=Haskell]
+bimap :: (fu a -> fu a') -> (gu b -> gu b')
+  -> bf (fu a) (gu b) -> bf (fu a') (gu b')
+\end{lstlisting}
 如果你喜欢拼图，这种类型操作可以提供数小时的娱乐。
 
 因此，事实证明，我们不必证明 \code{Maybe} 是一个函子——这个事实是由于它被构造为两个函子性原语的和而得出的。
@@ -142,7 +183,10 @@
 
 让我们看看一个树形数据结构，我们在 Haskell 中将其定义为递归和类型：
 
-\src{snippet14}
+\begin{lstlisting}[language=Haskell]
+data Tree a = Leaf a | Node (Tree a) (Tree a)
+    deriving Functor
+\end{lstlisting}
 正如我之前提到的，在 C++ 中实现和类型的一种方式是通过类层次结构。在面向对象的语言中，将 \code{fmap} 实现为基类 \code{Functor} 的虚函数然后在所有子类中重载它是很自然的。不幸的是，这是不可能的，因为 \code{fmap} 是一个模板，不仅由它作用的对象类型（\code{this} 指针）参数化，还由应用于它的函数的返回类型参数化。在 C++ 中，虚函数不能模板化。我们将 \code{fmap} 实现为一个通用的自由函数，并用 \code{dynamic\_cast} 替换模式匹配。
 
 基类必须至少定义一个虚函数以支持动态转换，因此我们将析构函数设置为虚函数（这在任何情况下都是一个好主意）：
@@ -191,25 +235,42 @@
 
 将其与 Haskell 中的 \code{fmap} 实现进行比较：
 
-\src{snippet15}
+\begin{lstlisting}[language=Haskell]
+instance Functor Tree where
+    fmap f (Leaf a) = Leaf (f a)
+    fmap f (Node t t') = Node (fmap f t) (fmap f t')
+\end{lstlisting}
 这个实现也可以由编译器自动派生。
 
 \section{写入函子（The Writer Functor）}
 
 我承诺过会回到我之前描述的\hyperref[kleisli-categories]{Kleisli 范畴}。该范畴中的态射表示为返回 \code{Writer} 数据结构的“装饰”函数。
 
-\src{snippet16}
+\begin{lstlisting}[language=Haskell]
+type Writer a = (a, String)
+\end{lstlisting}
 我说过这种装饰与内函子（endofunctors）有某种关系。实际上，\code{Writer} 类型构造器在 \code{a} 中是函子。我们甚至不需要为其实现 \code{fmap}，因为它只是一个简单的积类型。
 
 但 Kleisli 范畴与函子之间的一般关系是什么呢？作为一个范畴，Kleisli 范畴定义了组合和恒等性。让我提醒你，组合由鱼运算符给出：
 
-\src{snippet17}
+\begin{lstlisting}[language=Haskell]
+(>=>) :: (a -> Writer b) -> (b -> Writer c) -> (a -> Writer c)
+m1 >=> m2 = \x ->
+    let (y, s1) = m1 x
+        (z, s2) = m2 y 
+    in (z, s1 ++ s2)
+\end{lstlisting}
 恒等态射由称为 \code{return} 的函数给出：
 
-\src{snippet18}
+\begin{lstlisting}[language=Haskell]
+return :: a -> Writer a
+return x = (x, "")
+\end{lstlisting}
 事实证明，如果你花足够长的时间（我指的是\emph{足够长的时间}）看这些两个函数的类型，你可以找到一种方法将它们组合起来，以产生一个具有合适类型签名的函数作为 \code{fmap}。像这样：
 
-\src{snippet19}
+\begin{lstlisting}[language=Haskell]
+fmap f = id >=> (\x -> return (f x))
+\end{lstlisting}
 这里，鱼运算符结合了两个函数：一个是熟悉的 \code{id}，另一个是将 \code{f} 作用于 lambda 的参数并对其结果应用 \code{return} 的 lambda。最难理解的部分可能是 \code{id} 的使用。鱼运算符的参数不是应该是一个接受“正常”类型并返回装饰类型的函数吗？实际上不是。没有人说 \code{a} 在 \code{a -> Writer b} 中必须是一个“正常”的类型。它是一个类型变量，因此它可以是任何东西，特别是它可以是一个装饰类型，比如 \code{Writer b}。
 
 所以 \code{id} 会将 \code{Writer a} 转换为 \code{Writer a}。鱼运算符会取出 \code{a} 的值并作为 \code{x} 传递给 lambda。在那里，\code{f} 会将它转换为 \code{b}，\code{return} 会将其装饰，使其成为 \code{Writer b}。综合起来，我们最终得到一个接受 \code{Writer a} 并返回 \code{Writer b} 的函数，这正是 \code{fmap} 应该产生的。
@@ -222,21 +283,32 @@
 
 现在我们已经回顾了写入函子，让我们回到读取函子。它基于部分应用的函数箭头类型构造器：
 
-\src{snippet20}
+\begin{lstlisting}[language=Haskell]
+(->) r
+\end{lstlisting}
 我们可以将其重写为类型同义词：
 
-\src{snippet21}
+\begin{lstlisting}[language=Haskell]
+type Reader r a = r -> a
+\end{lstlisting}
 我们之前见过的 \code{Functor} 实例如下所示：
 
-\src{snippet22}
+\begin{lstlisting}[language=Haskell]
+instance Functor (Reader r) where
+    fmap f g = f . g
+\end{lstlisting}
 但就像配对类型构造器或 \code{Either} 类型构造器一样，函数类型构造器接受两个类型参数。配对和 \code{Either} 在两个参数中都是函子性——它们是双函子。函数构造器也是双函子吗？
 
 让我们尝试使它在第一个参数中函子性。我们从一个类型同义词开始——它就像 \code{Reader} 但参数顺序相反：
 
-\src{snippet23}
+\begin{lstlisting}[language=Haskell]
+type Op r a = a -> r
+\end{lstlisting}
 这次我们固定返回类型 \code{r}，并改变参数类型 \code{a}。让我们看看我们是否可以以某种方式匹配类型来实现 \code{fmap}，它将具有以下类型签名：
 
-\src{snippet24}
+\begin{lstlisting}[language=Haskell]
+fmap :: (a -> b) -> (a -> r) -> (b -> r)
+\end{lstlisting}
 仅凭两个接受 \code{a} 并分别返回 \code{b} 和 \code{r} 的函数，没有任何方法可以构建一个接受 \code{b} 并返回 \code{r} 的函数！如果我们能够以某种方式反转第一个函数，使其接受 \code{b} 并返回 \code{a}，情况就会有所不同。我们不能反转一个任意的函数，但我们可以进入对偶范畴。
 
 简单回顾一下：对于每个范畴 $\cat{C}$，都有一个对偶范畴 $\cat{C}^\mathit{op}$。这是一个与 $\cat{C}$ 具有相同对象的范畴，但所有箭头都反转了。
@@ -257,18 +329,30 @@
 \noindent
 以下是 Haskell 中定义逆变函子的类型类（确实是逆变\emph{端函子}）：
 
-\src{snippet25}
+\begin{lstlisting}[language=Haskell]
+class Contravariant f where
+    contramap :: (b -> a) -> (f a -> f b)
+\end{lstlisting}
 我们的类型构造器 \code{Op} 是其实例：
 
-\src{snippet26}
+\begin{lstlisting}[language=Haskell]
+instance Contravariant (Op r) where
+    -- (b -> a) -> Op r a -> Op r b
+    contramap f g = g . f
+\end{lstlisting}
 注意到函数 \code{f} 插入在 \emph{之前}（即，位于右侧）\code{Op} 的内容——函数 \code{g}。
 
 \code{Op} 的 \code{contramap} 的定义可能更加简洁，如果你注意到它只是带有翻转参数的函数组合运算符。有一个名为 \code{flip} 的特殊函数：
 
-\src{snippet27}
+\begin{lstlisting}[language=Haskell]
+flip :: (a -> b -> c) -> (b -> a -> c)
+flip f y x = f x y
+\end{lstlisting}
 有了它，我们得到：
 
-\src{snippet28}
+\begin{lstlisting}[language=Haskell]
+contramap = flip (.)
+\end{lstlisting}
 
 \section{前函子（Profunctors）}
 
@@ -276,7 +360,15 @@
 \[\cat{C}^\mathit{op} \times \cat{D} \to \Set\]
 由于 Haskell 类型在一定程度上可以看作是集合，因此我们将 \code{Profunctor} 名称应用于一个双参数的类型构造器 \code{p}，它在第一个参数中是逆变的，在第二个参数中是函子的。以下是取自 \code{Data.Profunctor} 库的适当类型类：
 
-\src{snippet29}[b]
+\begin{lstlisting}[language=Haskell]
+class Profunctor p where
+    dimap :: (a -> b) -> (c -> d) -> p b c -> p a d
+    dimap f g = lmap f . rmap g
+    lmap :: (a -> b) -> p b c -> p a c
+    lmap f = dimap f id
+    rmap :: (b -> c) -> p a b -> p a c
+    rmap = dimap id
+\end{lstlisting}
 所有三个函数都有默认实现。就像 \code{Bifunctor} 一样，当声明 \code{Profunctor} 的实例时，你可以选择实现 \code{dimap} 并接受 \code{lmap} 和 \code{rmap} 的默认值，或者实现 \code{lmap} 和 \code{rmap} 并接受 \code{dimap} 的默认值。
 
 \begin{figure}[H]
@@ -288,7 +380,12 @@
 \noindent
 现在我们可以断言函数箭头运算符是 \code{Profunctor} 的一个实例：
 
-\src{snippet30}[b]
+\begin{lstlisting}[language=Haskell]
+instance Profunctor (->) where
+    dimap ab cd bc = cd . bc . ab
+    lmap = flip (.)
+    rmap = (.)
+\end{lstlisting}
 前函子在 Haskell 的 lens 库中有其应用。我们在讨论端和余端时还会再次见到它们。
 
 \section{同态函子（The Hom-Functor）}

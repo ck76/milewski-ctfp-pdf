@@ -4,19 +4,31 @@
 
 回想一下，在最基本的层面上，monad 是关于组合 Kleisli 箭头的：
 
-\src{snippet01}
+\begin{lstlisting}[language=Haskell]
+a -> m b
+\end{lstlisting}
 其中，\code{m} 是一个函子，该函子是一个 monad。如果我们使用字母 \code{w}（倒转的 \code{m}）来表示 comonad，我们可以将 co-Kleisli 箭头定义为以下类型的态射：
 
-\src{snippet02}
+\begin{lstlisting}[language=Haskell]
+w a -> b
+\end{lstlisting}
 对于 co-Kleisli 箭头来说，其对应的鱼操作符的定义为：
 
-\src{snippet03}
+\begin{lstlisting}[language=Haskell]
+(=>=) :: (w a -> b) -> (w b -> c) -> (w a -> c)
+\end{lstlisting}
 为了使 co-Kleisli 箭头形成一个范畴，我们还必须有一个身份 co-Kleisli 箭头，这被称为 \code{extract}：
 
-\src{snippet04}
+\begin{lstlisting}[language=Haskell]
+extract :: w a -> a
+\end{lstlisting}
 这是 \code{return} 的对偶。我们还必须施加结合律以及左、右单位律。将这些全部结合起来，我们可以在 Haskell 中定义一个 comonad 如下：
 
-\src{snippet05}
+\begin{lstlisting}[language=Haskell]
+class Functor w => Comonad w where
+    (=>=) :: (w a -> b) -> (w b -> c) -> (w a -> c)
+    extract :: w a -> a
+\end{lstlisting}
 实际上，我们使用的基本函数略有不同，稍后我们会看到。
 
 问题是，在编程中 comonad 的用途是什么？
@@ -33,19 +45,32 @@
 
 还记得 reader monad 吗？我们引入它是为了应对实现需要访问某些只读环境 \code{e} 的计算的问题。这类计算可以表示为以下形式的纯函数：
 
-\src{snippet06}
+\begin{lstlisting}[language=Haskell]
+(a, e) -> b
+\end{lstlisting}
 我们使用柯里化将它们转化为 Kleisli 箭头：
 
-\src{snippet07}
+\begin{lstlisting}[language=Haskell]
+a -> (e -> b)
+\end{lstlisting}
 但请注意，这些函数已经具有 co-Kleisli 箭头的形式。让我们将它们的参数调整为更方便的函子形式：
 
-\src{snippet08}
+\begin{lstlisting}[language=Haskell]
+data Product e a = Prod e a deriving Functor
+\end{lstlisting}
 我们可以轻松定义组合操作符，通过使我们要组合的箭头都可以访问相同的环境：
 
-\src{snippet09}
+\begin{lstlisting}[language=Haskell]
+(=>=) :: (Product e a -> b) -> (Product e b -> c) -> (Product e a -> c)
+f =>= g = \(Prod e a) -> let b = f (Prod e a)
+                          c = g (Prod e b) 
+                      in c
+\end{lstlisting}
 \code{extract} 的实现简单地忽略了环境：
 
-\src{snippet10}
+\begin{lstlisting}[language=Haskell]
+extract (Prod e a) = a
+\end{lstlisting}
 不出所料，product comonad 可以用于执行与 reader monad 完全相同的计算。在某种程度上，comonad 的环境实现更为自然——它遵循了“上下文中的计算”的精神。另一方面，monad 具有 \code{do} 记法的便捷语法糖。
 
 reader monad 与 product comonad 之间的联系更加深入，因为 reader 函子是 product 函子的右伴随。不过，一般来说，comonad 涵盖了与 monad 不同的计算概念。稍后我们将看到更多的例子。
@@ -58,19 +83,35 @@ reader monad 与 product comonad 之间的联系更加深入，因为 reader 函
 
 起点是意识到组合操作符必须生成一个 co-Kleisli 箭头，它接受 \code{w a} 并生成 \code{c}。生成 \code{c} 的唯一方法是将第二个函数应用于类型为 \code{w b} 的参数：
 
-\src{snippet11}
+\begin{lstlisting}[language=Haskell]
+(=>=) :: (w a -> b) -> (w b -> c) -> (w a -> c)
+f =>= g = g ... 
+\end{lstlisting}
 但我们如何生成类型为 \code{w b} 的值，以便传递给 \code{g}？我们手头有一个类型为 \code{w a} 的参数和一个函数 \code{f :: w a -> b}。解决方案是定义 bind 的对偶，它被称为 \code{extend}：
 
-\src{snippet12}
+\begin{lstlisting}[language=Haskell]
+extend :: (w a -> b) -> w a -> w b
+\end{lstlisting}
 使用 \code{extend} 我们可以实现组合：
 
-\src{snippet13}
+\begin{lstlisting}[language=Haskell]
+f =>= g = g . extend f
+\end{lstlisting}
 接下来，我们能解剖 \code{extend} 吗？你可能会说，为什么不直接将 \code{w a -> b} 函数应用于参数 \code{w a}，但你很快就会意识到你无法将结果 \code{b} 转换为 \code{w b}。请记住，comonad 不提供提升值的方法。在类似的 monad 构造中，我们使用了 \code{fmap}。在这里我们只能使用 \code{fmap}，前提是我们手头有类型为 \code{w (w a)} 的东西。如果我们可以将 \code{w a} 转换为 \code{w (w a)}。方便的是，这正是 \code{join} 的对偶。我们称之为 \code{duplicate}：
 
-\src{snippet14}
+\begin{lstlisting}[language=Haskell]
+duplicate :: w a -> w (w a)
+\end{lstlisting}
 因此，就像对 monad 的定义一样，我们对 comonad 有三种等效的定义：使用 co-Kleisli 箭头、\code{extend} 或 \code{duplicate}。以下是直接取自 \code{Control.Comonad} 库的 Haskell 定义：
 
-\src{snippet15}
+\begin{lstlisting}[language=Haskell]
+class Functor w => Comonad w where
+    extract :: w a -> a
+    duplicate :: w a -> w (w a)
+    duplicate = extend id
+    extend :: (w a -> b) -> w a -> w b
+    extend f = fmap f . duplicate
+\end{lstlisting}
 提供了 \code{extend} 基于 \code{duplicate} 的默认实现，反之亦然，所以你只需覆盖其中之一。
 
 这些函数背后的直觉基于这样一个想法：一般来说，comonad 可以被看作是一个充满类型为 \code{a} 的值的容器（product comonad 是只有一个值的特例）。有一个“当前”值的概念，它可以通过 \code{extract} 轻松获取。co-Kleisli 箭头执行一些专注于当前值的计算，但它可以访问所有周围的值。想想康威的生命游戏。每个单元格都包含一个值（通常只是 \code{True} 或 \code{False}）。一个对应于生命游戏的 comonad 将是一个集中在“当前”单元格的单元格网格。
@@ -83,37 +124,62 @@ reader monad 与 product comonad 之间的联系更加深入，因为 reader 函
 
 这个从容器的一个元素转移焦点到另一个元素的过程最适合用无限流的例子来说明。这样的流就像一个列表，只是它没有空构造函数：
 
-\src{snippet16}
+\begin{lstlisting}[language=Haskell]
+data Stream a = Cons a (Stream a)
+\end{lstlisting}
 它显然是一个 \code{Functor}：
 
-\src{snippet17}
+\begin{lstlisting}[language=Haskell]
+instance Functor Stream where
+    fmap f (Cons a as) = Cons (f a) (fmap f as)
+\end{lstlisting}
 流的焦点是它的第一个元素，所以这是 \code{extract} 的实现：
 
-\src{snippet18}
+\begin{lstlisting}[language=Haskell]
+extract (Cons a _) = a
+\end{lstlisting}
 \code{duplicate} 生成一个流的流，每个流都集中在不同的元素上。
 
-\src{snippet19}
+\begin{lstlisting}[language=Haskell]
+duplicate (Cons a as) = Cons (Cons a as) (duplicate as)
+\end{lstlisting}
 第一个元素是原始流，第二个元素是原始流的尾部，第三个元素是它的尾部，以此类推，无穷无尽。
 
 这是完整的实例：
 
-\src{snippet20}
+\begin{lstlisting}[language=Haskell]
+instance Comonad Stream where
+    extract (Cons a _) = a 
+    duplicate (Cons a as) = Cons (Cons a as) (duplicate as)
+\end{lstlisting}
 这是一种非常函数式的看待流的方式。在命令式语言中，我们可能会从一个方法 \code{advance} 开始，该方法将流移位一个位置。这里，\code{duplicate} 一次性生成所有移位流。Haskell 的惰性计算使这成为可能，并且甚至是可取的。当然，为了使 \code{Stream} 实际可用，我们还会实现 \code{advance} 的类似物：
 
-\src{snippet21}
+\begin{lstlisting}[language=Haskell]
+tail :: Stream a -> Stream a
+tail (Cons a as) = as
+\end{lstlisting}
 但这永远不是 comonad 接口的一部分。
 
 如果你有任何数字信号处理的经验，你会立即看到流的 co-Kleisli 箭头只是一个数字滤波器，而 \code{extend} 生成一个经过滤波的流。
 
 作为一个简单的例子，让我们实现移动平均滤波器。这里是一个求和流中 \code{n} 个元素的函数：
 
-\src{snippet22}
+\begin{lstlisting}[language=Haskell]
+sumS :: Num a => Int -> Stream a -> a
+sumS n (Cons a as) = if n <= 0 then 0 else a + sumS (n - 1) as
+\end{lstlisting}
 这里是计算流的前 \code{n} 个元素的平均值的函数：
 
-\src{snippet23}
+\begin{lstlisting}[language=Haskell]
+average :: Fractional a => Int -> Stream a -> a
+average n stm = (sumS n stm) / (fromIntegral n)
+\end{lstlisting}
 部分应用的 \code{average n} 是一个 co-Kleisli 箭头，因此我们可以在整个流上 \code{extend} 它：
 
-\src{snippet24}
+\begin{lstlisting}[language=Haskell]
+movingAvg :: Fractional a => Int -> Stream a -> Stream a
+movingAvg n = extend (average n)
+\end{lstlisting}
 结果是运行平均值的流。
 
 流是一个单向、一维 comonad 的例子。它可以轻松扩展为双向或扩展为二维或多维。
@@ -145,22 +211,40 @@ reader monad 与 product comonad 之间的联系更加深入，因为 reader 函
 \end{align*}
 可以在 Haskell 中编写 comonoid 的定义：
 
-\src{snippet25}
+\begin{lstlisting}[language=Haskell]
+class Comonoid m where
+    split :: m -> (m, m)
+    destroy :: m -> ()
+\end{lstlisting}
 但它相当简单。显然，\code{destroy} 忽略了它的参数。
 
-\src{snippet26}
+\begin{lstlisting}[language=Haskell]
+destroy _ = ()
+\end{lstlisting}
 \code{split} 只是一个函数对：
 
-\src{snippet27}
+\begin{lstlisting}[language=Haskell]
+split x = (f x, g x)
+\end{lstlisting}
 现在考虑对偶于 monoid 单位律的 comonoid 定律。
 
-\src{snippet28}
+\begin{lstlisting}[language=Haskell]
+lambda . bimap destroy id . split = id
+rho . bimap id destroy . split = id
+\end{lstlisting}
 这里，\code{lambda} 和 \code{rho} 分别是左和右单位元（参见 \hyperref[monads-categorically]{monoidal 范畴}的定义）。替换定义后，我们得到：
 
-\src{snippet29}
+\begin{lstlisting}[language=Haskell]
+lambda (bimap destroy id (split x))
+= lambda (bimap destroy id (f x, g x))
+= lambda ((), g x)
+= g x
+\end{lstlisting}
 这证明了 \code{g = id}。同样，第二个定律展开为 \code{f = id}。结论是：
 
-\src{snippet30}
+\begin{lstlisting}[language=Haskell]
+split x = (x, x)
+\end{lstlisting}
 这表明在 Haskell 中（一般来说，在范畴 $\Set$ 中）每个对象都是一个简单的 comonoid。
 
 幸运的是，还有其他更有趣的 monoidal 范畴可以用来定义 comonoid。其中之一是端函子的范畴。事实证明，正如 monad 是端函子范畴中的 monoid，
@@ -182,21 +266,32 @@ reader monad 与 product comonad 之间的联系更加深入，因为 reader 函
 \[L (R a) = (s \Rightarrow a)\times{}s\]
 将其转换为 Haskell，我们从左侧的 \code{Product} 函子和右侧的 \code{Reader} 函子之间的伴随开始。组合 \code{Product} 在 \code{Reader} 之后等效于以下定义：
 
-\src{snippet31}
+\begin{lstlisting}[language=Haskell]
+data Store s a = Store (s -> a) s
+\end{lstlisting}
 伴随在对象 $a$ 处的 counit 是态射：
 \[\varepsilon_a \Colon ((s \Rightarrow a)\times{}s) \to a\]
 或者在 Haskell 记法中：
 
-\src{snippet32}
+\begin{lstlisting}[language=Haskell]
+counit (Prod (Reader f) s)) = f s
+\end{lstlisting}
 这成为我们的 \code{extract}：
 
-\src{snippet33}
+\begin{lstlisting}[language=Haskell]
+extract (Store f s) = f s
+\end{lstlisting}
 伴随的 unit：
 
-\src{snippet34}
+\begin{lstlisting}[language=Haskell]
+unit :: a -> Reader s (Product a s)
+unit a = Reader (\s -> Prod a s)
+\end{lstlisting}
 可以重写为部分应用的数据构造函数：
 
-\src{snippet35}
+\begin{lstlisting}[language=Haskell]
+Store f :: s -> Store f s
+\end{lstlisting}
 我们将 \code{duplicate} 构造为水平组合：
 \begin{align*}
   \delta & \Colon L \circ R \to L \circ R \circ L \circ R \\
@@ -204,12 +299,18 @@ reader monad 与 product comonad 之间的联系更加深入，因为 reader 函
 \end{align*}
 我们必须通过最左侧的 $L$ 来偷渡 $\eta$，这是 \code{Product} 函子。这意味着对对偶化的左侧部分应用 $\eta$ 或 \code{Store f}（这就是 \code{Product} 的 \code{fmap} 将要做的）。我们得到：
 
-\src{snippet36}
+\begin{lstlisting}[language=Haskell]
+duplicate (Store f s) = Store (Store f) s
+\end{lstlisting}
 （请记住，在 \code{duplicate} 的公式中，$L$ 和 $R$ 代表分量为身份态射的自然变换。）
 
 以下是 \code{Store} comonad 的完整定义：
 
-\src{snippet37}
+\begin{lstlisting}[language=Haskell]
+instance Comonad (Store s) where
+    extract (Store f s) = f s
+    duplicate (Store f s) = Store (Store f) s
+\end{lstlisting}
 你可以将 \code{Reader} 部分的 \code{Store} 看作是一个以 \code{s} 类型的元素作为键的 \code{a} 类型的通用容器。例如，如果 \code{s} 是 \code{Int}，\code{Reader Int a} 是一个 \code{a} 类型的双向无限流。\code{Store} 将此容器与一个键类型的值配对。例如，\code{Reader Int a} 与一个 \code{Int} 配对。在这种情况下，\code{extract} 使用这个整数来索引到无限流中。你可以将 \code{Store} 的第二个分量视为当前位置。
 
 继续这个例子，\code{duplicate} 创建一个由 \code{Int} 索引的新无限流。这个流包含流作为它的元素。特别是在当前位置，它包含原始流。但是，如果你使用其他 \code{Int}（正数或负数）作为键，你会得到一个在该新索引位置移位的流。
@@ -218,10 +319,15 @@ reader monad 与 product comonad 之间的联系更加深入，因为 reader 函
 
 \code{Store} comonad 在 \code{Lens} 库中起着重要的理论基础作用。概念上，\code{Store s a} comonad 封装了“聚焦”（如同镜头）于数据类型 \code{a} 的特定子结构的思想，使用类型 \code{s} 作为索引。特别是，以下类型的函数：
 
-\src{snippet38}
+\begin{lstlisting}[language=Haskell]
+a -> Store s a
+\end{lstlisting}
 等价于一对函数：
 
-\src{snippet39}
+\begin{lstlisting}[language=Haskell]
+set :: a -> s -> a
+get :: a -> s
+\end{lstlisting}
 如果 \code{a} 是一个乘积类型，\code{set} 可以实现为设置 \code{a} 内部 \code{s} 类型的字段，同时返回修改后的 \code{a} 版本。同样，\code{get} 可以实现为从 \code{a} 中读取 \code{s} 字段的值。我们将在下一节中进一步探讨这些思想。
 
 \section{挑战}
