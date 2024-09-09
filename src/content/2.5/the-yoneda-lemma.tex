@@ -118,9 +118,9 @@ Yoneda 引理告诉我们，reader 函子可以自然地映射到任何其他函
 
 Yoneda 引理告诉我们，这些自然变换与 \code{F a} 的元素是一一对应的：
 
-\begin{snipv}
+\begin{align}
   forall x . (a -> x) -> F x \ensuremath{\cong} F a
-\end{snipv}
+\end{align}
 这个等式的右侧是我们通常认为的数据结构。记住函子作为广义容器的解释？\code{F a} 是一个 \code{a} 的容器。但左侧是一个多态函数，它接受一个函数作为参数。Yoneda 引理告诉我们，这两种表示是等价的——它们包含相同的信息。
 
 换句话说：给我一个类型为：
@@ -141,9 +141,9 @@ Yoneda 引理告诉我们，这些自然变换与 \code{F a} 的元素是一一�
 
 这一原理的最简单示例是编译器构建中常用的代码转换：续延传递风格（continuation-passing style, \acronym{CPS}）。这是 Yoneda 引理对恒等函子的最简单应用。将 \code{F} 替换为恒等函子得到：
 
-\begin{snipv}
+\begin{align}
   forall r . (a -> r) -> r \ensuremath{\cong} a
-\end{snipv}
+\end{align}
 这一公式的解释是，任何类型 \code{a} 都可以被一个接受 \code{a} 的“处理器”的函数替换。处理器是接受 \code{a} 并执行其余计算的函数——续延。（类型 \code{r} 通常封装某种状态代码。）
 
 这种编程风格在用户界面（UIs）、异步系统和并发编程中非常常见。\acronym{CPS} 的缺点是它涉及控制的反转。代码分为生产者和消费者（处理器），并且不易组合。任何做过不小的 Web 编程的人都熟悉从交互式有状态处理器中产生的面条代码噩梦。正如我们稍后将看到的那样，合理使用函子和单子可以恢复 \acronym{CPS} 的某些组合属性。
@@ -157,9 +157,9 @@ $\cat{C}(-, a)$。Yoneda 引理的逆变版本建立了从这个函子到任何�
 \[\cat{Nat}(\cat{C}(-, a), F) \cong F a\]
 这是 Haskell 版本的对偶 Yoneda 引理：
 
-\begin{snipv}
+\begin{align}
   forall x . (x -> a) -> F x \ensuremath{\cong} F a
-\end{snipv}
+\end{align}
 请注意，在某些文献中，这个逆变版本被称为 Yoneda 引理。
 
 \section{挑战（Challenges）}

@@ -78,9 +78,9 @@
 
 要构造一个自然变换，我们从一个对象开始，这里是一个类型 \code{a}。一个函子 \code{F} 将它映射到类型 $F a$。另一个函子 \code{G} 将它映射到 $G a$。自然变换 \code{alpha} 在 \code{a} 处的分量是一个从 $F a$ 到 $G a$ 的函数。在伪 Haskell 中：
 
-\begin{snipv}
+\begin{align}
   alpha\textsubscript{a} :: F a -> G a
-\end{snipv}
+\end{align}
 自然变换是一个对所有类型 \code{a} 都定义的多态函数：
 
 \src{snippet01}
@@ -106,9 +106,9 @@ Haskell 的参数多态性有一个意想不到的后果：任何类型为
 \[G f \circ \alpha_a = \alpha_b \circ F f\]
 在 Haskell 中，函子 \code{G} 对态射 \code{f} 的作用是通过 \code{fmap} 实现的。我首先会在伪 Haskell 中写出来，带有明确的类型注释：
 
-\begin{snipv}
+\begin{align}
   fmap\textsubscript{G} f . alpha\textsubscript{a} = alpha\textsubscript{b} . fmap\textsubscript{F} f
-\end{snipv}
+\end{align}
 由于类型推断，这些注释是不必要的，下面的等式成立：
 
 \begin{lstlisting}{text}

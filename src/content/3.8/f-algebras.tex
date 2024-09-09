@@ -83,9 +83,9 @@
 \src{snippet09}
 继续这个过程，我们可以写出一个符号方程：
 
-\begin{snipv}
+\begin{align}
   type RingF\textsubscript{n+1} a = RingF (RingF\textsubscript{n} a)
-\end{snipv}
+\end{align}
 从概念上讲，在重复这个过程无穷次之后，我们最终得到 \code{Expr}。注意 \code{Expr} 不依赖于 \code{a}。我们旅程的起点无关紧要，最终总是到达同一个地方。这并不总是适用于任意范畴中的任意端函子，但在 $\Set$ 范畴中情况较好。
 
 当然，这只是一个牵强的论点，我稍后会对其进行更严格的论证。

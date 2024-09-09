@@ -54,9 +54,9 @@
 
 在 Haskell 中，Yoneda嵌入可以表示为读者函子（reader functors）之间的自然变换与函数（逆向进行）之间的同构：
 
-\begin{snipv}
+\begin{align}
   forall x. (a -> x) -> (b -> x) \ensuremath{\cong} b -> a
-\end{snipv}
+\end{align}
 （请记住，读者函子相当于 \code{((->) a)}。）
 
 这个等式的左侧是一个多态函数，给定从 \code{a} 到 \code{x} 的一个函数和一个类型为 \code{b} 的值，可以生成一个类型为 \code{x} 的值（我正在展开——去掉了函数 \code{b -> x} 周围的括号）。唯一能对所有 \code{x} 执行此操作的方法是，如果我们的函数知道如何将 \code{b} 转换为 \code{a}。它必须秘密访问一个从 \code{b} 到 \code{a} 的函数。

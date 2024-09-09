@@ -183,9 +183,9 @@ Kleisli 范畴中态射的组合是通过 Kleisli 箭头的 Monad 组合定义�
 \[\mu_{T b} \circ T f\]
 在 Haskell 表示中，这样写：
 
-\begin{snipv}
+\begin{align}
   G f\textsubscript{T} = join . fmap f
-\end{snipv}
+\end{align}
 你可能认出这是用 \code{join} 定义 Monad bind 的方式。
 
 很容易看出这两个函子形成了一个伴随关系：

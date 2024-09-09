@@ -86,9 +86,9 @@ $\pi$ 的分量称为 end 的投影映射：
 \src{snippet06}
 或者，带有类型注释：
 
-\begin{snipv}
-  dimap f id\textsubscript{b} . pi\textsubscript{b} = dimap id\textsubscript{a} f . pi\textsubscript{a}
-\end{snipv}
+\begin{align}
+  \dimap f \id_b \cdot \pi_b &= \dimap \id_a f \cdot \pi_a
+\end{align}
 这两个公式的类型都是：
 
 \src{snippet07}
@@ -192,9 +192,9 @@ coend 是这两个函数的反等化子。反等化子通过识别由同一参�
 \[\Set(\int^x p\ x\ x, c) \cong \int_x \Set(p\ x\ x, c)\]
 让我们在伪 Haskell 中看看它：
 
-\begin{snipv}
+\begin{align}
 (exists x. p x x) -> c \ensuremath{\cong} forall x. p x x -> c
-\end{snipv}
+\end{align}
 它告诉我们，接受存在类型的函数等价于一个多态函数。这非常有意义，因为这样的函数必须准备好处理可能编码在存在类型中的任何一种类型。与此相同的原理告诉我们，接受和类型的函数必须作为 case 语句实现，其中包含一个处理程序元组，每种类型都有一个处理程序。在这里，和类型被 coend 替代，而处理程序族则成为 end 或多态函数。
 
 \section{忍者 Yoneda 引理}
