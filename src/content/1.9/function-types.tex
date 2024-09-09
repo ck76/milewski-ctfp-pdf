@@ -148,24 +148,24 @@
 
 你可以使用模板 \code{std::bind} 部分应用一个 C++ 函数。例如，给定一个有两个字符串参数的函数：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   std::string catstr(std::string s1, std::string s2) {
     return s1 + s2;
   }
-\end{snip}
+\end{lstlisting}
 你可以定义一个接受一个字符串参数的函数：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   using namespace std::placeholders;
 
   auto greet = std::bind(catstr, "Hello ", _1);
   std::cout << greet("Haskell Curry");
-\end{snip}
+\end{lstlisting}
 Scala 比 C++ 或 Java 更具函数性，处于中间位置。如果你预见到你定义的函数将被部分应用，你可以使用多个参数列表来定义它：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   def catstr(s1: String)(s2: String) = s1 + s2
-\end{snip}
+\end{lstlisting}
 当然，这需要库编写者具有一定的预见性或预知能力。
 
 \section{指数对象}
@@ -294,14 +294,14 @@ Scala 比 C++ 或 Java 更具函数性，处于中间位置。如果你预见到
 \[\mathit{false} \Rightarrow a\]
 任何东西都可以从谬误中推导出来（\emph{ex falso quodlibet}）。以下是这个命题（函数）在 Haskell 中的一个可能的证明（实现）：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
   absurd (Void a) = absurd a
-\end{snip}
+\end{lstlisting}
 其中 \code{Void} 定义为：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
   newtype Void = Void Void
-\end{snip}
+\end{lstlisting}
 如往常一样，\code{Void} 类型是棘手的。这个定义使得它无法构造出一个值，因为为了构造一个值，你需要先提供一个值。因此，函数 \code{absurd} 永远无法被调用。
 
 这些都是有趣的例子，但柯里-霍华德同构在实际编程中是否有实用的一面？可能在日常编程中并不多见。但确实有一些编程语言如 Agda 或 Coq，利用柯里-霍华德同构来证明定理。

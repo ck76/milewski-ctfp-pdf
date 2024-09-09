@@ -118,9 +118,9 @@
 \src{snippet24}
 而 C++ 的实现是：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   enum { Red, Green, Blue };
-\end{snip}
+\end{lstlisting}
 一个更简单的和类型是：
 
 \src{snippet25}
@@ -143,7 +143,7 @@
 \src{snippet30}
 可以翻译为 C++ 使用空指针技巧来实现空列表：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class A>
   class List {
     Node<A> * _head;
@@ -153,7 +153,7 @@
     : _head(new Node<A>(a, l))
       {}
   };
-\end{snip}
+\end{lstlisting}
 注意，两个 Haskell 构造器 \code{Nil} 和 \code{Cons} 被翻译为两个重载的 \code{List} 构造器，具有类似的参数（对于 \code{Nil}，没有；对于 \code{Cons}，是一个值和一个列表）。\code{List} 类不需要标签来区分和类型的两个组件。相反，它使用 \code{\_head} 的特殊值 \code{nullptr} 来编码 \code{Nil}。
 
 然而，Haskell 和 C++ 类型之间的主要区别在于 Haskell 数据结构是不可变的。如果你使用一个特定的构造器创建了一个对象，该对象将永远记住使用了哪个构造器以及传递给它的参数。因此，创建为 \code{Just "energy"} 的 \code{Maybe} 对象永远不会变成 \code{Nothing}。同样，空列表将永远是空的，包含三个元素的列表将永远具有相同的三个元素。
@@ -255,7 +255,7 @@
 \end{longtable}
 
 \noindent
-这种类比更深入，是 Curry-Howard 同构（isomorphism）在逻辑与类型理论之间的基础。当我们讨论函数类型时，我们将再次讨论这个问题。
+这c辑与类型理论之间的基础。当我们讨论函数类型时，我们将再次讨论这个问题。
 
 \section{挑战 (Challenges)}
 
@@ -266,26 +266,26 @@
   \item
   这里有一个在 Haskell 中定义的和类型：
 
-  \begin{snip}{haskell}
+  \begin{lstlisting}[language=Haskell]
     data Shape = Circle Float
     | Rect Float Float
-  \end{snip}
+  \end{lstlisting}
   当我们想要定义一个作用于 \code{Shape} 的函数如 \code{area} 时，我们通过对这两个构造器进行模式匹配来完成：
 
-  \begin{snip}{haskell}
+  \begin{lstlisting}[language=Haskell]
     area :: Shape -> Float
     area (Circle r) = pi * r * r
     area (Rect d h) = d * h
-  \end{snip}
+  \end{lstlisting}
   在 C++ 或 Java 中将 \code{Shape} 实现为一个接口，并创建两个类：\code{Circle} 和 \code{Rect}。将 \code{area} 实现为一个虚函数。
   \item
   继续前一个示例：我们可以轻松地添加一个新函数 \code{circ}，它计算 \code{Shape} 的周长。我们可以在不触及 \code{Shape} 定义的情况下完成：
 
-  \begin{snip}{haskell}
+  \begin{lstlisting}[language=Haskell]
     circ :: Shape -> Float
     circ (Circle r) = 2.0 * pi * r
     circ (Rect d h) = 2.0 * (d + h)
-  \end{snip}
+  \end{lstlisting}
   将 \code{circ} 添加到你的 C++ 或 Java 实现中。你必须触及原始代码的哪些部分？
   \item
   继续进一步：向 \code{Shape} 添加一个新形状 \code{Square}，并进行所有必要的更新。在 Haskell 和 C++ 或 Java 中，你需要修改哪些代码？（即使你不是 Haskell 程序员，这些修改也应该相当明显。）

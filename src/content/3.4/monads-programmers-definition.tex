@@ -23,7 +23,7 @@
 
 这在一定程度上解释了许多程序员，尤其是那些来自命令式背景的程序员，理解 monad 的困难。问题在于我们不习惯于将编程视为函数组合的过程。这是可以理解的。我们经常给中间值命名，而不是直接将它们从一个函数传递到另一个函数。我们也会内联短段的胶合代码，而不是将其抽象为辅助函数。以下是用 C 语言编写的矢量长度函数的命令式实现：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   double vlen(double * v) {
     double d = 0.0;
     int n;
@@ -31,7 +31,7 @@
     d += v[n] * v[n];
     return sqrt(d);
   }
-\end{snip}
+\end{lstlisting}
 将此与 Haskell 的一个（风格化的）版本相比，该版本明确了函数组合：
 
 \src{snippet01}
@@ -62,11 +62,11 @@
 
 在这种形式中，monad 定律很容易表达。它们不能在 Haskell 中强制执行，但它们可以用于等式推理。它们只是 Kleisli 范畴的标准组合定律：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
 (f >=> g) >=> h = f >=> (g >=> h) -- 结合性
 return >=> f = f                  -- 左单位
 f >=> return = f                  -- 右单位
-\end{snip}
+\end{lstlisting}
 这种定义还表达了 monad 的真正含义：它是一种组合装饰函数的方法。这与副作用或状态无关。它关乎组合。正如我们稍后将看到的，装饰函数可以用来表达各种效应或状态，但这不是 monad 的用途。monad 是将一个装饰函数的末端与另一个装饰函数的末端捆绑在一起的粘性胶带。
 
 回到我们的 \code{Writer} 例子：记录函数（\code{Writer} 函子的 Kleisli 箭头）形成一个范畴，因为 \code{Writer} 是一个 monad：

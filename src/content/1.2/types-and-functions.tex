@@ -83,7 +83,7 @@ $\Set$ 是一个非常特殊的范畴，因为我们实际上可以窥视其内�
 \src{snippet05}
 表达式 \code{{[}1..n{]}} 是从 \code{1} 到 \code{n} 的整数列表。函数 \code{product} 乘以列表中的所有元素。这就像从数学文本中取出的阶乘定义。将其与 C 进行比较：
 
-\begin{snip}{c}
+\begin{lstlisting}{c}
   int fact(int n) {
     int i;
     int result = 1;
@@ -91,7 +91,7 @@ $\Set$ 是一个非常特殊的范畴，因为我们实际上可以窥视其内�
     result *= i;
     return result;
   }
-\end{snip}
+\end{lstlisting}
 我还需要说什么吗？
 
 好吧，我会第一个承认这是一个廉价的伎俩！阶乘函数有一个明显的数学指称。一个敏锐的读者可能会问：从键盘读取一个字符或通过网络发送一个数据包的数学模型是什么？很长一段时间，这将是一个尴尬的问题，导致一个相当复杂的解释。看起来指称语义并不是为大量重要任务（这些任务对于编写有用的程序至关重要）提供最佳支持，而这些任务可以通过操作语义轻松处理。突破来自范畴论。Eugenio Moggi 发现计算效应可以映射到单子（monads）。事实证明，这是一个重要的观察，不仅为指称语义带来了新的生机，使纯函数式程序更加可用，还为传统编程提供了新的视角。我会在稍后，当我们开发更多范畴工具时讨论单子。
@@ -117,17 +117,17 @@ $\Set$ 是一个非常特殊的范畴，因为我们实际上可以窥视其内�
 
 接下来是对应于单例集的类型。这是一个只有一个可能值的类型。这个值只是“存在”。你可能不会立即认出它，但这就是 C++ 中的 \code{void}。想想从这个类型到另一个类型的函数。一个从 \code{void} 到另一个类型的函数总是可以被调用。如果它是一个纯函数，它将总是返回相同的结果。以下是一个这样的函数的例子：
 
-\begin{snip}{c}
+\begin{lstlisting}{c}
   int f44() { return 44; }
-\end{snip}
+\end{lstlisting}
 你可能认为这个函数不接受任何输入，但正如我们刚才看到的，一个不接受任何输入的函数永远无法被调用，因为没有表示“无”的值。那么这个函数接受什么呢？概念上，它接受一个虚拟值，只有一个实例存在，所以我们不必明确提及它。然而，在 Haskell 中，有一个符号表示这个值：一个空的括号对，\code{()}. 因此，巧合的是（或者这真的是巧合吗？），在 C++ 和 Haskell 中调用一个 void 函数的方式看起来相同。此外，由于 Haskell 对简洁的喜爱，同样的符号 \code{()} 用于类型、构造函数和唯一对应于单例集的值。所以这里是这个函数在 Haskell 中的定义：
 
 \src{snippet07}
 第一行声明 \code{f44} 接受 \code{()} 类型，读作“unit”，返回 \code{Integer} 类型。第二行通过模式匹配 \code{()}，即 unit 的唯一构造函数，生成数字 44。你通过提供 unit 值 \code{()} 来调用这个函数：
 
-\begin{snip}{c}
+\begin{lstlisting}{c}
   f44 ()
-\end{snip}
+\end{lstlisting}
 请注意，任何 unit 的函数都相当于从目标类型中选择一个元素（这里是选择 \code{Integer} 44）。事实上，你可以将 \code{f44} 视为数字 44 的另一种表示形式。这是我们如何用函数（箭头）代替集合的明确元素的一个例子。将函数从 unit 到任何类型 $A$ 视为与该集合 $A$ 的元素之间存在一一对应关系。
 
 那么具有 \code{void} 返回类型或在 Haskell 中具有 unit 返回类型的函数呢？在 C++ 中，这些函数用于副作用，但我们知道这些在数学意义上不是真正的函数。返回 unit 的纯函数什么都不做：它丢弃其参数。
@@ -145,21 +145,21 @@ $\Set$ 是一个非常特殊的范畴，因为我们实际上可以窥视其内�
 \src{snippet10}
 在 C++ 中你会这样编写这个函数：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class T>
   void unit(T) {}
-\end{snip}
+\end{lstlisting}
 接下来是类型学中的两元素集。在 C++ 中，它被称为 \code{bool}，而在 Haskell 中，预料之中的是 \code{Bool}。不同之处在于，在 C++ 中，\code{bool} 是一种内置类型，而在 Haskell 中，它可以定义如下：
 
 \src{snippet11}
 （读这个定义的方式是 \code{Bool} 不是 \code{True} 就是 \code{False}。）原则上，在 C++ 中也应该能够将布尔类型定义为枚举：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   enum bool {
     true,
     false
   };
-\end{snip}
+\end{lstlisting}
 但 C++ 中的 \code{enum} 秘密地是一个整数。C++11 的“\code{enum class}”可以代替使用，但你必须用类名限定它的值，如 \code{bool::true} 和 \code{bool::false}，更不用说在使用的每个文件中都必须包含适当的头文件。
 
 从 \code{Bool} 到目标类型的纯函数只需选择两个值，一个对应 \code{True}，另一个对应 \code{False}。

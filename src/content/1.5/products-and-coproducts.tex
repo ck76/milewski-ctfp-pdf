@@ -102,12 +102,12 @@
 \src{snippet08}
 在C++中，我们将使用模板函数，例如：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class A, class B> A
   fst(pair<A, B> const & p) {
     return p.first;
   }
-\end{snip}
+\end{lstlisting}
 有了这些看似非常有限的知识，让我们尝试在集合的范畴中定义一个对象和态射的模式，这将引导我们构造两个集合的积。这个模式由一个对象$c$和两个态射$p$和$q$组成，它们分别连接到$a$和$b$：
 
 \src{snippet09}
@@ -229,22 +229,22 @@
 
 对于程序员来说，更容易理解余积的类型意义：它是两个类型的标记并集（tagged union）。C++支持并集，但它们不是标记的。这意味着在你的程序中，你必须以某种方式跟踪并集的哪个成员是有效的。要创建一个标记并集，你必须定义一个标记——枚举——并将其与并集结合。例如，一个\code{int}和\code{char const *}的标记并集可以实现为：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   struct Contact {
     enum { isPhone, isEmail } tag;
     union { int phoneNum; char const * emailAddr; };
   };
-\end{snip}
+\end{lstlisting}
 这两个嵌入可以实现为构造函数或函数。例如，下面是第一个嵌入作为函数\code{PhoneNum}的实现：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   Contact PhoneNum(int n) {
     Contact c;
     c.tag = isPhone;
     c.phoneNum = n;
     return c;
   }
-\end{snip}
+\end{lstlisting}
 它将一个整数嵌入到\code{Contact}中。
 
 标记并集也称为\newterm{变体}{variant}，并且在Boost库中有一个非常通用的变体实现，\code{boost::variant}。
@@ -305,16 +305,16 @@
   \item
   证明\code{Either}是比配备两个嵌入的\code{int}“更好”的余积：
 
-  \begin{snip}{cpp}
+  \begin{lstlisting}{cpp}
     int i(int n) { return n; }
     int j(bool b) { return b ? 0: 1; }
-  \end{snip}
+  \end{lstlisting}
 
   提示：定义一个函数
 
-  \begin{snip}{cpp}
+  \begin{lstlisting}{cpp}
     int m(Either const & e);
-  \end{snip}
+  \end{lstlisting}
 
   因式分解\code{i}和\code{j}。
   \item
@@ -322,14 +322,14 @@
   \item
   继续：这些嵌入怎么样？
 
-  \begin{snip}{cpp}
+  \begin{lstlisting}{cpp}
     int i(int n) {
       if (n < 0) return n;
       return n + 2;
     }
 
     int j(bool b) { return b ? 0: 1; }
-  \end{snip}
+  \end{lstlisting}
   \item
   提出一个劣质的\code{int}和\code{bool}余积的候选者，因为它允许从其到\code{Either}的多个可接受的态射，故它不能优于\code{Either}。
 \end{enumerate}

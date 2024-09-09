@@ -2,68 +2,68 @@
 
 \lettrine[lhang=0.17]{你}{已经看到了如何将} 类型和纯函数建模为范畴。我还提到过在范畴论中有一种方法可以建模副作用（side effects）或非纯函数。让我们看看这样一个例子：记录或跟踪执行过程的函数。在命令式语言中，这可能会通过修改某些全局状态来实现，例如：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   string logger;
 
   bool negate(bool b) {
     logger += "Not so! ";
     return !b;
   }
-\end{snip}
+\end{lstlisting}
 你知道这不是一个纯函数，因为它的记忆化版本将无法生成日志。此函数具有\newterm{副作用}。
 
 在现代编程中，我们尽量避免全局可变状态——仅仅是因为并发的复杂性。而且你永远不会在库中编写这样的代码。
 
 幸运的是，我们可以让这个函数变成纯函数。你只需显式传递日志，输入和输出日志。让我们通过添加一个字符串参数，并将常规输出与包含更新日志的字符串配对来实现这一点：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   pair<bool, string> negate(bool b, string logger) {
     return make_pair(!b, logger + "Not so! ");
   }
-\end{snip}
+\end{lstlisting}
 这个函数是纯函数，没有副作用，每次用相同的参数调用时都会返回相同的对（pair），并且如果需要可以将其记忆化。然而，考虑到日志的累积性质，你将不得不记忆化所有可能导致给定调用的历史记录。将会有一个单独的记忆条目用于：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   negate(true, "It was the best of times. ");
-\end{snip}
+\end{lstlisting}
 以及
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   negate(true, "It was the worst of times. ");
-\end{snip}
+\end{lstlisting}
 等等。
 
 这对于库函数来说也不是一个很好的接口。调用者可以选择忽略返回类型中的字符串，因此这不是一个巨大的负担；但它们被迫传递一个字符串作为输入，这可能会带来不便。
 
 有没有一种更不显眼的方式来实现相同的效果？有没有办法分离关注点？在这个简单的例子中，函数 \code{negate} 的主要目的是将一个布尔值转换为另一个布尔值。记录日志是次要的。当然，记录的消息是函数特有的，但将消息聚合成一个连续日志的任务是一个单独的关注点。我们仍然希望函数生成一个字符串，但我们希望解除它生成日志的负担。因此，这里有一个折衷的解决方案：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   pair<bool, string> negate(bool b) {
     return make_pair(!b, "Not so! ");
   }
-\end{snip}
+\end{lstlisting}
 这个想法是，日志将在函数调用之间被聚合。
 
 为了看看如何做到这一点，让我们切换到一个稍微现实一点的例子。我们有一个从字符串到字符串的函数，它将小写字符转换为大写字符：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   string toUpper(string s) {
     string result;
     int (*toupperp)(int) = &toupper; // toupper is overloaded
     transform(begin(s), end(s), back_inserter(result), toupperp);
     return result;
   }
-\end{snip}
+\end{lstlisting}
 还有另一个函数，它将字符串拆分为字符串向量，按空白边界拆分：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   vector<string> toWords(string s) {
     return words(s);
   }
-\end{snip}
+\end{lstlisting}
 实际工作在辅助函数 \code{words} 中完成：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   vector<string> words(string s) {
     vector<string> result{""};
     for (auto i = begin(s); i != end(s); ++i)
@@ -75,7 +75,7 @@
     }
     return result;
   }
-\end{snip}
+\end{lstlisting}
 我们希望修改函数 \code{toUpper} 和 \code{toWords}，使它们能够在常规返回值的基础上附加一条消息字符串。
 
 \begin{figure}[H]
@@ -85,13 +85,13 @@
 \noindent
 我们将“修饰”这些函数的返回值。让我们通过定义一个模板 \code{Writer} 来以通用的方式做到这一点，该模板封装了一个对，其第一个组件是任意类型 \code{A} 的值，第二个组件是一个字符串：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class A>
   using Writer = pair<A, string>;
-\end{snip}
+\end{lstlisting}
 以下是修饰后的函数：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   Writer<string> toUpper(string s) {
     string result;
     int (*toupperp)(int) = &toupper;
@@ -102,16 +102,16 @@
   Writer<vector<string>> toWords(string s) {
     return make_pair(words(s), "toWords ");
   }
-\end{snip}
+\end{lstlisting}
 我们希望将这两个函数组合成另一个修饰过的函数，该函数将字符串转换为大写并将其拆分为单词，同时生成这些操作的日志。以下是我们可能的实现方式：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   Writer<vector<string>> process(string s) {
     auto p1 = toUpper(s);
     auto p2 = toWords(p1.first);
     return make_pair(p2.first, p1.second + p2.second);
   }
-\end{snip}
+\end{lstlisting}
 我们已经达到了目标：日志的聚合不再是各个函数的关注点。它们生成自己的消息，然后在外部将其连接成更大的日志。
 
 现在想象一个完全以这种方式编写的程序。这是一个充满重复性、易出错的代码的噩梦。但我们是程序员。我们知道如何处理重复的代码：我们将其抽象化！然而，这不是你一般的抽象——我们必须抽象\newterm{函数组合}本身。但组合是范畴论的本质，因此在编写更多代码之前，让我们从范畴的角度分析这个问题。
@@ -122,27 +122,27 @@
 
 例如，假设我们要修饰从 \code{int} 到 \code{bool} 的函数 \code{isEven}。我们将其转换为一个态射，该态射由修饰后的函数表示。重要的一点是，这个态射仍然被认为是对象 \code{int} 和 \code{bool} 之间的箭头，尽管修饰后的函数返回的是一个对：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   pair<bool, string> isEven(int n) {
     return make_pair(n % 2 == 0, "isEven ");
   }
-\end{snip}
+\end{lstlisting}
 根据范畴的定律，我们应该能够将这个态射与另一个从对象 \code{bool} 到任意对象的态射组合。特别是，我们应该能够将其与我们之前的 \code{negate} 组合：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   pair<bool, string> negate(bool b) {
     return make_pair(!b, "Not so! ");
   }
-\end{snip}
+\end{lstlisting}
 显然，我们不能以组合常规函数的方式组合这两个态射，因为输入/输出不匹配。它们的组合应该看起来更像这样：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   pair<bool, string> isOdd(int n) {
     pair<bool, string> p1 = isEven(n);
     pair<bool, string> p2 = negate(p1.first);
     return make_pair(p2.first, p1.second + p2.second);
   }
-\end{snip}
+\end{lstlisting}
 所以这是我们正在构建的新范畴中两个态射的组合的配方：
 
 \begin{enumerate}
@@ -159,7 +159,7 @@
 
 如果我们希望将这种组合抽象为 C++ 中的高阶函数，则必须使用由三个类型参数化的模板，这三个类型对应于我们范畴中的三个对象。它应接受根据我们的规则可以组合的两个修饰函数，并返回第三个修饰函数：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class A, class B, class C>
   function<Writer<C>(A)> compose(function<Writer<B>(A)> m1,
   function<Writer<C>(B)> m2)
@@ -170,17 +170,17 @@
       return make_pair(p2.first, p1.second + p2.second);
     };
   }
-\end{snip}
+\end{lstlisting}
 现在我们可以回到前面的例子，使用这个新模板来实现 \code{toUpper} 和 \code{toWords} 的组合：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   Writer<vector<string>> process(string s) {
     return compose<string, string, vector<string>>(toUpper, toWords)(s);
   }
-\end{snip}
+\end{lstlisting}
 在向 \code{compose} 模板传递类型时仍有很多噪音。如果你有一个支持返回类型推导的泛型lambda函数的 C++14 兼容编译器，这种噪音可以避免（此代码的贡献归于 Eric Niebler）：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   auto const compose = [](auto m1, auto m2) {
     return [m1, m2](auto x) {
       auto p1 = m1(x);
@@ -188,26 +188,26 @@
       return make_pair(p2.first, p1.second + p2.second);
     };
   };
-\end{snip}
+\end{lstlisting}
 在这个新定义中，\code{process} 的实现简化为：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   Writer<vector<string>> process(string s) {
     return compose(toUpper, toWords)(s);
   }
-\end{snip}
+\end{lstlisting}
 但我们还没有完成。我们已经在新范畴中定义了组合，但是恒等态射是什么？它们不是我们常规的恒等函数！它们必须是从类型 A 返回到类型 A 的态射，这意味着它们是如下形式的修饰函数：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   Writer<A> identity(A);
-\end{snip}
+\end{lstlisting}
 它们必须像组合的单位元一样运作。如果你看一下我们定义的组合，你会看到一个恒等态射应该传递其参数而不做任何更改，并且只向日志中贡献一个空字符串：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class A> Writer<A> identity(A x) {
     return make_pair(x, "");
   }
-\end{snip}
+\end{lstlisting}
 你可以很容易地说服自己，我们刚刚定义的范畴确实是一个合法的范畴。特别是，我们的组合是平凡的结合的。如果你跟踪每个对的第一个组件所发生的事情，它只是一个常规函数组合，这是结合的。第二个组件正在连接，而连接也是结合的。
 
 一个聪明的读者可能会注意到，很容易将此构造推广到任何幺半群，而不仅仅是字符串幺半群。我们可以在 \code{compose} 中使用 \code{mappend}，在 \code{identity} 中使用 \code{mempty}（代替 \code{+} 和 \code{""}）。实际上，我们没有理由仅限于记录字符串。一个好的库编写者应该能够识别出使库工作的最小约束——这里记录库的唯一要求是日志具有幺半群属性。
@@ -260,7 +260,7 @@
 
 一个未定义其参数所有可能值的函数称为部分函数（partial function）。从数学意义上讲，它并不是真正的函数，因此它不符合标准的范畴模型。然而，它可以通过返回一个修饰类型 \code{optional} 的函数来表示：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class A> class optional {
     bool _isValid;
     A _value;
@@ -270,15 +270,15 @@
     bool isValid() const { return _isValid; }
     A value() const { return _value; }
   };
-\end{snip}
+\end{lstlisting}
 例如，下面是修饰函数 \code{safe\_root} 的实现：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   optional<double> safe_root(double x) {
     if (x >= 0) return optional<double>{sqrt(x)};
     else return optional<double>{};
   }
-\end{snip}
+\end{lstlisting}
 挑战如下：
 
 \begin{enumerate}

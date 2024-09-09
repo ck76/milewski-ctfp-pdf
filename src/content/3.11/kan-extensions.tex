@@ -248,9 +248,9 @@ Kan扩展的积/余积公式可以很容易地翻译成Haskell。让我们从右
 \[\Lan_{K}D a = \int^i \cat{A}(K i, a)\times{}D i\]
 因此，它翻译为一个存在量词。符号上表示为：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
   Lan k d a = exists i. (k i -> a, d i)
-\end{snip}
+\end{lstlisting}
 这可以在Haskell中使用 \acronym{GADT} 进行编码，或者使用一个通用量词的数据构造器：
 
 \src{snippet06}

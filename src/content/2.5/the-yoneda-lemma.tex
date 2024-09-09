@@ -169,13 +169,13 @@ $\cat{C}(-, a)$。Yoneda 引理的逆变版本建立了从这个函子到任何�
   \item
   证明构成 Haskell 中 Yoneda 同构的两个函数 \code{phi} 和 \code{psi} 是彼此的逆。
 
-  \begin{snip}{haskell}
+  \begin{lstlisting}[language=Haskell]
     phi :: (forall x . (a -> x) -> F x) -> F a
     phi alpha = alpha id
 
     psi :: F a -> (forall x . (a -> x) -> F x)
     psi fa h = fmap h fa
-  \end{snip}
+  \end{lstlisting}
   \item
   离散范畴是指只有对象而没有态射的范畴，除了恒等态射之外。对于从这样一个范畴来的函子，Yoneda 引理如何运作？
   \item

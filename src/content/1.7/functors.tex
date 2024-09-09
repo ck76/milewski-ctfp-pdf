@@ -77,16 +77,16 @@
 \src{snippet08}
 有两种情况需要考虑：\code{Nothing} 和 \code{Just}。这是第一种情况（我使用 Haskell 伪代码将左边转换为右边）：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
   fmap id Nothing
   = { definition of fmap }
   Nothing
   = { definition of id }
   id Nothing
-\end{snip}
+\end{lstlisting}
 注意，在最后一步我反向使用了 \code{id} 的定义。我用 \code{id\ Nothing} 替换了表达式 \code{Nothing}。实际上，你通过“从两端烧蜡烛”来进行这样的证明，直到在中间遇到相同的表达式——在这里是 \code{Nothing}。第二种情况也很简单：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
   fmap id (Just x)
   = { definition of fmap }
   Just (id x)
@@ -94,13 +94,13 @@
   Just x
   = { definition of id }
   id (Just x)
-\end{snip}
+\end{lstlisting}
 现在，让我们展示 \code{fmap} 保持复合性：
 
 \src{snippet09}
 首先是 \code{Nothing} 情况：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
   fmap (g . f) Nothing
   = { definition of fmap }
   Nothing
@@ -108,10 +108,10 @@
   fmap g Nothing
   = { definition of fmap }
   fmap g (fmap f Nothing)
-\end{snip}
+\end{lstlisting}
 然后是 \code{Just} 情况：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
   fmap (g . f) (Just x)
   = { definition of fmap }
   Just ((g . f) x)
@@ -123,10 +123,10 @@
   fmap g (fmap f (Just x))
   = { definition of composition }
   (fmap g . fmap f) (Just x)
-\end{snip}
+\end{lstlisting}
 值得强调的是，等式推理不适用于具有副作用的 C++ 风格的“函数”。考虑以下代码：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   int square(int x) {
     return x * x;
   }
@@ -137,19 +137,19 @@
   }
 
   double y = square(counter());
-\end{snip}
+\end{lstlisting}
 使用等式推理，你会将 \code{square} 内联为：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   double y = counter() * counter();
-\end{snip}
+\end{lstlisting}
 这显然不是一个有效的转换，也不会产生相同的结果。尽管如此，如果你将 \code{square} 实现为宏，C++ 编译器仍然会尝试使用等式推理，结果可能会灾难性地错误。
 
 \subsection{Optional}
 
 函子在 Haskell 中很容易表达，但它们可以在任何支持泛型编程和高阶函数的语言中定义。让我们考虑 C++ 中 \code{Maybe} 的类似物，模板类型 \code{optional}。这是实现的一个简要示意图（实际实现要复杂得多，涉及参数传递的各种方式，复制语义，以及 C++ 特有的资源管理问题）：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class T>
   class optional {
     bool _isValid; // 标志
@@ -159,10 +159,10 @@
     optional(T x) : _isValid(true) , _v(x) {} // Just
     bool isValid() const { return _isValid; }
     T val() const { return _v; } };
-\end{snip}
+\end{lstlisting}
 此模板提供了函子定义的一部分：类型映射。它将任何类型 \code{T} 映射到新的类型 \code{optional<T>}。让我们定义它在函数上的作用：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class A, class B>
   std::function<optional<B>(optional<A>)>
   fmap(std::function<B(A)> f) {
@@ -173,10 +173,10 @@
       return optional<B>{ f(opt.val()) };
     };
   }
-\end{snip}
+\end{lstlisting}
 这是一个高阶函数，将一个函数作为参数并返回一个函数。下面是它的非柯里化版本：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class A, class B>
   optional<B> fmap(std::function<B(A)> f, optional<A> opt) {
     if (!opt.isValid())
@@ -184,12 +184,12 @@
     else
     return optional<B>{ f(opt.val()) };
   }
-\end{snip}
+\end{lstlisting}
 还有一种选择是将 \code{fmap} 作为 \code{optional} 的模板方法。这种选择的尴尬之处在于，在 C++ 中抽象出函子模式是一个问题。函子是否应该是一个接口供继承（不幸的是，你不能有模板虚函数）？它应该是一个柯里化还是非柯里化的自由模板函数？C++ 编译器是否能够正确推断出缺失的类型，还是应该明确指定它们？考虑一种情况，输入函数 \code{f} 将 \code{int} 转换为 \code{bool}。编译器如何确定 \code{g} 的类型：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   auto g = fmap(f);
-\end{snip}
+\end{lstlisting}
 特别是，如果将来有多个函子重载 \code{fmap}？
 
 \subsection{类型类（Typeclasses）}
@@ -215,19 +215,19 @@
 
 我们可以在 C++ 中尝试相同的方法吗？类型构造器对应于模板类，如 \code{optional}，因此通过类比，我们可以用\newterm{模板模板参数} \code{F} 来参数化 \code{fmap}。这是它的语法：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<template<class> F, class A, class B>
   F<B> fmap(std::function<B(A)>, F<A>);
-\end{snip}
+\end{lstlisting}
 我们希望能够为不同的函子专门化这个模板。不幸的是，C++ 中禁止部分专门化模板函数。你不能写：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class A, class B>
   optional<B> fmap<optional>(std::function<B(A)> f, optional<A> opt)
-\end{snip}
+\end{lstlisting}
 相反，我们不得不依赖函数重载，这使我们回到了原始的非柯里化 \code{fmap} 定义：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class A, class B>
   optional<B> fmap(std::function<B(A)> f, optional<A> opt) {
     if (!opt.isValid())
@@ -235,7 +235,7 @@
     else
     return optional<B>{ f(opt.val()) };
   }
-\end{snip}
+\end{lstlisting}
 这个定义是有效的，但仅仅是因为 \code{fmap} 的第二个参数选择了重载。它完全忽略了更通用的 \code{fmap} 定义。
 
 \subsection{列表函子（The List Functor）}
@@ -254,7 +254,7 @@
 \src{snippet18}
 如果你对 C++ 更熟悉，可以考虑 \code{std::vector}，它可能是最通用的 C++ 容器。\code{std::vector} 的 \code{fmap} 实现只是 \code{std::transform} 的一个薄包装：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class A, class B>
   std::vector<B> fmap(std::function<B(A)> f, std::vector<A> v) {
     std::vector<B> w;
@@ -264,16 +264,16 @@
     , f);
     return w;
   }
-\end{snip}
+\end{lstlisting}
 我们可以用它来对一系列数字的元素进行平方：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   std::vector<int> v{ 1, 2, 3, 4 };
   auto w = fmap([](int i) { return i*i; }, v);
   std::copy( std::begin(w)
   , std::end(w)
   , std::ostream_iterator(std::cout, ", "));
-\end{snip}
+\end{lstlisting}
 大多数 C++ 容器通过实现可传递给 \code{std::transform} 的迭代器而成为函子，这些迭代器是 \code{fmap} 的较原始版本。不幸的是，函子的简单性在通常的迭代器和临时变量的杂乱中丢失了（参见上面的 \code{fmap} 实现）。我很高兴地说，新的提议的 C++ range 库使得范围的函子性质更加明显。
 
 \subsection{Reader 函子（The Reader Functor）}
@@ -314,21 +314,21 @@
 \src{snippet28}
 在 C++ 中这可能会更清楚（我从未想过我会说出这些话！），在那里类型参数和值之间有更强的区分——前者是编译时的，后者是运行时的：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class C, class A>
   struct Const {
     Const(C v) : _v(v) {}
     C _v;
   };
-\end{snip}
+\end{lstlisting}
 C++ 中的 \code{fmap} 实现同样忽略了函数参数，并且本质上重新转换了 \code{Const} 参数而不改变其值：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class C, class A, class B>
   Const<C, B> fmap(std::function<B(A)> f, Const<C, A> c) {
     return Const<C, B>{c._v};
   }
-\end{snip}
+\end{lstlisting}
 尽管它看起来很奇怪，但 \code{Const} 函子在许多结构中起着重要作用。在范畴论中，它是我之前提到的常量函子 $\Delta_c$ 的特例——黑洞的自函子情况。我们将在未来看到更多它的应用。
 
 \section{函子组合（Functor Composition）}
@@ -363,9 +363,9 @@ C++ 中的 \code{fmap} 实现同样忽略了函数参数，并且本质上重新
   \item
   我们能否通过定义以下内容将 \code{Maybe} 类型构造器变成一个函子：
 
-  \begin{snip}{haskell}
+  \begin{lstlisting}[language=Haskell]
     fmap _ _ = Nothing
-  \end{snip}
+  \end{lstlisting}
 
   它忽略了两个参数？（提示：检查函子定律。）
   \item

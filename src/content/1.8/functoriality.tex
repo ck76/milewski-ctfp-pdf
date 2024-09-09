@@ -62,9 +62,9 @@
 \src{snippet03}
 这里双函子的作用是生成类型的对，例如：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
 (,) a b = (a, b)
-\end{snip}
+\end{lstlisting}
 通过对偶，余积，如果它定义在范畴中的每对对象上，也将是一个双函子。在 Haskell 中，这由 \code{Either} 类型构造器作为 \code{Bifunctor} 实例体现：
 
 \src{snippet04}[b]
@@ -124,14 +124,14 @@
 
 敏锐的读者可能会问一个问题：如果代数数据类型的 \code{Functor} 实例的推导如此机械化，难道不能由编译器自动化执行吗？确实如此，并且实际上是这样。你只需要通过在源文件顶部包含以下行来启用特定的 Haskell 扩展：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
 {-# LANGUAGE DeriveFunctor #-}
-\end{snip}
+\end{lstlisting}
 然后将 \code{deriving Functor} 添加到你的数据结构中：
 
-\begin{snip}{haskell}
+\begin{lstlisting}[language=Haskell]
   data Maybe a = Nothing | Just a deriving Functor
-\end{snip}
+\end{lstlisting}
 并且相应的 \code{fmap} 将由编译器为你实现。
 
 代数数据结构的规则性使得不仅可以推导出 \code{Functor} 实例，还可以推导出其他几个类型类的实例，包括我之前提到的 \code{Eq} 类型类。还可以选择教授编译器派生你自己的类型类实例，但这有点高级。然而，思路是相同的：你为基本构建块、和与积提供行为，然后让编译器找出其余的内容。
@@ -147,34 +147,34 @@
 
 基类必须至少定义一个虚函数以支持动态转换，因此我们将析构函数设置为虚函数（这在任何情况下都是一个好主意）：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class T>
   struct Tree {
     virtual ~Tree() {}
   };
-\end{snip}
+\end{lstlisting}
 \code{Leaf} 只是一个伪装成 \code{Identity} 的函子：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class T>
   struct Leaf : public Tree<T> {
     T _label;
     Leaf(T l) : _label(l) {}
   };
-\end{snip}
+\end{lstlisting}
 \code{Node} 是一个积类型：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class T>
   struct Node : public Tree<T> {
     Tree<T> * _left;
     Tree<T> * _right;
     Node(Tree<T> * l, Tree<T> * r) : _left(l), _right(r) {}
   };
-\end{snip}
+\end{lstlisting}
 在实现 \code{fmap} 时，我们利用了 \code{Tree} 类型的动态调度。 \code{Leaf} 情况下应用了 \code{Identity} 版本的 \code{fmap}，而 \code{Node} 情况下则被视为一个与两个 \code{Tree} 函子副本组合的双函子。作为 C++ 程序员，你可能不习惯以这些术语分析代码，但这是一个很好的范畴思考练习。
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class A, class B>
   Tree<B> * fmap(std::function<B(A)> f, Tree<A> * t) {
     Leaf<A> * pl = dynamic_cast <Leaf<A>*>(t);
@@ -186,7 +186,7 @@
     , fmap<A>(f, pn->_right));
     return nullptr;
   }
-\end{snip}
+\end{lstlisting}
 为了简单起见，我决定忽略内存和资源管理问题，但在生产代码中，你可能会使用智能指针（独占或共享，具体取决于你的策略）。
 
 将其与 Haskell 中的 \code{fmap} 实现进行比较：
@@ -313,25 +313,25 @@
   \item
   证明数据类型：
 
-  \begin{snip}{haskell}
+  \begin{lstlisting}[language=Haskell]
     data Pair a b = Pair a b
-  \end{snip}
+  \end{lstlisting}
 
   是一个双函子。为额外加分，实现 \code{Bifunctor} 的所有三种方法，并使用等式推理证明这些定义在可以应用的情况下与默认实现兼容。
   \item
   证明标准定义的 \code{Maybe} 与以下展开的同构性：
 
-  \begin{snip}{haskell}
+  \begin{lstlisting}[language=Haskell]
     type Maybe' a = Either (Const () a) (Identity a)
-  \end{snip}
+  \end{lstlisting}
 
   提示：定义两者之间的两个映射。为额外加分，使用等式推理证明它们是彼此的逆映射。
   \item
   让我们尝试另一个数据结构。我称之为 \code{PreList}，因为它是 \code{List} 的前体。它用一个类型参数 \code{b} 替换了递归。
 
-  \begin{snip}{haskell}
+  \begin{lstlisting}[language=Haskell]
     data PreList a b = Nil | Cons a b
-  \end{snip}
+  \end{lstlisting}
 
   你可以通过递归应用 \code{PreList} 来恢复我们之前定义的 \code{List}（我们会在讨论不动点时看到它是如何完成的）。
 
@@ -339,13 +339,13 @@
   \item
   证明以下数据类型在 \code{a} 和 \code{b} 中定义了双函子：
 
-  \begin{snip}{haskell}
+  \begin{lstlisting}[language=Haskell]
     data K2 c a b = K2 c
 
     data Fst a b = Fst a
 
     data Snd a b = Snd b
-  \end{snip}
+  \end{lstlisting}
 
   为额外加分，将你的解决方案与 Conor McBride 的论文 \urlref{http://strictlypositive.org/CJ.pdf}{Clowns to the Left of me, Jokers to the Right} 进行对比。
   \item

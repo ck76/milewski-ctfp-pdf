@@ -87,9 +87,9 @@
 \src{snippet09}
 它必须满足自然性条件，并且必须是 \code{alpha} 的逆：
 
-\begin{snip}{text}
+\begin{lstlisting}{text}
   alpha . beta = id = beta . alpha
-\end{snip}
+\end{lstlisting}
 我们稍后会看到，从 $\cat{C}(a, -)$ 到任何 $\Set$-值函子的自然变换总是存在的，只要 $F a$ 非空（Yoneda 引理），但它不一定是可逆的。
 
 让我给你一个 Haskell 中的例子，使用列表函子和 \code{Int} 作为 \code{a}。这是一个可以完成任务的自然变换：
@@ -147,9 +147,9 @@
   \item
   函子：
 
-  \begin{snip}{haskell}
+  \begin{lstlisting}[language=Haskell]
     Pair a = Pair a a
-  \end{snip}
+  \end{lstlisting}
   是可表示的。你能猜出表示它的类型吗？实现 \code{tabulate} 和 \code{index}。
 \end{enumerate}
 

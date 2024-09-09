@@ -89,9 +89,9 @@
 \src{snippet02}
 请记住，它实际上是一个以 \code{a} 为参数的函数族。这是 Haskell 语法简洁性的另一个例子。在 C++ 中，一个类似的结构会稍微冗长一些：
 
-\begin{snip}{cpp}
+\begin{lstlisting}{cpp}
   template<class A> G<A> alpha(F<A>);
-\end{snip}
+\end{lstlisting}
 在 Haskell 的多态函数和 C++ 的泛型函数之间有一个更深刻的区别，这反映在这些函数的实现和类型检查方式上。在 Haskell 中，一个多态函数必须统一地为所有类型定义。一个公式必须适用于所有类型。这被称为 \newterm{参数多态性}。
 
 而在 C++ 中，默认支持的是 \newterm{特定多态性}，这意味着模板不必对所有类型都是良定义的。模板是否对给定类型起作用是在实例化时决定的，在此过程中，具体类型被替换为类型参数。类型检查被延迟，这不幸的是，通常导致难以理解的错误消息。
@@ -111,9 +111,9 @@ Haskell 的参数多态性有一个意想不到的后果：任何类型为
 \end{snipv}
 由于类型推断，这些注释是不必要的，下面的等式成立：
 
-\begin{snip}{text}
+\begin{lstlisting}{text}
   fmap f . alpha = alpha . fmap f
-\end{snip}
+\end{lstlisting}
 这仍然不是真正的 Haskell——函数相等性在代码中是无法表达的——但它是程序员在方程推理中可以使用的等式；或者由编译器使用来实现优化。
 
 自然性条件在 Haskell 中是自动满足的，原因在于“免费的定理”。参数多态性，在 Haskell 中用于定义自然变换，对实现施加了非常强的限制——所有类型只有一个公式。这些限制转换为关于此类函数的方程定理。在变换函子的函数的情况下，免费的定理就是自然性条件。\footnote{
@@ -407,14 +407,14 @@ Haskell 的参数多态性有一个意想不到的后果：任何类型为
   \item
   为不同 \code{Op} 函子之间的变换创建一些测试用例，验证对立的自然性条件。这里有一个选择：
 
-  \begin{snip}{haskell}
+  \begin{lstlisting}[language=Haskell]
     op :: Op Bool Int
     op = Op (\x -> x > 0)
-  \end{snip}
+  \end{lstlisting}
   和
 
-  \begin{snip}{haskell}
+  \begin{lstlisting}[language=Haskell]
     f :: String -> Int
     f x = read x
-  \end{snip}
+  \end{lstlisting}
 \end{enumerate}
