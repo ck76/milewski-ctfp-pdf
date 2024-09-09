@@ -58,10 +58,7 @@
 
 要构成一个范畴，我们还必须定义锥之间的态射。这些将完全由它们的顶点之间的态射决定。但并不是任何态射都可以。记住，在我们构造积时，我们规定候选对象（顶点）之间的态射必须是投影的公因子。例如：
 
-\begin{lstlisting}[language=Scala]
-val p1 = p compose m
-val q1 = q compose m
-\end{lstlisting}
+\src{snippet01}
 
 \begin{figure}[H]
   \centering
@@ -101,10 +98,7 @@ val q1 = q compose m
 \[u \circ f \Colon c' \to \Lim[D]\]
 这就是 $\cat{C}(c', \Lim[D])$ 的一个元素——所以确实，我们找到了态射的一个映射：
 
-\begin{lstlisting}[language=Scala]
-def contramap[C, C1, D[_]](f: C1 => C, u: C => Lim[D]): (C1 => Lim[D]) =
-  u compose f
-\end{lstlisting}
+\src{snippet02}
 注意 $c$ 和 $c'$ 的顺序颠倒了，这正是 \emph{反变} 函子的特征。
 
 \begin{figure}[H]
@@ -157,17 +151,11 @@ def contramap[C, C1, D[_]](f: C1 => C, u: C => Lim[D]): (C1 => Lim[D]) =
 
 下一个有趣的极限称为 \emph{等化子}。它是由一个两元素范畴生成的极限，该范畴中有两个平行的态射在它们之间（以及总是存在的恒等态射）。这个范畴选择了 $\cat{C}$ 中由两个对象 $a$ 和 $b$ 以及两个态射组成的图：
 
-\begin{lstlisting}[language=Scala]
-val f : A => B
-val g : A => B
-\end{lstlisting}
+\src{snippet03}
 
 要在此图之上构建一个锥，我们必须添加顶点 $c$ 和两个投影：
 
-\begin{lstlisting}[language=Scala]
-val p : C => A
-val q : C => B
-\end{lstlisting}
+\src{snippet04}
 
 \begin{figure}[H]
   \centering
@@ -177,57 +165,39 @@ val q : C => B
 \noindent
 我们有两个必须交换的三角形：
 
-\begin{lstlisting}[language=Scala]
-q == f compose p
-q == g compose p
-\end{lstlisting}
+\src{snippet05}
 
 这告诉我们，$q$ 由这些方程中的一个唯一决定，比如 \code{q = f . p}，我们可以省略它。因此我们只剩下一个条件：
 
-\begin{lstlisting}[language=Scala]
-f compose p == g compose p
-\end{lstlisting}
+\src{snippet06}
 
 想法是，如果我们将注意力集中在 $\Set$ 上，函数 $p$ 的像选择了 $a$ 的一个子集。当限制在该子集上时，函数 $f$ 和 $g$ 是相等的。
 
 例如，假设 $a$ 是由坐标 $x$ 和 $y$ 参数化的二维平面。$b$ 是实数线，并且：
 
-\begin{lstlisting}[language=Scala]
-def f(x, y) = 2 * y + x
-def g(x, y) = y - x
-\end{lstlisting}
+\src{snippet07}
 
 这两个函数的等化子是实数集（顶点 $c$）和函数：
 
-\begin{lstlisting}[language=Scala]
-def p(t) = (t, (-2) * t)
-\end{lstlisting}
+\src{snippet08}
 
 注意 $(p~t)$ 定义了二维平面中的一条直线。沿着这条直线，这两个函数是相等的。
 
 当然，还有其他的集合 $c'$ 和函数 $p'$ 可能会导致相等：
 
-\begin{lstlisting}[language=Scala]
-f compose p1 == g compose p1
-\end{lstlisting}
+\src{snippet09}
 
 但它们都唯一地因式分解通过 $p$。例如，我们可以将单元素集 $\cat{()}$ 作为 $c'$，并选择函数：
 
-\begin{lstlisting}[language=Scala]
-def p1 : Unit => (Double, Double) = _ => (0, 0)
-\end{lstlisting}
+\src{snippet10}
 
 这是一个很好的锥，因为 $f (0, 0) = g (0, 0)$。但它不是普遍的，因为它通过 $h$ 唯一因式分解：
 
-\begin{lstlisting}[language=Scala]
-val p1 = p compose h
-\end{lstlisting}
+\src{snippet11}
 
 其中
 
-\begin{lstlisting}[language=Scala]
-def h(_,_) = 0
-\end{lstlisting}
+\src{snippet12}
 
 \begin{figure}[H]
 \centering
@@ -239,20 +209,13 @@ def h(_,_) = 0
 
 解决方程的一个更一般的想法体现在另一种极限——拉回。这里，我们仍然有两个想要等式化的态射，但这次它们的定义域不同。我们从一个形状为 $1\rightarrow2\leftarrow3$ 的三对象范畴开始。此范畴对应的图由三个对象 $a$、$b$ 和 $c$ 以及两个态射组成：
 
-\begin{lstlisting}[language=Scala]
-val f : A => B
-val g : C => B
-\end{lstlisting}
+\src{snippet13}
 
 此图通常称为 \emph{余弦图}。
 
 在此图之上构建的锥由顶点 $d$ 和三个态射组成：
 
-\begin{lstlisting}[language=Scala]
-val p : D => A
-val q : D => C
-val r : D => B
-\end{lstlisting}
+\src{snippet14}
 
 \begin{figure}[H]
 \centering
@@ -262,9 +225,7 @@ val r : D => B
 \noindent
 交换性条件告诉我们 $r$ 是完全由其他态射决定的，因此可以从图中省略。所以我们只剩下以下条件：
 
-\begin{lstlisting}[language=Scala]
-g compose q == f compose p
-\end{lstlisting}
+\src{snippet15}
 
 拉回是这种形状的普遍锥。
 
@@ -276,9 +237,7 @@ g compose q == f compose p
 \noindent
 再次，如果你将焦点缩小到集合，可以认为对象 $d$ 由一对来自 $a$ 和 $c$ 的元素组成，其中第一个分量上的 $f$ 等于第二个分量上的 $g$。如果这仍然太过一般，考虑一个特殊情况，其中 $g$ 是常函数，比如 $g~\_ = 1.23$（假设 $b$ 是实数集）。那么你实际上是在解决方程：
 
-\begin{lstlisting}[language=Scala]
-f(x) == 1.23
-\end{lstlisting}
+\src{snippet16}
 
 在这种情况下，$c$ 的选择无关紧要（只要它不是一个空集），所以我们可以将其视为一个单元素集。集合 $a$ 可以是三维向量的集合，$f$ 是向量的长度。然后拉回是对 $(v, ())$ 的集合，其中 $v$ 是长度为 1.23 的向量（$\sqrt{(x^{2}+y^{2}+z^{2})} = 1.23$ 的解），$()$ 是单元素集的虚拟元素。
 
@@ -372,30 +331,15 @@ twice :: (t -> t) -> t -> t
 
 在 Haskell 中，同态函子是将任意两个类型映射到一个函数类型的映射，因此它只是一个参数化的函数类型。当我们将第二个参数固定时，例如固定为 \code{String}，我们得到反变函子：
 
-\begin{lstlisting}[language=Scala]
-trait Contravariant[F[_]] {
-  def contramap[A, B](fa: F[A])(f: B => A) : F[B]
-}
-
-class ToString[A](f: A => String) extends AnyVal 
-
-implicit val contravariant = new Contravariant[ToString] {
-  def contramap[A, B](fa: ToString[A])(f: B => A): ToString[B] =
-    ToString(fa.f compose f)
-}
-\end{lstlisting}
+\src{snippet17}
 连续性意味着当 \code{ToString} 应用于余极限（例如一个余积 \code{Either b c}）时，它将生成一个极限；在本例中，是两个函数类型的积：
 
-\begin{lstlisting}[language=Scala]
-ToString[Either[B, C]] ~ (B => String, C => String)
-\end{lstlisting}
+\src{snippet18}
 确实，任何 \code{Either b c} 的函数都实现为一个 case 语句，该语句由一对函数服务两个情况。
 
 同样，当我们固定同态集的第一个参数时，我们得到熟悉的 reader 函子。其连续性意味着例如任何返回积的函数都等价于函数的积；特别是：
 
-\begin{lstlisting}[language=Scala]
-R => (A, B) ~ (R => A, R => B)
-\end{lstlisting}
+\src{snippet19}
 我知道你在想什么：你不需要范畴论就能弄清楚这些东西。你是对的！然而，我仍然感到惊讶的是，这样的结果可以从第一个原则推导出来，而无需借助比特与字节、处理器架构、编译器技术，甚至 lambda 演算。
 
 如果你对“极限”和“连续性”这些名称的来源感到好奇，它们是从微积分中相应概念推广而来的。在微积分中，极限和连续性是用开邻域定义的。开集定义了拓扑，形成一个范畴（一个偏序集）。

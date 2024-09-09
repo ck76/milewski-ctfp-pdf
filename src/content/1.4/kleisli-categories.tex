@@ -216,38 +216,20 @@
 
 在 Haskell 中做同样的事情更简洁一些，并且我们还得到了编译器的更多帮助。让我们从定义 \code{Writer} 类型开始：
 
-\begin{lstlisting}[language=Scala]
-type Writer[A] = (A, String)
-\end{lstlisting}
+\src{snippet01}
 这里我只是在定义一个类型别名，相当于 C++ 中的 \code{typedef}（或 \code{using}）。\code{Writer} 类型由类型变量 \code{a} 参数化，相当于 \code{a} 和 \code{String} 的对。对的语法是最简的：只是两个用逗号分隔的项目放在括号中。
 
 我们的态射是从任意类型到某个 \code{Writer} 类型的函数：
 
-\begin{lstlisting}[language=Scala]
-A => Writer[B]
-\end{lstlisting}
+\src{snippet02}
 我们将声明组合为一个有趣的中缀运算符，有时称为“鱼”：
 
-\begin{lstlisting}[language=Scala]
-def >=>[A, B, C](m1: A => Writer[B], m2: B => Writer[C]): A => Writer[C]
-\end{lstlisting}
+\src{snippet03}
 这是一个有两个参数的函数，每个参数都是一个函数，并返回一个函数。第一个参数的类型是 \code{(a -> Writer b)}，第二个参数是 \code{(b -> Writer c)}，结果是 \code{(a -> Writer c)}。
 
 以下是这个中缀运算符的定义——两个参数 \code{m1} 和 \code{m2} 出现在鱼符号的两边：
 
-\begin{lstlisting}[language=Scala]
-object kleisli {
-  //allows us to use >=> as an infix operator
-  implicit class KleisliOps[A, B](m1: A => Writer[B]) {
-    def >=>[C](m2: B => Writer[C]): A => Writer[C] =
-      x => {
-        val (y, s1) = m1(x)
-        val (z, s2) = m2(y)
-        (z, s1 + s2)
-      }
-    }
-}
-\end{lstlisting}
+\src{snippet04}
 结果是一个参数为 \code{x} 的 lambda 函数。lambda 写作反斜杠——将其视为希腊字母 $\lambda$ 的一条截肢腿。
 
 \code{let} 表达式允许你声明辅助变量。这里调用 \code{m1} 的结果与一对变量 \code{(y, s1)} 进行模式匹配；调用 \code{m2} 的结果，使用第一个模式中的参数 \code{y}，与 \code{(z, s2)} 进行匹配。
@@ -258,28 +240,15 @@ object kleisli {
 
 我还将在我们的范畴中定义恒等态射，但由于某些原因，这些原因将在后面详细解释，我将其称为 \code{return}。
 
-\begin{lstlisting}[language=Scala]
-def pure[A](x: A): Writer[A] = (x, "")
-\end{lstlisting}
+\src{snippet05}
 为了完整性，我们来看一下 Haskell 版本的修饰函数 \code{upCase} 和 \code{toWords}：
 
-\begin{lstlisting}[language=Scala]
-val upCase: String => Writer[String] =
-  s => (s.toUpperCase, "upCase ")
-
-val toWords: String => Writer[List[String]] =
-  s => (s.split(' ').toList, "toWords ")
-\end{lstlisting}
+\src{snippet06}
 函数 \code{map} 对应于 C++ 中的 \code{transform}。它将字符函数 \code{toUpper} 应用于字符串 \code{s}。辅助函数 \code{words} 定义在标准 Prelude 库中。
 
 最后，两个函数的组合使用鱼运算符完成：
 
-\begin{lstlisting}[language=Scala]
-val process: String => Writer[List[String]] = {
-  import kleisli._
-  upCase >=> toWords
-}
-\end{lstlisting}
+\src{snippet07}
 
 \section{Kleisli 范畴 (Kleisli Categories)}
 

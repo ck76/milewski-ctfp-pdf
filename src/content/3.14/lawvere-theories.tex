@@ -42,9 +42,7 @@
 
 劳维尔范畴骨架的自然选择是有限集范畴 $\cat{FinSet}$。它包含空集 $\varnothing$，一个单元素集合 $1$，一个双元素集合 $2$，等等。这个范畴中的所有对象都可以通过使用余积从单元素集合生成（将空集视为零元余积的特例）。例如，双元素集合是两个单元素集合的和，$2 = 1 + 1$，如下所示的 Haskell 表达式：
 
-\begin{lstlisting}[language=Scala]
-type Two = Either[Unit, Unit]
-\end{lstlisting}
+\src{snippet01}
 然而，即使我们自然地认为只有一个空集，但可能有许多不同的单元素集合。特别是，集合 $1 + \varnothing$ 与集合 $\varnothing + 1$ 是不同的，也与 $1$ 不同——尽管它们都是同构的。集合范畴中的余积不是结合的。我们可以通过构建一个范畴来解决这种情况，该范畴识别所有同构的集合。这种范畴称为\newterm{骨架}（skeleton）。换句话说，任何劳维尔理论的骨架是 $\cat{FinSet}$ 的骨架 $\cat{F}$。这个范畴中的对象可以与自然数（包括零）相对应，这些自然数对应于 $\cat{FinSet}$ 中的元素数量。余积在此处扮演加法的角色。$\cat{F}$ 中的态射对应于有限集之间的函数。例如，从 $\varnothing$ 到 $n$ 存在唯一的态射（空集是初对象），从 $n$ 到 $\varnothing$ 没有态射（除了 $\varnothing \to \varnothing$），从 $1$ 到 $n$ 有 $n$ 个态射（即嵌入态射），从 $n$ 到 $1$ 有一个态射，等等。这里，$n$ 表示 $\cat{F}$ 中的一个对象，它对应于通过同构识别的 $\cat{FinSet}$ 中的所有 $n$ 元集合。
 
 使用范畴 $\cat{F}$，我们可以正式定义\newterm{劳维尔理论}（Lawvere theory）为一个带有特殊函子的范畴 $\cat{L}$：
@@ -241,9 +239,7 @@ $\cat{Mod}(\cat{L}_{\cat{Mon}}, \Set)$ 与所有幺半群的范畴 $\cat{Mon}$ �
 
 \code{Maybe} 幺半群由具有单个零元运算 $0 \to 1$ 的劳维尔理论生成。该理论的模型是一个函子，将 $1$ 映射到某个集合 $a$，并将零元运算映射为一个函数：
 
-\begin{lstlisting}[language=Scala]
-def raise: Unit => A
-\end{lstlisting}
+\src{snippet02}
 我们可以使用共端公式恢复 \code{Maybe} 幺半群。让我们考虑零元运算的添加对态射集 $\cat{L}(n, 1)$ 的影响。除了创建一个新的 $\cat{L}(0, 1)$（在 $\Fop$ 中不存在），它还向 $\cat{L}(n, 1)$ 添加了新的态射。这些态射是由 $n \to 0$ 的态射与我们的 $0 \to 1$ 组合的结果。这些贡献在共端公式中与 $a^0 \times \cat{L}(0, 1)$ 相关，因为它们可以通过两种不同的方式从：
 \[a^n \times \cat{L}(0, 1)\]
 通过提升 $0 \to n$ 获得。
@@ -266,16 +262,10 @@ def raise: Unit => A
 \[T_{\cat{L}} a = a^0 + a^1\]
 或者，用 Haskell 表示：
 
-\begin{lstlisting}[language=Scala]
-type Option[A] = Either[Unit, A]
-\end{lstlisting}
+\src{snippet03}
 这相当于：
 
-\begin{lstlisting}[language=Scala]
-sealed trait Option[+A]
-case object None extends Option[Nothing]
-case class Some[A](a: A) extends Option[A]
-\end{lstlisting}
+\src{snippet04}
 请注意，此劳维尔理论仅支持引发异常，而不支持其处理。
 
 \section{挑战\\ \textmd{Challenges}}

@@ -40,9 +40,7 @@
 
 当我们声明 \code{x} 是 \code{Integer} 时：
 
-\begin{lstlisting}[language=Scala]
-val x: BigInt
-\end{lstlisting}
+\src{snippet01}
 我们是在说它是整数集的一个元素。Haskell 中的 \code{Integer} 是一个无限集合，可以用于任意精度的算术运算。还有一个有限集合 \code{Int} 对应于机器类型，就像 C++ 中的 \code{int}。
 
 有些微妙之处使得将类型与集合等同变得棘手。涉及循环定义的多态函数有问题，而且你不能拥有所有集合的集合；但正如我所承诺的，我不会拘泥于数学。好消息是，有一个集合的范畴，称为 $\Set$，我们将仅与它打交道。在 $\Set$ 中，对象是集合，态射（箭头）是函数。
@@ -51,21 +49,15 @@ $\Set$ 是一个非常特殊的范畴，因为我们实际上可以窥视其内�
 
 在理想世界中，我们会说 Haskell 类型是集合，Haskell 函数是集合之间的数学函数。只是有一个小问题：数学函数不执行任何代码——它只是知道答案。Haskell 函数必须计算答案。如果答案可以在有限步数内获得——无论这个数字多大——这都不是问题。但有些计算涉及递归，而这些计算可能永远不会终止。我们不能仅仅因为区分终止和不终止的函数是不可判定的（著名的停机问题）而禁止 Haskell 中的不终止函数。这就是为什么计算机科学家提出了一个聪明的主意，或者从某种观点来看是一个重要的黑客，来扩展每种类型再加上一个特殊值，称为 \newterm{底}（bottom），表示为 \code{\_|\_} 或 Unicode $\bot$。这个“值”对应于一个不终止的计算。所以一个声明为：
 
-\begin{lstlisting}[language=Scala]
-val f: Boolean => Boolean
-\end{lstlisting}
+\src{snippet02}
 的函数可以返回 \code{True}，\code{False}，或 \code{\_|\_}；后者意味着它将永远不会终止。
 
 有趣的是，一旦你接受底作为类型系统的一部分，将每个运行时错误视为底也是很方便的，甚至允许函数显式地返回底。后者通常使用表达式 \code{undefined} 来完成，例如：
 
-\begin{lstlisting}[language=Scala]
-val f: Boolean => Boolean = x => ???
-\end{lstlisting}
+\src{snippet03}
 这个定义通过类型检查，因为 \code{undefined} 计算为底，底是任何类型的成员，包括 \code{Bool}。你甚至可以写：
 
-\begin{lstlisting}[language=Scala]
-def f: Boolean => Boolean = ???
-\end{lstlisting}
+\src{snippet04}
 （没有 \code{x}），因为底也是类型 \code{Bool -> Bool} 的成员。
 
 可能返回底的函数称为部分函数，与此相对的是全函数，它们对每个可能的参数返回有效结果。
@@ -88,9 +80,7 @@ def f: Boolean => Boolean = ???
 
 考虑一下 Haskell 中的阶乘函数定义，这是一个非常适合指称语义的语言：
 
-\begin{lstlisting}[language=Scala]
-val fact = (n: Int) => (1 to n).product
-\end{lstlisting}
+\src{snippet05}
 表达式 \code{{[}1..n{]}} 是从 \code{1} 到 \code{n} 的整数列表。函数 \code{product} 乘以列表中的所有元素。这就像从数学文本中取出的阶乘定义。将其与 C 进行比较：
 
 \begin{lstlisting}{c}
@@ -122,9 +112,7 @@ val fact = (n: Int) => (1 to n).product
 
 一旦你意识到类型是集合，你就可以想到一些相当奇特的类型。例如，什么类型对应于空集？不，这不是 C++ 中的 \code{void}，尽管这个类型在 Haskell 中确实被称为 \code{Void}。它是一种没有任何值的类型。你可以定义一个接受 \code{Void} 的函数，但你永远无法调用它。要调用它，你必须提供一个类型为 \code{Void} 的值，但根本没有这样的值。至于这个函数可以返回什么，没有任何限制。它可以返回任何类型（尽管它永远不会返回，因为它无法被调用）。换句话说，它是一个在返回类型上是多态的函数。Haskellers 为它起了一个名字：
 
-\begin{lstlisting}[language=Scala]
-def absurd[A]: Nothing => A
-\end{lstlisting}
+\src{snippet06}
 （记住，\code{a} 是一个可以代表任何类型的类型变量。）这个名字并非巧合。类型和函数在逻辑方面有一个更深的解释，称为 Curry-Howard 对应。类型 \code{Void} 表示虚假，而函数 \code{absurd} 的类型对应于从虚假中可以得出任何结论的声明，正如拉丁格言“ex falso sequitur quodlibet”所言。
 
 接下来是对应于单例集的类型。这是一个只有一个可能值的类型。这个值只是“存在”。你可能不会立即认出它，但这就是 C++ 中的 \code{void}。想想从这个类型到另一个类型的函数。一个从 \code{void} 到另一个类型的函数总是可以被调用。如果它是一个纯函数，它将总是返回相同的结果。以下是一个这样的函数的例子：
@@ -134,9 +122,7 @@ def absurd[A]: Nothing => A
 \end{lstlisting}
 你可能认为这个函数不接受任何输入，但正如我们刚才看到的，一个不接受任何输入的函数永远无法被调用，因为没有表示“无”的值。那么这个函数接受什么呢？概念上，它接受一个虚拟值，只有一个实例存在，所以我们不必明确提及它。然而，在 Haskell 中，有一个符号表示这个值：一个空的括号对，\code{()}. 因此，巧合的是（或者这真的是巧合吗？），在 C++ 和 Haskell 中调用一个 void 函数的方式看起来相同。此外，由于 Haskell 对简洁的喜爱，同样的符号 \code{()} 用于类型、构造函数和唯一对应于单例集的值。所以这里是这个函数在 Haskell 中的定义：
 
-\begin{lstlisting}[language=Scala]
-val f44: Unit => BigInt = _ => 44
-\end{lstlisting}
+\src{snippet07}
 第一行声明 \code{f44} 接受 \code{()} 类型，读作“unit”，返回 \code{Integer} 类型。第二行通过模式匹配 \code{()}，即 unit 的唯一构造函数，生成数字 44。你通过提供 unit 值 \code{()} 来调用这个函数：
 
 \begin{lstlisting}{c}
@@ -148,21 +134,15 @@ val f44: Unit => BigInt = _ => 44
 
 从集合 $A$ 到单例集的函数在数学上将 $A$ 的每个元素映射到该单例集的单个元素。对于每个 $A$，这样的函数恰好只有一个。以下是 \code{Integer} 的这个函数：
 
-\begin{lstlisting}[language=Scala]
-val fInt: BigInt => Unit = x => ()
-\end{lstlisting}
+\src{snippet08}
 你给它任何整数，它都会返回一个 unit。秉持简洁的精神，Haskell 允许你使用通配符模式，即下划线，来表示一个被丢弃的参数。这样你就不必为它发明一个名字。所以上面的代码可以重写为：
 
-\begin{lstlisting}[language=Scala]
-val fInt: BigInt => Unit = _ => ()
-\end{lstlisting}
+\src{snippet09}
 请注意，这个函数的实现不仅不依赖于传递给它的值，它甚至不依赖于参数的类型。
 
 可以使用相同公式为任何类型实现的函数称为参数化多态函数。你可以使用一个类型参数而不是具体类型来实现一整个家族的此类函数。我们应该如何称呼从任何类型到 unit 类型的多态函数？当然，我们称它为 \code{unit}：
 
-\begin{lstlisting}[language=Scala]
-def unit[A]: A => Unit = _ => ()
-\end{lstlisting}
+\src{snippet10}
 在 C++ 中你会这样编写这个函数：
 
 \begin{lstlisting}{cpp}
@@ -171,11 +151,7 @@ def unit[A]: A => Unit = _ => ()
 \end{lstlisting}
 接下来是类型学中的两元素集。在 C++ 中，它被称为 \code{bool}，而在 Haskell 中，预料之中的是 \code{Bool}。不同之处在于，在 C++ 中，\code{bool} 是一种内置类型，而在 Haskell 中，它可以定义如下：
 
-\begin{lstlisting}[language=Scala]
-sealed trait Bool
-case object True extends Bool
-case object False extends Bool
-\end{lstlisting}
+\src{snippet11}
 （读这个定义的方式是 \code{Bool} 不是 \code{True} 就是 \code{False}。）原则上，在 C++ 中也应该能够将布尔类型定义为枚举：
 
 \begin{lstlisting}{cpp}

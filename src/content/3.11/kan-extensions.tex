@@ -229,72 +229,21 @@ Kan扩展的积/余积公式可以很容易地翻译成Haskell。让我们从右
 \[\Ran_{K}D a \cong \int_i \Set(\cat{A}(a, K i), D i)\]
 我们用通用量词替代积，并用函数类型替代同态集：
 
-\begin{lstlisting}[language=Scala]
-// Another type needs to be introduced.
-// To read more about FunctionK (~>):
-// typelevel.org/cats/datatypes/functionk.html
-trait ~>[F[_], G[_]] {
-  def apply[C](fa: F[C]): G[C]
-}
-
-trait Ran[K[_], D[_], A] {
-  // partially-applied type
-  type AtoK[I] = A => K[I]
-
-  def apply: AtoK ~> D
-}
-\end{lstlisting}
+\src{snippet01}
 从这个定义来看，很明显 \code{Ran} 必须包含一个可以应用于函数的类型 \code{a}，以及两个函子 \code{k} 和 \code{d} 之间的自然变换。例如，假设 \code{k} 是树函子（tree functor），\code{d} 是列表函子（list functor），你被给了一个 \code{Ran Tree {[}{]} String}。如果你传递给它一个函数：
 
-\begin{lstlisting}[language=Scala]
-def f: String => Tree[Int]
-\end{lstlisting}
+\src{snippet02}
 你将得到一个 \code{Int} 列表，等等。右Kan扩展将使用你的函数生成一棵树，然后将其重新打包成一个列表。例如，你可以传递一个解析器，该解析器从字符串生成解析树，你将得到一个对应于该树的深度优先遍历的列表。
 
 右Kan扩展可以用来计算给定函子的左伴随，通过用恒等函子替换函子 \code{d}。这导致的结果是函子 \code{k} 的左伴随由以下类型的多态函数集表示：
 
-\begin{lstlisting}[language=Scala]
-type Id[I] = I
-
-trait PolyFunc[A, K[_]] {
-  type AtoK[I] = A => K[I]
-
-  def apply(): AtoK ~> Id
-}
-\end{lstlisting}
+\src{snippet03}
 假设 \code{k} 是从幺半群（monoids）范畴的遗忘函子（forgetful functor）。通用量词将遍历所有幺半群。当然，在Haskell中我们无法表达幺半群的定律，但以下是一个生成的自由函子的相应近似（遗忘函子 \code{k} 是对对象的恒等）：
 
-\begin{lstlisting}[language=Scala]
-trait `PolyFunctionM`[F[_], G[_]] {
-  def apply[I: Monoid](fa: F[I]): G[I]
-}
-
-trait Lst[A] {
-  type aTo[X] = A => X
-
-  def apply(): aTo `PolyFunctionM` Id
-}
-\end{lstlisting}
+\src{snippet04}
 正如预期的那样，它生成自由幺半群，或者Haskell列表：
 
-\begin{lstlisting}[language=Scala]
-// Read more about foldMap:
-// typelevel.org/cats/typeclasses/foldable.html
-def foldMap[F[_], A, B](fa: F[A])(f: A => B)
-                       (implicit B: Monoid[B]): B = ???
-implicit def listMonoid[A]: Monoid[List[A]] = ???
-
-def toLst[A]: List[A] => Lst[A] = as => new Lst[A] {
-  def apply(): `PolyFunctionM`[aTo, Id] =
-    new `PolyFunctionM`[aTo, Id] {
-      def apply[I: Monoid](fa: aTo[I]): Id[I] =
-        foldMap(as)(fa)
-    }
-}
-
-def fromLst[A]: Lst[A] => List[A] =
-  f => f().apply(a => List(a))
-\end{lstlisting}
+\src{snippet05}
 左Kan扩展是一个余积：
 \[\Lan_{K}D a = \int^i \cat{A}(K i, a)\times{}D i\]
 因此，它翻译为一个存在量词。符号上表示为：
@@ -304,34 +253,15 @@ def fromLst[A]: Lst[A] => List[A] =
 \end{lstlisting}
 这可以在Haskell中使用 \acronym{GADT} 进行编码，或者使用一个通用量词的数据构造器：
 
-\begin{lstlisting}[language=Scala]
-trait Lan[K[_], +D[_], A] {
-  def fk[I](ki: K[I]): A
-  def di[I]: D[I]
-}
-\end{lstlisting}
+\src{snippet06}
 这个数据结构的解释是，它包含一个函数，该函数接受某些未指定的 \code{i} 的容器并生成一个 \code{a}。它还包含了这些 \code{i} 的容器。由于你不知道 \code{i} 是什么，这个数据结构唯一能做的事情就是检索 \code{i} 的容器，将其重新打包成由函子 \code{k} 定义的容器，并调用该函数以获得 \code{a}。例如，如果 \code{d} 是一棵树，\code{k} 是一个列表，你可以序列化树，用生成的列表调用函数并得到一个 \code{a}。
 
 左Kan扩展可以用来计算一个函子的右伴随。我们知道乘积函子的右伴随是指数函子，所以让我们尝试使用Kan扩展来实现它：
 
-\begin{lstlisting}[language=Scala]
-type Exp[A, B] = Lan[(A, ?), I, B]
-\end{lstlisting}
+\src{snippet07}
 这确实与函数类型同构，如以下一对函数所示：
 
-\begin{lstlisting}[language=Scala]
-def fst[I]: ((I, _)) => I = _._1
-
-def toExp[A, B]: (A => B) => Exp[A, B] = f => new Lan[(A, ?), I, B] {
-  def fk[L](ki: (A, L)): B =
-    f.compose(fst[A])(ki)
-
-  def di[L]: I[L] = I()
-}
-
-def fromExp[A, B]: Exp[A, B] => (A => B) =
-  lan => a => lan.fk((a, lan.di))
-\end{lstlisting}
+\src{snippet08}
 正如前面所描述的一般情况一样，我们执行了以下步骤：
 
 \begin{enumerate}
@@ -354,42 +284,15 @@ Kan扩展的一个有趣应用是自由函子的构造。它解决了以下实�
 
 在Haskell中，我们会这样写：
 
-\begin{lstlisting}[language=Scala]
-trait FreeF[F[_], A] {
-  def h[I]: I => A
-  def fi[I]: F[I]
-}
-\end{lstlisting}
+\src{snippet09}
 确实，对于任何类型构造器 \code{f}，\code{FreeF f} 是一个函子：
 
-\begin{lstlisting}[language=Scala]
-implicit def freeFunctor[F[_]] = new Functor[FreeF[F, ?]] {
-  def fmap[A, B](g: A => B)(fa: FreeF[F, A]): FreeF[F, B] = {
-    new FreeF[F, B] {
-      def h[I]: I => B = g compose fa.h
-      def fi[I]: F[I] = fi
-    }
-  }
-}
-\end{lstlisting}
+\src{snippet10}
 如你所见，自由函子通过记录函数及其参数来模拟函数的提升（lifting）。它通过记录它们的组合来累积提升的函数。函子规则自动得到满足。这种构造在论文\urlref{http://okmij.org/ftp/Haskell/extensible/more.pdf}{Freer Monads, More Extensible Effects}中被使用。
 
 或者，我们可以使用右Kan扩展来达到相同目的：
 
-\begin{lstlisting}[language=Scala]
-case class FreeF[F[_], A](r: (A => ?) ~> F)
-\end{lstlisting}
+\src{snippet11}
 很容易验证这确实是一个函子：
 
-\begin{lstlisting}[language=Scala]
-implicit def freeFunctor[F[_]] = new Functor[FreeF[F, ?]] {
-  def fmap[A, B](g: A => B)(fa: FreeF[F, A]): FreeF[F, B] = fa match {
-    case FreeF(r) => FreeF {
-      new ~>[B => ?, F] {
-        def apply[C](bi: B => C): F[C] =
-          r(bi compose g)
-      }
-    }
-  }
-}
-\end{lstlisting}
+\src{snippet12}

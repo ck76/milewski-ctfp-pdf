@@ -48,20 +48,12 @@
 
 在 Haskell 中，列表数据结构是一个自由幺半群（有一些警告：参见 \urlref{http://comonad.com/reader/2015/free-monoids-in-haskell/}{Dan Doel 的博客文章}）。列表类型 \code{{[}a{]}} 是一个自由幺半群，其中类型 \code{a} 代表生成元的集合。例如，类型 \code{{[}Char{]}} 包含单位元素——空列表 \code{{[}{]}}，以及单元素列表如 \code{{[}'a'{]}}, \code{{[}'b'{]}}——这些是自由幺半群的生成元。其余部分通过应用“乘积”生成。在这里，两个列表的乘积只是将一个附加到另一个。附加是结合律和单位律（即这里有一个中立元素——空列表）成立的。由 \code{Char} 生成的自由幺半群不过是所有字符列表的集合。在 Haskell 中，它被称为 \code{String}：
 
-\begin{lstlisting}[language=Scala]
-type String = List[Char]
-\end{lstlisting}
+\src{snippet01}
 （\code{type} 定义了一个类型同义词——一个现有类型的不同名称。）
 
 另一个有趣的例子是从单一生成元构建的自由幺半群。它是由 \code{()} 组成的列表类型 \code{{[}(){]}}。它的元素是 \code{{[}{]}}, \code{{[}(){]}}, \code{{[}(), (){]}}，等等。每个这样的列表都可以由一个自然数描述——它的长度。列表中的单位并没有更多的信息。附加两个这样的列表会产生一个新列表，其长度是其组成部分的长度之和。很容易看出，类型 \code{{[}(){]}} 与自然数的加法幺半群（带零）同构。以下是两个互为逆函数，见证了这种同构：
 
-\begin{lstlisting}[language=Scala]
-def toNat: List[Unit] => Int =
-  _.length
-
-def toLst: Int => List[Unit] =
-  n => List.fill(n)(())
-\end{lstlisting}
+\src{snippet02}
 为简单起见，我使用了类型 \code{Int} 而不是 \code{Natural}，但原理是相同的。函数 \code{replicate} 创建一个长度为 \code{n} 的列表，预先填充了给定的值——在这里是单位值。
 
 \section{一些直观的理解}
