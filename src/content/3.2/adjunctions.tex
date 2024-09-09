@@ -4,7 +4,10 @@
 
 但相等性往往过于严格。有许多事例表明，事物在所有实际用途上都是相同的，但实际上并不相等。例如，类型对 \code{(Bool, Char)} 严格来说并不等于 \code{(Char, Bool)}，但我们理解它们包含相同的信息。这个概念最好用两个类型之间的\newterm{同构（isomorphism）}来描述——这是一个可逆的态射。既然它是一个态射，它就保留了结构；而“同构”意味着它是一个往返行程的一部分，无论从哪一边开始，都会回到原来的位置。在成对类型的情况下，这个同构称为 \code{swap}：
 
-\src{snippet01}
+\begin{lstlisting}[language=Reason]
+let swap = (a, b) => (b, a);
+
+\end{lstlisting}
 \code{swap} 恰好是它自己的逆。
 
 \section{伴随和单位/余单位对（Adjunction and Unit/Counit Pair）}
@@ -106,10 +109,24 @@ $\eta$ 被称为单位（unit），而 $\varepsilon$ 被称为余单位（counit
 \end{gather*}
 我们经常在 Haskell 中以不同的名称看到单位和余单位。单位被称为 \code{return}（或在 \code{Applicative} 定义中称为 \code{pure}）：
 
-\src{snippet02}
+\begin{lstlisting}[language=Reason]
+module type Unit_Example = {
+  type m('a);
+
+  let return: 'd => m('d);
+};
+
+\end{lstlisting}
 而余单位则称为 \code{extract}：
 
-\src{snippet03}
+\begin{lstlisting}[language=Reason]
+module type Counit_Example = {
+  type w('c);
+
+  let extract: w('c) => 'c;
+};
+
+\end{lstlisting}
 在这里，\code{m} 是对应于 $R \circ L$ 的（自）函子，而 \code{w} 是对应于 $L \circ R$ 的（自）函子。正如我们稍后会看到的，它们分别是单子（monad）和余单子（comonad）定义的一部分。
 
 如果你将自函子视为一个容器，单位（或 \code{return}）是一个多态函数，它为任意类型的值创建一个默认的盒子。余单位（或 \code{extract}）则是相反的：它从容器中检索或生成单一值。
@@ -120,7 +137,15 @@ $\eta$ 被称为单位（unit），而 $\varepsilon$ 被称为余单位（counit
 
 然而，我们可以在 Haskell 中定义\newterm{自函子}的伴随关系。以下是取自 \code{Data.Functor.Adjunction} 的部分定义：
 
-\src{snippet04}
+\begin{lstlisting}[language=Reason]
+/* L is Functor F and R is Representable Functor U */
+module type Adjunction =
+  (F: Functor, U: Representable) => {
+    let unit: 'a => U.t(F.t('a));
+    let counit: F.t(U.t('a)) => 'a;
+  };
+
+\end{lstlisting}
 此定义需要一些解释。首先，它描述了一个多参数类型类——这两个参数是 \code{f} 和 \code{u}。它建立了 \code{Adjunction} 之间的关系。
 
 纵向条件（在竖线之后）指定了功能依赖性。例如，\code{f -> u} 意味着 \code{u} 是由 \code{f} 决定的（\code{f} 和 \code{u} 之间的关系是一个函数，这里是在类型构造函数上）。相反，\code{u -> f} 意味着如果我们知道 \code{u}，那么 \code{f} 是唯一确定的。
@@ -177,10 +202,68 @@ $\eta$ 被称为单位（unit），而 $\varepsilon$ 被称为余单位（counit
 
 回到 Haskell 中 \code{Adjunction} 的定义，自然变换 $\varphi$ 和 $\psi$ 被分别替换为多态的（在 \code{a} 和 \code{b} 上）函数 \code{leftAdjunct} 和 \code{rightAdjunct}。函子 $L$ 和 $R$ 分别被称为 \code{f} 和 \code{u}：
 
-\src{snippet05}
+\begin{lstlisting}[language=Reason]
+module type Adjunction_HomSet =
+  (F: Functor, U: Representable) => {
+    let left_adjunct: (F.t('a) => 'b, 'a) => U.t('b);
+    let right_adjunct: ('a => U.t('b), F.t('a)) => 'b;
+  };
+
+\end{lstlisting}
 在 \code{unit}/\code{counit} 表述和 \code{leftAdjunct}/\allowbreak\code{rightAdjunct} 表述之间的等价性由以下映射见证：
 
-\src{snippet06}
+\begin{lstlisting}[language=Reason]
+/* Putting it all together to show the equivalence between 
+* unit & counit and left_adjunct & right_adjunct */
+module type Adjunction =
+  (F: Functor, U: Representable) => {
+    let unit: 'a => U.t(F.t('a));
+    let counit: F.t(U.t('a)) => 'a;
+    let left_adjunct: (F.t('a) => 'b, 'a) => U.t('b);
+    let right_adjunct: ('a => U.t('b), F.t('a)) => 'b;
+  };
+
+/* Adjunction via unit & counit */
+module type Adjunction_Unit_Counit =
+  (F: Functor, U: Representable) => {
+    let unit: 'a => U.t(F.t('a));
+    let counit: F.t(U.t('a)) => 'a;
+  };
+
+/* Adjunction via left and right adjoints */
+module type Adjunction_Hom_Set =
+  (F: Functor, U: Representable) => {
+    let left_adjunct: (F.t('a) => 'b, 'a) => U.t('b);
+    let right_adjunct: ('a => U.t('b), F.t('a)) => 'b;
+  };
+
+/* Implementing unit & counit from left and right adjoint definitions */
+module Adjunction_From_Hom_Set = (A: Adjunction_Hom_Set) : Adjunction =>
+  (F: Functor, U: Representable) => {
+    type f('t) = F.t('t);
+    type u('t) = U.t('t);
+
+    module M = A(F, U);
+    include M;
+
+    let unit: 'a. 'a => u(f('a)) = a => M.left_adjunct(idty, a);
+    let counit: 'a. f(u('a)) => 'a = fua => M.right_adjunct(idty, fua);
+  };
+
+/* Implementing left and right adjunct from unit & counit Definitions */
+module Adjunction_From_Unit_Counit = (A: Adjunction_Unit_Counit) : Adjunction =>
+  (F: Functor, U: Representable) => {
+    type f('t) = F.t('t);
+    type u('t) = U.t('t);
+
+    module M = A(F, U);
+    include M;
+
+    let left_adjunct = (f, a) => (U.fmap(f))(M.unit(a));
+    let right_adjunct = (f, fa) => M.counit(F.fmap(f, fa));
+  };
+
+\end{lstlisting}
 从伴随的范畴描述到 Haskell 代码的转换是非常有启发性的。我强烈建议将其作为练习。
 
 我们现在准备解释为什么在 Haskell 中右伴随自动是一个\hyperref[representable-functors]{可表函子}。原因是，在第一近似下，我们可以将 Haskell 类型的范畴视为集合的范畴。
@@ -201,10 +284,17 @@ $\eta$ 被称为单位（unit），而 $\varepsilon$ 被称为余单位（counit
 
 如我们前面所见，在 Haskell 中，我们可以实现一个 \code{factorizer}，它从两个投影生成这个态射：
 
-\src{snippet07}
+\begin{lstlisting}[language=Reason]
+let factorizer = (p, q, x) => (p(x), q(x));
+
+\end{lstlisting}
 验证因子化条件成立是很容易的：
 
-\src{snippet08}
+\begin{lstlisting}[language=Reason]
+compose(fst, factorizer(p, q)) == p;
+compose(snd, factorizer(p, q)) == q;
+
+\end{lstlisting}
 我们有一个映射，它接受一对态射 \code{p} 和 \code{q} 并生成另一个态射 \code{m = factorizer p q}。
 
 我们如何将其转化为定义伴随所需的同态集之间的映射？诀窍是走出 $\Hask$，并将态射对视为在积范畴中的单个态射。
@@ -261,7 +351,10 @@ $\eta$ 被称为单位（unit），而 $\varepsilon$ 被称为余单位（counit
 \[(\cat{C}\times{}\cat{C})(\Delta c, \langle a, b \rangle) \cong \cat{C}(c, a\times{}b)\]
 这里 $a\times{}b$ 是我们右伴随函子 $\mathit{Product}$ 对对象对 $\langle a, b \rangle$ 的作用结果。请注意，任何从 $\cat{C}\times{}\cat{C}$ 到 $\cat{C}$ 的函子都是一个双函子（bifunctor），因此 $\mathit{Product}$ 是一个双函子。在 Haskell 中，$\mathit{Product}$ 双函子简单地表示为 \code{(,)}。你可以将它应用于两个类型并得到它们的积类型，例如：
 
-\src{snippet09}
+\begin{lstlisting}[language=Reason]
+(int, bool) ~ (int, bool)
+
+\end{lstlisting}
 
 \section{从伴随到指数对象（Exponential from Adjunction）}
 

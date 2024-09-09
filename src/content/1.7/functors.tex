@@ -42,16 +42,38 @@
 
 \code{Maybe} 的定义是将类型 \code{a} 映射到类型 \code{Maybe a}：
 
-\src{snippet01}
+\begin{lstlisting}[language=Reason]
+let compose = (f, g, x) => f(g(x));
+
+\end{lstlisting}
 这里有一个重要的细微差别：\code{Maybe} 本身不是一种类型，它是一个类型构造器（type constructor）。你必须给它一个类型参数，比如 \code{Int} 或 \code{Bool}，才能将其转换为一种类型。\code{Maybe} 没有任何参数表示它是一个作用于类型的函数。但是我们能将 \code{Maybe} 转换成一个函子吗？（从现在起，当我在编程的上下文中谈到函子时，我几乎总是指自函子。）一个函子不仅是一个对象（在这里是类型）的映射，而且也是一个态射（在这里是函数）的映射。对于从 \code{a} 到 \code{b} 的任意函数：
 
-\src{snippet02}
+\begin{lstlisting}[language=Reason]
+type option('a) =
+  | None
+  | Some('a);
+
+\end{lstlisting}
 我们希望生成一个从 \code{Maybe a} 到 \code{Maybe b} 的函数。为了定义这样的函数，我们将要考虑 \code{Maybe} 的两个构造器对应的两种情况。\code{Nothing} 的情况很简单：我们只需返回 \code{Nothing}。如果参数是 \code{Just}，我们将把函数 \code{f} 应用于其内容。因此，\code{Maybe} 下的 $f$ 的像是函数：
 
-\src{snippet03}
+\begin{lstlisting}[language=Reason]
+module type AtoB = {
+  type a;
+  type b;
+  
+  let f: a => b;
+};
+
+\end{lstlisting}
 （顺便说一句，在 Haskell 中，你可以在变量名中使用撇号，这在这种情况下非常方便。）在 Haskell 中，我们将函子的态射映射部分实现为一个高阶函数，称为 \code{fmap}。对于 \code{Maybe}，它具有以下签名：
 
-\src{snippet04}
+\begin{lstlisting}[language=Reason]
+let f' = f =>
+  fun
+  | None => None
+  | Some(x) => Some(f(x));
+
+\end{lstlisting}
 
 \begin{figure}[H]
   \centering
@@ -61,20 +83,45 @@
 \noindent
 我们通常会说 \code{fmap} “提升”了一个函数。提升的函数作用于 \code{Maybe} 值上。与往常一样，由于柯里化，这个签名可以从两种方式解释：作为一个参数的函数——它本身是一个函数 \code{(a -> b)}——返回一个函数 \code{(Maybe a -> Maybe b)}；或者作为两个参数的函数，返回 \code{Maybe b}：
 
-\src{snippet05}
+\begin{lstlisting}[language=Reason]
+module type Maybe_Functor = {
+  type a;
+  type b;
+  
+  let fmap: (a => b, option(a)) => option(b);
+};
+
+\end{lstlisting}
 基于我们之前的讨论，这就是我们如何为 \code{Maybe} 实现 \code{fmap}：
 
-\src{snippet06}
+\begin{lstlisting}[language=Reason]
+module type Maybe_Functor = {
+  type a;
+  type b;
+  
+  let fmap: (a => b, option(a)) => option(b);
+};
+
+\end{lstlisting}
 要证明类型构造器 \code{Maybe} 和函数 \code{fmap} 形成了一个函子，我们必须证明 \code{fmap} 保持恒等性和复合性。这些被称为“函子定律”，它们只是确保了范畴结构的保存。
 
 \subsection{等式推理（Equational Reasoning）}
 
 为了证明函子定律，我将使用\newterm{等式推理}，这是一种在 Haskell 中常见的证明技巧。它利用了 Haskell 函数被定义为等式这一事实：左边等于右边。你总是可以将一个替换为另一个，可能会重命名变量以避免名称冲突。把这想象成内联一个函数，或者反过来，重构一个表达式为一个函数。让我们以恒等函数为例：
 
-\src{snippet07}
+\begin{lstlisting}[language=Reason]
+let fmap = f =>
+  fun
+  | None => None
+  | Some(x) => Some(f(x));
+
+\end{lstlisting}
 例如，如果你在某个表达式中看到 \code{id y}，你可以将它替换为 \code{y}（内联）。进一步说，如果你看到 \code{id} 应用于一个表达式，例如 \code{id (y + 2)}，你可以将它替换为表达式本身 \code{(y + 2)}。而且这种替换是双向的：你可以将任意表达式 \code{e} 替换为 \code{id e}（重构）。如果一个函数通过模式匹配定义，你可以独立使用每个子定义。例如，给定上面 \code{fmap} 的定义，你可以将 \code{fmap f Nothing} 替换为 \code{Nothing}，反之亦然。让我们看看这在实际中的应用。让我们从保持恒等性开始：
 
-\src{snippet08}
+\begin{lstlisting}[language=Reason]
+let id = x => x;
+
+\end{lstlisting}
 有两种情况需要考虑：\code{Nothing} 和 \code{Just}。这是第一种情况（我使用 Haskell 伪代码将左边转换为右边）：
 
 \begin{lstlisting}[language=Haskell]
@@ -97,7 +144,14 @@
 \end{lstlisting}
 现在，让我们展示 \code{fmap} 保持复合性：
 
-\src{snippet09}
+\begin{lstlisting}[language=Reason]
+module Test_Functor_Id = (F: Functor) => {
+  open F;
+  
+  let test_id = x => assert(fmap(id, x) == x);
+};
+
+\end{lstlisting}
 首先是 \code{Nothing} 情况：
 
 \begin{lstlisting}[language=Haskell]
@@ -196,19 +250,56 @@
 
 那么 Haskell 是如何抽象出函子的呢？它使用了类型类（typeclass）机制。类型类定义了支持共同接口的类型族。例如，支持相等运算的对象类定义如下：
 
-\src{snippet10}
+\begin{lstlisting}[language=Reason]
+module Test_Functor_Compose = (F: Functor) => {
+  open F;
+
+  /* Compose */
+  let (<.>) = (f, g, x) => f(g(x));
+  
+  let test_compose = (f, g, x) =>
+    assert(fmap(f <.> g, x) == fmap(f, fmap(g, x)));
+};
+
+\end{lstlisting}
 此定义说明类型 \code{a} 是 \code{Eq} 类的一部分，如果它支持操作符 \code{(==)}，该操作符接受两个类型为 \code{a} 的参数并返回 \code{Bool}。如果你想告诉 Haskell 某个特定类型是 \code{Eq}，你必须声明它是这个类的一个实例并提供 \code{(==)} 的实现。例如，给定二维 \code{Point}（两个 \code{Float} 的积类型）的定义：
 
-\src{snippet11}
+\begin{lstlisting}[language=Reason]
+module type Eq = {
+  type a;
+  
+  let (===): (a, a) => bool;
+};
+
+\end{lstlisting}
 你可以定义点的相等性：
 
-\src{snippet12}
+\begin{lstlisting}[language=Reason]
+type point =
+  | Pt(float, float);
+
+\end{lstlisting}
 在这里，我使用了操作符 \code{(==)}（即我正在定义的那个）在两个模式 \code{(Pt x y)} 和 \code{(Pt x' y')} 之间的中缀位置。函数体位于单个等号之后。一旦 \code{Point} 被声明为 \code{Eq} 的实例，你就可以直接比较点的相等性。注意，与 C++ 或 Java 不同，你不必在定义 \code{Point} 时指定 \code{Eq} 类（或接口）——你可以稍后在客户端代码中进行指定。类型类也是 Haskell 唯一的函数（和操作符）重载机制。我们将需要它来重载不同函子的 \code{fmap}。不过这里有一个复杂的情况：函子并不是定义为一种类型，而是定义为类型的映射，即类型构造器。我们需要一个类型类，它不是类型的族，而是类型构造器的族。幸运的是，Haskell 的类型类既适用于类型构造器，也适用于类型。所以，这里是 \code{Functor} 类的定义：
 
-\src{snippet13}
+\begin{lstlisting}[language=Reason]
+module Point_Eq = (E: Eq with type a = float) => {
+  type a = point;
+  
+  let (===) = (Pt(p1x, p1y), Pt(p2x, p2y)) =>
+    E.(p1x === p2x) && E.(p2x === p2y);
+};
+
+\end{lstlisting}
 它规定 \code{f} 是一个 \code{Functor}，如果存在一个具有指定类型签名的函数 \code{fmap}。小写的 \code{f} 是一个类型变量，类似于类型变量 \code{a} 和 \code{b}。不过，编译器能够通过查看其用法推断出它表示的是类型构造器而不是类型：作用于其他类型上，如 \code{f a} 和 \code{f b}。因此，当声明 \code{Functor} 的实例时，你必须给出一个类型构造器，就像 \code{Maybe} 一样：
 
-\src{snippet14}
+\begin{lstlisting}[language=Reason]
+module type Functor = {
+  type t('a);
+  
+  let fmap: ('a => 'b, t('a)) => t('b);
+};
+
+\end{lstlisting}
 顺便说一下，\code{Functor} 类以及很多简单数据类型（包括 \code{Maybe}）的实例定义都是标准 Prelude 库的一部分。
 
 \subsection{C++ 中的函子（Functor in C++）}
@@ -242,16 +333,44 @@
 
 为了对编程中函子的作用有一些直观认识，我们需要看更多的例子。任何由另一种类型参数化的类型都是函子的候选对象。泛型容器是由它们存储的元素类型参数化的，所以让我们看看一个非常简单的容器——列表：
 
-\src{snippet15}
+\begin{lstlisting}[language=Reason]
+module Option_Functor: Functor with type t('a) = option('a) = {
+  type t('a) = option('a);
+  
+  let fmap = f =>
+    fun
+    | None => None
+    | Some(x) => Some(f(x));
+};
+
+\end{lstlisting}
 我们有类型构造器 \code{List}，它将任何类型 \code{a} 映射到类型 \code{List a}。要证明 \code{List} 是一个函子，我们必须定义函数的提升：给定一个函数 \code{a -> b}，定义一个函数 \code{List a -> List b}：
 
-\src{snippet16}
+\begin{lstlisting}[language=Reason]
+type list('a) =
+  | Nil
+  | Cons('a, list('a));
+
+\end{lstlisting}
 作用于 \code{List a} 的函数必须考虑两种情况，对应于列表的两个构造器。\code{Nil} 的情况很简单——只需返回 \code{Nil}，因为对一个空列表你无能为力。\code{Cons} 的情况有点复杂，因为它涉及递归。所以让我们退一步，考虑我们想要做什么。我们有一个 \code{a} 列表，一个将 \code{a} 转换为 \code{b} 的函数 \code{f}，我们想要生成一个 \code{b} 列表。显而易见的做法是使用 \code{f} 将列表中的每个元素从 \code{a} 转换为 \code{b}。在实践中，如何实现这一点，给定一个（非空的）列表定义为头部和尾部的 \code{Cons}？我们将 \code{f} 应用于头部，并将提升后的（\code{fmap} 后的）\code{f} 应用于尾部。这是一个递归定义，因为我们正在用提升后的 \code{f} 定义提升后的 \code{f}：
 
-\src{snippet17}
+\begin{lstlisting}[language=Reason]
+module type List_Functor_Type = {
+  type t('a) = list('a);
+  
+  let fmap: ('a => 'b, list('a)) => list('b);
+};
+
+\end{lstlisting}
 注意，在右边 \code{fmap f} 应用于的列表比我们定义的列表要短——它作用于尾部。我们递归地处理越来越短的列表，因此我们必然最终到达空列表或 \code{Nil}。但正如我们之前决定的那样，\code{fmap f} 作用于 \code{Nil} 返回 \code{Nil}，从而终止递归。要得到最终结果，我们将新的头部 \code{(f x)} 和新的尾部 \code{(fmap f t)} 用 \code{Cons} 构造器组合起来。将这一切整合在一起，这是列表函子的实例声明：
 
-\src{snippet18}
+\begin{lstlisting}[language=Reason]
+let rec fmap = f =>
+  fun
+  | Nil => Nil
+  | Cons(x, xs) => Cons(f(x), fmap(f, xs));
+
+\end{lstlisting}
 如果你对 C++ 更熟悉，可以考虑 \code{std::vector}，它可能是最通用的 C++ 容器。\code{std::vector} 的 \code{fmap} 实现只是 \code{std::transform} 的一个薄包装：
 
 \begin{lstlisting}{cpp}
@@ -280,38 +399,95 @@
 
 现在你可能已经形成了一些直觉——例如，函子是某种类型的容器——让我向你展示一个看起来完全不同的例子。考虑将类型 \code{a} 映射到返回 \code{a} 的函数类型。我们还没有深入讨论函数类型——完整的范畴论处理即将到来——但我们对这些作为程序员有一些理解。在 Haskell 中，函数类型是使用箭头类型构造器 \code{(->)} 构造的，它接受两个类型：参数类型和结果类型。你已经看到它的中缀形式 \code{a -> b}，但它同样可以在前缀形式中使用，当它被括号包围时：
 
-\src{snippet19}
+\begin{lstlisting}[language=Reason]
+module List_Functor: Functor with type t('a) = list('a) = {
+  type t('a) = list('a);
+  
+  let rec fmap = f =>
+    fun
+    | Nil => Nil
+    | Cons(x, xs) => Cons(f(x), fmap(f, xs));
+};
+
+\end{lstlisting}
 就像普通函数一样，多参数类型函数也可以部分应用。因此，当我们只提供一个类型参数给箭头时，它仍然期待另一个参数。这就是为什么：
 
-\src{snippet20}
+\begin{lstlisting}[language=Reason]
+type t('a, 'b) = 'a => 'b;
+
+\end{lstlisting}
 是一个类型构造器。它还需要另一个类型 \code{b} 才能生成一个完整的类型 \code{a -> b}。就其本质而言，它定义了一整套类型构造器，参数化于 \code{a}。让我们看看这是否也是一套函子。处理两个类型参数可能有点混乱，所以让我们重命名一下。我们称参数类型为 \code{r}，结果类型为 \code{a}，与我们之前的函子定义一致。因此，我们的类型构造器接受任何类型 \code{a} 并将其映射为类型 \code{r -> a}。要证明它是一个函子，我们想要将一个函数 \code{a -> b} 提升为一个接受 \code{r -> a} 并返回 \code{r -> b} 的函数。这些是分别使用类型构造器 \code{(->) r} 作用于 \code{a} 和 \code{b} 时形成的类型。以下是应用于这种情况的 \code{fmap} 的类型签名：
 
-\src{snippet21}
+\begin{lstlisting}[language=Reason]
+module type T = {type t;};
+
+module Partially_Applied_FunctionType = (T: T) => {
+  type t('b) = T.t => 'b;
+};
+
+\end{lstlisting}
 我们需要解决以下难题：给定一个函数 \code{f :: a -> b} 和一个函数 \code{g :: r -> a}，创建一个函数 \code{r -> b}。我们只能以一种方式将这两个函数组合起来，结果恰好是我们需要的。因此，这是我们 \code{fmap} 的实现：
 
-\src{snippet22}
+\begin{lstlisting}[language=Reason]
+module type Reader_Fmap_Example = {
+  let fmap: ('a => 'b, 'r => 'a, 'r) => 'b;
+};
+
+\end{lstlisting}
 它就是有效的！如果你喜欢简洁的符号，这个定义可以进一步简化，注意到组合可以用前缀形式重写：
 
-\src{snippet23}
+\begin{lstlisting}[language=Reason]
+module Reader_Functor = (T: T) : Functor => {
+  type t('a) = T.t => 'a;
+  
+  let fmap = (f, ra, r) => f(ra(r));
+};
+
+\end{lstlisting}
 并且可以省略参数，得到两个函数的直接等式：
 
-\src{snippet24}
+\begin{lstlisting}[language=Reason]
+let fmap: ('a => 'b, 'r => 'a, 'r) => 'b = (
+  compose: ('a => 'b, 'r => 'a, 'r) => 'b
+);
+
+\end{lstlisting}
 这种类型构造器 \code{(->) r} 和上面 \code{fmap} 的实现组合在一起，称为 reader 函子。
 
 \section{函子作为容器（Functors as Containers）}
 
 我们已经看到了一些在编程语言中作为通用容器定义的函子的例子，或者至少是包含它们所参数化的类型的值的对象。reader 函子似乎是一个特例，因为我们不认为函数是数据。但我们已经看到，纯函数可以被记忆化，并且函数执行可以转换为表查找。表是数据。反过来，由于 Haskell 的惰性，传统的容器，比如列表，实际上可能是作为函数实现的。考虑一个自然数的无限列表，它可以简洁地定义为：
 
-\src{snippet25}
+\begin{lstlisting}[language=Reason]
+let nats = Caml.Stream.from(i => Some(i + 1));
+
+\end{lstlisting}
 在第一行中，方括号是 Haskell 内置的列表类型构造器。在第二行中，方括号用于创建列表字面量。显然，这样的无限列表不能存储在内存中。编译器将其实现为一个按需生成 \code{Integer} 的函数。Haskell 有效地模糊了数据和代码之间的界限。列表可以被视为一个函数，而函数可以被视为一个将参数映射到结果的表。如果函数的定义域是有限的且不太大，这甚至可能是可行的。然而，将 \code{strlen} 实现为表查找是不现实的，因为有无限多种不同的字符串。作为程序员，我们不喜欢无限，但在范畴论中，你会学会处理无限。无论是所有字符串的集合还是宇宙的所有可能状态，过去、现在和未来——我们都可以应对！所以，我喜欢将函子对象（一个由自函子生成的类型的对象）视为包含它所参数化的类型的值，即使这些值并不实际存在于其中。函子对象的一个例子是 C++ 中的 \code{std::future}，它可能在某个时候包含一个值，但不能保证它一定会；如果你想访问它，可能会阻塞等待另一个线程完成执行。另一个例子是 Haskell 中的 \code{IO} 对象，它可能包含用户输入，或者显示“Hello World！”的未来宇宙版本。根据这种解释，函子对象可能包含它所参数化的类型的一个或多个值。或者它可能包含生成这些值的配方。我们完全不关心是否能够访问这些值——这是完全可选的，并且超出了函子的范围。我们所关心的只是能够使用函数来操作这些值。如果可以访问这些值，那么我们应该能够看到这种操作的结果。如果不能，我们关心的只是这些操作是否能够正确组合，并且使用恒等函数的操作不会改变任何东西。为了向你展示我们有多么不关心是否能够访问函子对象中的值，下面是一个完全忽略其参数 \code{a} 的类型构造器：
 
-\src{snippet26}
+\begin{lstlisting}[language=Reason]
+type const('c, 'a) =
+  | Const('c);
+
+\end{lstlisting}
 \code{Const} 类型构造器接受两个类型，\code{c} 和 \code{a}。就像我们之前处理箭头构造器一样，我们将部分应用它来创建一个函子。数据构造器（也称为 \code{Const}）只接受一个类型为 \code{c} 的值。它与 \code{a} 没有任何依赖关系。对于这个类型构造器，\code{fmap} 的类型是：
 
-\src{snippet27}
+\begin{lstlisting}[language=Reason]
+module type Const_Functor_Example = {
+  let fmap: ('a => 'b, const('c, 'a)) => const('c, 'b);
+};
+
+\end{lstlisting}
 由于函子忽略了其类型参数，\code{fmap} 的实现可以自由地忽略其函数参数——该函数没有作用的对象：
 
-\src{snippet28}
+\begin{lstlisting}[language=Reason]
+module Const_Functor = (T: T) : Functor => {
+  type t('a) = const(T.t, 'a);
+  
+  // or even let fmap = (_, c) => c;
+  let fmap = (f, Const(c)) => Const(c); 
+};
+
+\end{lstlisting}
 在 C++ 中这可能会更清楚（我从未想过我会说出这些话！），在那里类型参数和值之间有更强的区分——前者是编译时的，后者是运行时的：
 
 \begin{lstlisting}{cpp}
@@ -335,25 +511,56 @@ C++ 中的 \code{fmap} 实现同样忽略了函数参数，并且本质上重新
 
 很容易让自己相信范畴之间的函子是可以组合的，就像集合之间的函数可以组合一样。两个函子的组合，在作用于对象时，只是它们各自的对象映射的组合；在作用于态射时，也是类似的。当穿过两个函子时，恒等态射最终仍然是恒等态射，态射的组合最终仍然是态射的组合。这真的没什么特别的。特别是，自函子的组合很容易。还记得 \code{maybeTail} 函数吗？我将用 Haskell 内置的列表实现重写它：
 
-\src{snippet29}
+\begin{lstlisting}[language=Reason]
+let maybe_tail =
+  fun
+  | [] => None
+  | [_, ...xs] => Some(xs);
+
+\end{lstlisting}
 （我们之前称为 \code{Nil} 的空列表构造器被替换为一对空方括号 \code{{[}{]}}。\code{Cons} 构造器被替换为中缀操作符 \code{:}（冒号）。）\code{maybeTail} 的结果是 \code{Maybe} 和 \code{{[}{]}} 两个函子的组合，作用于 \code{a}。每个函子都有其自己的 \code{fmap} 版本，但如果我们想将某个函数 \code{f} 应用于组合：一个 \code{Maybe} 列表怎么办？我们必须突破两个函子的层次。我们可以使用 \code{fmap} 突破外部的 \code{Maybe}。但我们不能直接将 \code{f} 发送到 \code{Maybe} 内部，因为 \code{f} 不能作用于列表。我们必须发送 \code{(fmap f)} 来操作内部列表。例如，让我们看看如何对一个 \code{Maybe} 整数列表的元素进行平方：
 
-\src{snippet30}
+\begin{lstlisting}[language=Reason]
+let square = x => x * x;
+let mis = Some(Cons(1, Cons(2, Cons(3, Nil))));
+let mis2 = Option_Functor.fmap(List_Functor.fmap(square), mis);
+
+\end{lstlisting}
 编译器在分析类型后，会发现对于外部的 \code{fmap}，它应该使用 \code{Maybe} 实例中的实现，而对于内部的，则使用列表函子的实现。可能并不立即明显，上面的代码可以重写为：
 
-\src{snippet31}
+\begin{lstlisting}[language=Reason]
+let fmapO = Option_Functor.fmap;
+let fmapL = List_Functor.fmap;
+let fmapC = (f, l) => (compose(fmapO, fmapL))(f, l);
+let mis2 = fmapC(square, mis);
+
+\end{lstlisting}
 但记住，\code{fmap} 可以被视为只有一个参数的函数：
 
-\src{snippet32}
+\begin{lstlisting}[language=Reason]
+module type Fmap_Alt_Sig_Example = {
+  type t('a);
+  
+  let fmap: ('a => 'b, t('a)) => t('b);
+};
+
+\end{lstlisting}
 在我们的例子中，\code{(fmap . fmap)} 中的第二个 \code{fmap} 的参数是：
 
-\src{snippet33}
+\begin{lstlisting}[language=Reason]
+module type Square_Signature = {let square: int => int;};
+
+\end{lstlisting}
 并返回一个类型为：
 
-\src{snippet34}
+\begin{lstlisting}[language=Reason]
+list(int) => list(int)
+\end{lstlisting}
 的函数。第一个 \code{fmap} 然后接受该函数并返回一个函数：
 
-\src{snippet35}
+\begin{lstlisting}[language=Reason]
+option(list(int)) => option(list(int))
+\end{lstlisting}
 最后，该函数被应用于 \code{mis}。因此，两个函子的组合是一个函子，其 \code{fmap} 是相应的 \code{fmap} 组合。回到范畴论：很明显，函子组合是结合的（对象的映射是结合的，态射的映射也是结合的）。而且每个范畴中都有一个平凡的恒等函子：它将每个对象映射到自身，并将每个态射映射到自身。因此，函子具有与某些范畴中的态射相同的属性。但那个范畴是什么呢？它必须是一个对象是范畴，态射是函子的范畴。这是范畴的范畴。但是 \emph{所有} 范畴的范畴必须包含它自身，这会导致与使得所有集合的集合不可能的悖论相同的悖论。然而，存在一个所有 \emph{小} 范畴的范畴，称为 $\Cat$（它是大的，所以不能是它自身的成员）。一个小范畴是其中对象形成一个集合的范畴，而不是比集合更大的东西。请注意，在范畴论中，即使是无限不可数的集合也被认为是“小的”。我之所以提到这些事情，是因为我觉得能够在许多抽象层次上识别出相同的结构是相当令人惊奇的。稍后我们将看到函子也形成了范畴。
 
 \section{挑战（Challenges）}

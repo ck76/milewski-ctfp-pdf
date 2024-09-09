@@ -12,15 +12,34 @@
 
 在 Haskell 中，预函子被定义为一个带有 \code{dimap} 方法的二参类型构造器 \code{p}，该方法提升了一对函数，第一个函数是以“错误”的方向作用的：
 
-\src{snippet01}
+\begin{lstlisting}[language=Reason]
+module type Functor = {
+  type t('a);
+
+  let fmap: ('a => 'b, t('a)) => t('b);
+};
+
+module type Profunctor = {
+  type p('a, 'b);
+
+  let dimap: ('c => 'a, 'b => 'd, p('a, 'b)) => p('c, 'd);
+};
+
+let id = a => a;
+
+\end{lstlisting}
 预函子的函子性告诉我们，如果我们有证明 \code{a} 与 \code{b} 相关的证明，那么只要存在从 \code{c} 到 \code{a} 的态射和从 \code{b} 到 \code{d} 的另一个态射，我们就可以得到证明 \code{c} 与 \code{d} 相关的证明。或者，我们可以将第一个函数视为将新键转换为旧键，第二个函数则修改容器的内容。
 
 对于在一个范畴内作用的预函子，我们可以从类型 $p\ a\ a$ 的对角元素中提取出大量信息。我们可以证明 $b$ 与 $c$ 相关，只要我们有一对态射 $b \to a$ 和 $a \to c$。更好的是，我们可以使用单个态射来到达非对角线值。例如，如果我们有一个态射 $f \Colon a \to b$，我们可以提升对 $\langle f, \idarrow[b] \rangle$ 从 $p\ b\ b$ 到 $p\ a\ b$：
 
-\src{snippet02}
+\begin{lstlisting}[language=Reason]
+let dimap(f, id, (P (b, b))) : p('a, 'b);
+\end{lstlisting}
 或者我们可以提升对 $\langle \idarrow[a], f \rangle$ 从 $p\ a\ a$ 到 $p\ a\ b$：
 
-\src{snippet03}
+\begin{lstlisting}[language=Reason]
+let dimap(id, f, (P (a, a))) : p('a, 'b);
+\end{lstlisting}
 
 \section{双自然变换（Dinatural Transformations）}
 
@@ -62,7 +81,11 @@ end 是极限的推广，函数子被预函子所取代。代替锥体，我们�
 \[p\ \idarrow[a]\ f \circ \alpha_a = p\ f\ \idarrow[b] \circ \alpha_b\]
 或者，使用 Haskell 表示法：
 
-\src{snippet04}
+\begin{lstlisting}[language=Reason]
+/* There is no compose operator in ReasonML */
+compose(dimap(id, f), alpha) == compose(dimap(f, id), alpha);
+
+\end{lstlisting}
 现在我们可以进行通用构造，并将 $p$ 的 end 定义为通用楔形——一个集合 $e$ 和一个函数族 $\pi$，使得对于任何顶点为 $a$ 的楔形和一个函数族 $\alpha$，都存在一个唯一的函数 $h \Colon a \to e$ 使得所有的三角形都交换：
 \[\pi_a \circ h = \alpha_a\]
 
@@ -80,10 +103,15 @@ $\pi$ 的分量称为 end 的投影映射：
 
 在 Haskell 中，end 公式直接翻译为通用量词：
 
-\src{snippet05}
+\begin{lstlisting}[language=Reason]
+'a. p('a, 'a);
+\end{lstlisting}
 严格来说，这只是 $p$ 的所有对角线元素的乘积，但楔形条件由于\urlref{https://bartoszmilewski.com/2017/04/11/profunctor-parametricity/}{参数性}的原因自动满足。对于任何函数 $f \Colon a \to b$，楔形条件表示为：
 
-\src{snippet06}
+\begin{lstlisting}[language=Reason]
+compose(dimap(f, id), pi) == compose(dimap(id, f), pi);
+
+\end{lstlisting}
 或者，带有类型注释：
 
 \begin{align}
@@ -91,10 +119,24 @@ $\pi$ 的分量称为 end 的投影映射：
 \end{align}
 这两个公式的类型都是：
 
-\src{snippet07}
+\begin{lstlisting}[language=Reason]
+module type Polymorphic_Projection = (P: Profunctor) => {
+  type rank2_p = {p: 'c. P.p('c, 'c)};
+
+  let pi: rank2_p => P.p('a, 'b);
+};
+
+\end{lstlisting}
 而 \code{pi} 是多态投影：
 
-\src{snippet08}
+\begin{lstlisting}[language=Reason]
+module Pi = (P: Profunctor) => {
+  type rank2_p = {p: 'a. P.p('a, 'a)};
+
+  let pi: rank2_p => P.p('c, 'c) = (e => e.p: rank2_p => P.p('c, 'c));
+};
+
+\end{lstlisting}
 在这里，类型推断自动选择 \code{e} 的正确分量。
 
 正如我们能够将锥体的所有交换条件表达为一个自然变换一样，我们也可以将所有楔形条件组合成一个双自然变换。为此，我们需要将常量函子 $\Delta_c$ 推广为常量预函子，将所有对象对映射到一个单一对象 $c$，并将所有态射对映射到该对象的恒等态射。楔形是从该函子到预函子 $p$ 的双自然变换。实际上，当我们意识到 $\Delta_c$ 将所有态射提升为一个恒等函数时，双自然性六边形会缩小为楔形菱形。
@@ -105,23 +147,70 @@ end 也可以为其他目标范畴定义，但在这里我们只考虑 $\Set$ �
 
 end 定义中的交换条件可以使用等化子来书写。首先，让我们定义两个函数（我使用 Haskell 表示法，因为数学符号在这种情况下似乎不太友好）。这些函数对应于楔形条件的两个汇聚分支：
 
-\src{snippet09}[b]
+\begin{lstlisting}[language=Reason]
+module EndsEqualizer = (P: Profunctor) => {
+  let lambda: (P.p('a, 'a), 'a => 'b) => P.p('a, 'b) = (
+    (paa, f) => P.dimap(id, f, paa)
+  );
+
+  let rho: (P.p('b, 'b), 'a => 'b) => P.p('a, 'b) = (
+    (pbb, f) => P.dimap(f, id, pbb)
+  );
+};
+
+\end{lstlisting}
 两个函数都将预函子 \code{p} 的对角线元素映射到多态函数类型：
 
-\src{snippet10}
+\begin{lstlisting}[language=Reason]
+module type ProdP = {
+  type p('a, 'b);
+  type prod_p('a, 'b) = ('a => 'b) => p('a, 'b);
+};
+
+\end{lstlisting}
 这些函数具有不同的类型。然而，如果我们形成一个大乘积类型，将所有 \code{p} 的对角线元素聚集在一起，我们可以统一它们的类型：
 
-\src{snippet11}
+\begin{lstlisting}[language=Reason]
+module type DiaProd = {
+  type p('a, 'b);
+  type diaprod('a) =
+    | DiaProd(p('a, 'a));
+};
+
+\end{lstlisting}
 函数 \code{lambda} 和 \code{rho} 诱导了从这个乘积类型的两个映射：
 
-\src{snippet12}
+\begin{lstlisting}[language=Reason]
+module EndsWithDiaProd = (
+    P: Profunctor,
+    D: DiaProd with type p('a, 'b) = P.p('a, 'b),
+    PP: ProdP with type p('a, 'b) = P.p('a, 'b),
+  ) => {
+  module E = EndsEqualizer(P);
+
+  let lambdaP: D.diaprod('a) => PP.prod_p('a, 'b) = (
+    (DiaProd(paa)) => E.lambda(paa)
+  );
+
+  let rhoP: D.diaprod('b) => PP.prod_p('a, 'b) = (
+    (DiaProd(pbb)) => E.rho(pbb)
+  );
+};
+
+\end{lstlisting}
 \code{p} 的 end 是这两个函数的等化子。请记住，等化子选择了两个函数相等的最大子集。在这种情况下，它选择了 \code{p} 的所有对角线元素的乘积，其中楔形图交换。
 
 \section{自然变换作为 Ends}
 
 end 最重要的一个例子是自然变换的集合。两个函子 $F$ 和 $G$ 之间的自然变换是从形如 $\cat{C}(F a, G a)$ 的态射集选择的态射族。如果没有自然性条件，自然变换的集合只是这些态射集的乘积。实际上，在 Haskell 中就是这样：
 
-\src{snippet13}
+\begin{lstlisting}[language=Reason]
+/* Higher rank types can be introduced via records */
+module NT_as_Ends = (F: Functor, G: Functor) => {
+  type set_of_nt = {nt: 'a. F.t('a) => G.t('a)};
+};
+
+\end{lstlisting}
 之所以在 Haskell 中起作用，是因为自然性是从参数性推导出来的。然而，在 Haskell 之外，并不是所有跨越这些态射集的对角线部分都能生成自然变换。但请注意，映射：
 \[\langle a, b \rangle \to \cat{C}(F a, G b)\]
 是一个预函子，因此研究其 end 是有意义的。这是楔形条件：
@@ -164,18 +253,75 @@ coend 的符号是积分符号，“积分变量”位于上标位置：
 \end{lstlisting}
 在 Haskell 中编码存在量词的标准方法是使用通用量词的数据构造器。因此我们可以定义：
 
-\src{snippet14}
+\begin{lstlisting}[language=Reason]
+module Coend = (P: Profunctor) => {
+  type coend =
+    | Coend({c: 'a. P.p('a, 'a)});
+};
+
+\end{lstlisting}
 其逻辑是，应该可以使用 $p\ a\ a$ 家族中的任何类型的值来构造一个 coend，无论我们选择了哪个 $a$。
 
 就像 end 可以用等化子来定义一样，coend 可以用\newterm{反等化子（coequalizer）}来描述。所有的反楔形条件可以通过取 $p\ a\ b$ 的一个巨大的并集，并为所有可能的 $b \to a$ 函数而满足。在 Haskell 中，可以表示为存在类型：
 
-\src{snippet15}
+\begin{lstlisting}[language=Reason]
+module type SumP = {
+  type a;
+  type b;
+  type p('a, 'b);
+
+  let f: b => a;
+  let pab: p(a, b);
+};
+
+\end{lstlisting}
 有两种方法来计算这个和类型，即通过提升函数并应用于预函子 $p$：
 
-\src{snippet16}
+\begin{lstlisting}[language=Reason]
+module type DiagSum = {
+  type a;
+  type p('a, 'b);
+
+  let paa: p(a, a);
+};
+
+module CoEndImpl = (P: Profunctor) => {
+  type a;
+  type b;
+
+  module type Sum_P =
+    SumP with type p('a, 'b) = P.p('a, 'b)
+      and type a = a and type b = b;
+
+  let lambda = (module S: Sum_P): (module DiagSum) =>
+    (module {
+       type a = S.b;
+       type p('a, 'b) = P.p('a, 'b);
+
+       let paa = P.dimap(S.f, id, S.pab);
+     });
+
+  let rho = (module S: Sum_P): (module DiagSum) =>
+    (module {
+       type a = S.a;
+       type p('a, 'b) = P.p('a, 'b);
+
+       let paa = P.dimap(id, S.f, S.pab);
+     });
+};
+
+\end{lstlisting}
 其中，\code{DiagSum} 是预函子 $p$ 的对角线元素的并集：
 
-\src{snippet17}
+\begin{lstlisting}[language=Reason]
+module type DiagSum = {
+  type a;
+  type p('a, 'b);
+
+  let paa: p(a, a);
+};
+
+\end{lstlisting}
 coend 是这两个函数的反等化子。反等化子通过识别由同一参数应用 \code{lambda} 或 \code{rho} 获得的值，自动满足反楔形条件。这里，参数是一个包含函数 $b \to a$ 和 $p\ a\ b$ 元素的对。应用 \code{lambda} 和 \code{rho} 生成的可能不同的 \code{DiagSum p} 值。在 coend 中，这两个值被识别出来，使得反楔形条件自动满足。
 
 在集合中识别相关元素的过程正式称为取商（taking a quotient）。要定义商，我们需要一个\newterm{等价关系} $\sim$，它是自反的、对称的和传递的关系：
@@ -231,7 +377,16 @@ coend 是这两个函数的反等化子。反等化子通过识别由同一参�
 \[(q \circ p)\ a\ b = \int^c p\ c\ a\times{}q\ b\ c\]
 以下是 \code{Data.Profunctor.Composition} 中的 Haskell 定义，经过一些重命名：
 
-\src{snippet18}
+\begin{lstlisting}[language=Reason]
+module type Procompose = {
+  type p('a, 'b);
+  type q('a, 'b);
+
+  type procompose(_, _) =
+    | Procompose(q('a, 'c) => p('c, 'b)): procompose('a, 'b);
+};
+
+\end{lstlisting}
 这是使用广义代数数据类型（\acronym{GADT} 语法，其中一个自由类型变量（此处为 \code{c}）自动存在量化。数据构造器 \code{Procompose} 因此等价于：
 
 \begin{lstlisting}{text}
