@@ -10,18 +10,33 @@
 import os
 import re
 
-def process_tex_files():
+import os
+import re
+
+def process_tex_files(language):
     content_dir = './src/content'
     snippet_pattern = re.compile(r'\\src\{(.*?)\}')
+    file_extension = {
+        'haskell': 'hs',
+        'ocaml': 'ml',
+        'reason': 're',
+        'scala': 'scala'
+    }
+    lstlisting_language = {
+        'haskell': 'Haskell',
+        'ocaml': 'OCaml',
+        'reason': 'Reason',
+        'scala': 'Scala'
+    }
 
     for root, _, files in os.walk(content_dir):
         for file in files:
             if file.endswith('.tex'):
                 tex_file_path = os.path.join(root, file)
-                haskell_code_dir = os.path.join(root, 'code/haskell')
+                code_dir = os.path.join(root, f'code/{language}')
 
                 print(f'Processing {tex_file_path}...')
-                print('code file dir:', haskell_code_dir)
+                print('code file dir:', code_dir)
                 with open(tex_file_path, 'r', encoding='utf-8') as tex_file:
                     lines = tex_file.readlines()
 
@@ -30,13 +45,13 @@ def process_tex_files():
                     match = snippet_pattern.match(line.strip())
                     if match:
                         snippet_name = match.group(1)
-                        hs_file_path = os.path.join(haskell_code_dir, f'{snippet_name}.hs')
+                        code_file_path = os.path.join(code_dir, f'{snippet_name}.{file_extension[language]}')
                         print(f'Processing snippet {snippet_name}...')
-                        if os.path.exists(hs_file_path):
-                            with open(hs_file_path, 'r', encoding='utf-8') as hs_file:
-                                hs_content = hs_file.read()
-                            new_lines.append('\\begin{lstlisting}[language=Haskell]\n')
-                            new_lines.append(hs_content)
+                        if os.path.exists(code_file_path):
+                            with open(code_file_path, 'r', encoding='utf-8') as code_file:
+                                code_content = code_file.read()
+                            new_lines.append(f'\\begin{{lstlisting}}[language={lstlisting_language[language]}]\n')
+                            new_lines.append(code_content)
                             new_lines.append('\n')
                             new_lines.append('\\end{lstlisting}\n')
                         else:
@@ -47,4 +62,8 @@ def process_tex_files():
                 with open(tex_file_path, 'w', encoding='utf-8') as tex_file:
                     tex_file.writelines(new_lines)
 
-process_tex_files()
+# Example usage
+# process_tex_files('haskell')
+# process_tex_files('ocaml')
+# process_tex_files('reason')
+process_tex_files('scala')
