@@ -105,15 +105,35 @@ Yoneda 引理告诉我们，两个同态函子和任意其他函子 $F$ 之间�
 
 我们已经在 Haskell 中以 reader 函子的形式遇到过同态函子：
 
-\src{snippet01}
+\begin{lstlisting}[language=OCaml]
+type ('a, 'x) reader = 'a -> 'x
+
+\end{lstlisting}
 reader 函子通过前组合映射态射（这里的函数）：
 
-\src{snippet02}
+\begin{lstlisting}[language=OCaml]
+module ReaderFunctor (T : sig
+  type a
+end) : Functor = struct
+  type 'x t = (T.a, 'x) reader
+
+  let fmap : ('x -> 'y) -> 'x t -> 'y t = fun f r a -> f (r a)
+end
+
+\end{lstlisting}
 Yoneda 引理告诉我们，reader 函子可以自然地映射到任何其他函子。
 
 自然变换是多态函数。因此，给定一个函子 \code{F}，我们可以从 reader 函子映射到它：
 
-\src{snippet03}
+\begin{lstlisting}[language=OCaml]
+module type NT_AX_FX = sig
+  type a
+  type 'x t
+
+  val alpha : (a -> 'x) -> 'x t
+end
+
+\end{lstlisting}
 和往常一样，\code{forall} 是可选的，但我喜欢明确地写出来，以强调自然变换的参数多态性。
 
 Yoneda 引理告诉我们，这些自然变换与 \code{F a} 的元素是一一对应的：
@@ -125,16 +145,28 @@ Yoneda 引理告诉我们，这些自然变换与 \code{F a} 的元素是一一�
 
 换句话说：给我一个类型为：
 
-\src{snippet04}
+\begin{lstlisting}[language=OCaml]
+val alpha : (a -> 'x) -> 'x t
+
+\end{lstlisting}
 的多态函数，我将生成一个 \code{a} 的容器。诀窍是我们在证明 Yoneda 引理时使用的：我们用 \code{id} 调用这个函数来获得 \code{F a} 的一个元素：
 
-\src{snippet05}
+\begin{lstlisting}[language=OCaml]
+alpha id : 'a f
+
+\end{lstlisting}
 反之亦然：给定一个类型为 \code{F a} 的值：
 
-\src{snippet06}
+\begin{lstlisting}[language=OCaml]
+val fa : 'a f
+
+\end{lstlisting}
 可以定义一个类型正确的多态函数：
 
-\src{snippet07}
+\begin{lstlisting}[language=OCaml]
+alpha h = F.fmap h fa
+
+\end{lstlisting}
 你可以轻松地在两种表示之间来回转换。
 
 拥有多种表示的好处是，其中一种可能比另一种更容易组合，或者在某些应用中更高效。

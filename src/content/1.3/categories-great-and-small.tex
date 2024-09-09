@@ -46,14 +46,30 @@
 
 在 Haskell 中，我们可以为幺半群定义一个类型类——一种有中性元素 \code{mempty} 和二元运算 \code{mappend} 的类型：
 
-\src{snippet01}
+\begin{lstlisting}[language=OCaml]
+module type Monoid = sig
+  type a
+
+  val mempty : a
+  val mappend : a -> a -> a
+end
+
+\end{lstlisting}
 这个二元函数的类型签名 \code{m -> m -> m} 乍一看可能有些奇怪，但在我们讨论柯里化（currying）之后，它将变得完全合理。你可以用两种基本方式解释带有多个箭头的类型签名：作为一个具有多个参数的函数，最右边的类型是返回类型；或者作为一个单参数函数（最左边的一个），返回一个函数。后者的解释可以通过添加括号来强调（虽然它们是多余的，因为箭头是右结合的），如：\code{m -> (m -> m)}。我们稍后会回到这种解释。
 
 注意，在 Haskell 中，没有办法表达 \code{mempty} 和 \code{mappend} 的幺半群性质（即 \code{mempty} 是中性元素和 \code{mappend} 是结合的事实）。程序员有责任确保它们得到满足。
 
 Haskell 类不像 C++ 类那么具侵入性。当你定义一个新类型时，你不必预先指定它的类。你可以自由地拖延，并在以后再声明给定类型是某个类的实例。例如，让我们通过提供 \code{mempty} 和 \code{mappend} 的实现来声明 \code{String} 是一个幺半群（实际上，这在标准 Prelude 中已经为你做了）：
 
-\src{snippet02}
+\begin{lstlisting}[language=OCaml]
+module StringMonoid : Monoid = struct
+  type a = string
+
+  let mempty = ""
+  let mappend = ( ^ )
+end
+
+\end{lstlisting}
 这里，我们重用了列表连接运算符 \code{(++)}，因为 \code{String} 只是一个字符列表。
 
 关于 Haskell 语法的一点说明：任何中缀运算符都可以通过将其括在括号中变成一个二元函数。给定两个字符串，你可以通过在它们之间插入 \code{++} 来连接它们：
