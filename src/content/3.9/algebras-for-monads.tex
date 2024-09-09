@@ -48,16 +48,28 @@
 \noindent
 我们也可以在 Haskell 中表达这些条件：
 
-\src{snippet01}
+\begin{lstlisting}[language=Scala]
+alg compose pure == id
+alg compose flatten == alg compose fmap(alg)
+\end{lstlisting}
 让我们看一个小例子。列表自函子的代数包括某个类型 \code{a} 和一个从 \code{a} 列表生成 \code{a} 的函数。我们可以通过选择元素类型和累加器类型都为 \code{a}，使用 \code{foldr} 来表达这个函数：
 
-\src{snippet02}
+\begin{lstlisting}[language=Scala]
+def foldr[A]: (A => A => A) => A => List[A] => A
+\end{lstlisting}
 这个特定的代数由一个两参数函数（我们称之为 \code{f}）和一个值 \code{z} 来指定。列表函子恰好也是一个 Monad，其中 \code{return} 将值转化为一个单元素列表。代数（这里是 \code{foldr f z}）在 \code{return} 之后的组合将 \code{x} 转换为：
 
-\src{snippet03}
+\begin{lstlisting}[language=Scala]
+def foldr[A]: (A => A => A) => A => List[A] => A =
+  f => z => {
+    case x :: Nil => f(x)(z)
+  }
+\end{lstlisting}
 这里 \code{f} 的操作以中缀表示。代数与 Monad 兼容的条件是，对于每个 \code{x}，以下一致性条件必须得到满足：
 
-\src{snippet04}
+\begin{lstlisting}[language=Scala]
+f(x)(z) == x
+\end{lstlisting}
 如果我们将 \code{f} 视为一个二元操作符，这个条件告诉我们 \code{z} 是右单位元。
 
 第二个一致性条件作用于列表的列表。 \code{join} 的作用是将各个列表连接起来。然后我们可以折叠（fold）结果列表。另一种方式是先折叠各个列表，然后折叠结果列表。同样，如果我们将 \code{f} 解释为一个二元操作符，这个条件告诉我们这个二元操作是结合律的。当 \code{(a, f, z)} 是一个 Monoid 时，这些条件肯定得到了满足。
@@ -167,14 +179,18 @@ Kleisli 范畴中态射的组合是通过 Kleisli 箭头的 Monad 组合定义�
 \end{align*}
 在 Haskell 中我们可以这样写：
 
-\src{snippet05}
+\begin{lstlisting}[language=Scala]
+h == flatten.compose(fmap(g) _ compose f)
+\end{lstlisting}
 从 $\cat{C}$ 到 $\cat{C}_T$ 存在一个函子 $F$，它在对象上是平凡的。在态射上，它将 $\cat{C}$ 中的态射 $f$ 映射到 $\cat{C}_T$ 中的态射，方法是创建一个将 $f$ 的返回值装饰（embellish）的 Kleisli 箭头。给定一个态射：
 \[f \Colon a \to b\]
 它在 $\cat{C}_T$ 中创建一个具有相应 Kleisli 箭头的态射：
 \[\eta \circ f\]
 在 Haskell 中我们可以这样写：
 
-\src{snippet06}
+\begin{lstlisting}[language=Scala]
+unit compose f
+\end{lstlisting}
 我们还可以定义一个从 $\cat{C}_T$ 回到 $\cat{C}$ 的函子 $G$。它将 Kleisli 范畴中的对象 $a$ 映射到 $\cat{C}$ 中的对象 $T a$。它对 Kleisli 箭头 $f_{\cat{K}}$（对应的态射为：
 \[f \Colon a \to T b\]
 ）在 $\cat{C}$ 中的态射是：
@@ -237,7 +253,15 @@ $\varepsilon$ 和 $\delta$ 是定义 comonad 的两个自然变换（在 Haskell
 \[\mathit{coalg}_s \Colon a \to \mathit{Store}\ s\ a\]
 对于函子 $\mathit{Store}\ s$：
 
-\src{snippet07}
+\begin{lstlisting}[language=Scala]
+case class Store[S, A](run: S => A, s: S)
+
+// convenient partially applied constructor
+object Store {
+  def apply[S, A](run: S => A): S => Store[S, A] =
+    s => new Store(run, s)
+}
+\end{lstlisting}
 这个余代数也可以表示为一对函数：
 \begin{align*}
   \mathit{set} & \Colon a \to s \to a \\
@@ -249,7 +273,17 @@ $\varepsilon$ 和 $\delta$ 是定义 comonad 的两个自然变换（在 Haskell
 
 我们还知道 $\mathit{Store}\ s$ 是一个 comonad：
 
-\src{snippet08}
+\begin{lstlisting}[language=Scala]
+implicit def storeComonad[S] = new Comonad[Store[S, ?]] {
+  def extract[A](wa: Store[S, A]): A = wa match {
+    case Store(f, s) => f(s)
+  }
+  
+  def duplicate[A](wa: Store[S, A]): Store[S, Store[S, A]] = wa match {
+    case Store(f, s) => Store(Store(f), s)
+  }
+}
+\end{lstlisting}
 问题是：在什么条件下，lens 是这个 comonad 的余代数？第一个一致性条件：
 \[\varepsilon_a \circ \mathit{coalg} = \idarrow[a]\]
 可以翻译为：
@@ -260,25 +294,44 @@ $\varepsilon$ 和 $\delta$ 是定义 comonad 的两个自然变换（在 Haskell
 \[\mathit{fmap}\ \mathit{coalg} \circ \mathit{coalg} = \delta_a \circ \mathit{coalg}\]
 需要更多的工作。首先，回忆 \code{Store} 函子的 \code{fmap} 定义：
 
-\src{snippet09}
+\begin{lstlisting}[language=Scala]
+implicit def storeFunctor[S] = new Functor[Store[S, ?]] {
+  def fmap[A, B](g: A => B)(fa: Store[S, A]): Store[S, B] = fa match {
+    case Store(f, s) =>
+      Store(g compose f, s)
+  }
+}
+\end{lstlisting}
 将 \code{fmap coalg} 应用于 \code{coalg} 的结果会给出：
 
-\src{snippet10}
+\begin{lstlisting}[language=Scala]
+Store(coalg compose set(a), get(a))
+\end{lstlisting}
 另一方面，将 \code{duplicate} 应用于 \code{coalg} 的结果会生成：
 
-\src{snippet11}
+\begin{lstlisting}[language=Scala]
+Store(Store(set(a)), get(a))
+\end{lstlisting}
 要使这两个表达式相等，\code{Store} 下的两个函数在作用于任意 \code{s} 时必须相等：
 
-\src{snippet12}
+\begin{lstlisting}[language=Scala]
+coalg(set(a)(s)) == Store(set(a))(s)
+\end{lstlisting}
 展开 \code{coalg}，我们得到：
 
-\src{snippet13}
+\begin{lstlisting}[language=Scala]
+Store(set(set(a)(s)))(get(set(a)(s))) == Store(set(a))(s)
+\end{lstlisting}
 这相当于剩下的两个 lens 定律。第一个是：
 
-\src{snippet14}
+\begin{lstlisting}[language=Scala]
+set(set(a)(s)) == set(a)
+\end{lstlisting}
 告诉我们，设置字段值两次与设置一次是相同的。第二个定律：
 
-\src{snippet15}
+\begin{lstlisting}[language=Scala]
+get(set(a)(s)) == s
+\end{lstlisting}
 告诉我们，获取字段的值将字段设置为 $s$ 会返回 $s$。
 
 换句话说，一个良构的 lens 确实是 \code{Store} 函子的 comonad 余代数。

@@ -83,10 +83,14 @@
 \end{align}
 自然变换是一个对所有类型 \code{a} 都定义的多态函数：
 
-\src{snippet01}
+\begin{lstlisting}[language=Scala]
+def alpha[A]: F[A] => G[A]
+\end{lstlisting}
 在 Haskell 中，\code{forall a} 是可选的（实际上需要开启语言扩展 \code{ExplicitForAll}）。通常，你会这样写：
 
-\src{snippet02}
+\begin{lstlisting}[language=Scala]
+val alpha: F[A] => G[A]
+\end{lstlisting}
 请记住，它实际上是一个以 \code{a} 为参数的函数族。这是 Haskell 语法简洁性的另一个例子。在 C++ 中，一个类似的结构会稍微冗长一些：
 
 \begin{lstlisting}{cpp}
@@ -100,7 +104,9 @@
 
 Haskell 的参数多态性有一个意想不到的后果：任何类型为
 
-\src{snippet03}
+\begin{lstlisting}[language=Scala]
+val alpha: F[A] => G[A]
+\end{lstlisting}
 的多态函数，其中 \code{F} 和 \code{G} 是函子，自动满足自然性条件。这里是范畴符号中的表示（$f$ 是一个函数 $f \Colon a \to b$）：
 
 \[G f \circ \alpha_a = \alpha_b \circ F f\]
@@ -126,59 +132,116 @@ Haskell 的参数多态性有一个意想不到的后果：任何类型为
 
 让我们来看一些 Haskell 中自然变换的例子。第一个例子是列表函子和 \code{Maybe} 函子之间的自然变换。它返回列表的头部，但前提是列表非空：
 
-\src{snippet04}
+\begin{lstlisting}[language=Scala]
+def safeHead[A]: List[A] => Option[A] = {
+  case Nil => None
+  case x :: xs => Some(x)
+}
+\end{lstlisting}
 这是一个在 \code{a} 上多态的函数。它对任何类型 \code{a} 都有效，没有限制，因此它是参数多态的一个例子。因此，它是两个函子之间的自然变换。但为了让我们信服，让我们验证自然性条件。
 
-\src{snippet05}
+\begin{lstlisting}[language=Scala]
+(fmap(f) compose safeHead) == (safeHead compose fmap(f))
+\end{lstlisting}
 我们有两种情况需要考虑：一个空列表：
 
-\src{snippet06}
+\begin{lstlisting}[language=Scala]
+fmap(f)(safeHead(List.empty)) == fmap(f)(None) == None
+\end{lstlisting}
 
-\src{snippet07}
+\begin{lstlisting}[language=Scala]
+safeHead(fmap(f)(List.empty)) == safeHead(List.empty) == None
+\end{lstlisting}
 和一个非空列表：
 
-\src{snippet08}
+\begin{lstlisting}[language=Scala]
+fmap(f)(safeHead(x :: xs)) == fmap(f)(Some(x)) == Some(f(x))
+\end{lstlisting}
 
-\src{snippet09}
+\begin{lstlisting}[language=Scala]
+safeHead(fmap(f)(x :: xs)) == safeHead(f(1) :: fmap(f)(xs)) == Some(f(x))
+\end{lstlisting}
 我使用了列表的 \code{fmap} 实现：
 
-\src{snippet10}
+\begin{lstlisting}[language=Scala]
+def fmap[A, B](f: A => B): List[A] => List[B] = {
+  case Nil => Nil
+  case x :: xs => f(x) :: fmap(f)(xs)
+}
+\end{lstlisting}
 和 \code{Maybe} 的：
 
-\src{snippet11}
+\begin{lstlisting}[language=Scala]
+def fmap[A, B](f: A => B): Option[A] => Option[B] = {
+  case None => None
+  case Some(x) => Some(f(x))
+}
+\end{lstlisting}
 一个有趣的情况是，当其中一个函子是平凡的 \code{Const} 函子时。从或到 \code{Const} 函子的自然变换看起来就像是一个在返回类型或参数类型上多态的函数。
 
 例如，\code{length} 可以被视为从列表函子到 \code{Const Int} 函子的自然变换：
 
-\src{snippet12}
+\begin{lstlisting}[language=Scala]
+def length[A]: List[A] => Const[Int, A] = {
+  case Nil => Const(0)
+  case x :: xs => Const(1 + unConst(length(xs)))
+}
+\end{lstlisting}
 这里使用 \code{unConst} 来剥离 \code{Const} 构造器：
 
-\src{snippet13}
+\begin{lstlisting}[language=Scala]
+def unConst[C, A]: Const[C, A] => C = {
+  case Const(x) => x
+}
+\end{lstlisting}
 当然，实际上 \code{length} 是这样定义的：
 
-\src{snippet14}
+\begin{lstlisting}[language=Scala]
+def length[A]: List[A] => Int
+\end{lstlisting}
 它有效地隐藏了它是自然变换的事实。
 
 找到一个从 \code{Const} 函子 \emph{来的}参数多态函数有点困难，因为它需要从无到有地创建一个值。我们能做的最好的是：
 
-\src{snippet15}
+\begin{lstlisting}[language=Scala]
+def scam[A]: Const[Int, A] => Option[A] = {
+  case Const(x) => None
+}
+\end{lstlisting}
 另一个我们已经见过的常见函子，并将在 Yoneda 引理中发挥重要作用的，是 \code{Reader} 函子。我将重新将其定义为 \code{newtype}：
 
-\src{snippet16}
+\begin{lstlisting}[language=Scala]
+case class Reader[E, A](run: E => A)
+\end{lstlisting}
 它被两个类型参数化，但只在第二个类型上是（协变）函子化的：
 
-\src{snippet17}
+\begin{lstlisting}[language=Scala]
+implicit def readerFunctor[E] = new Functor[Reader[E, ?]] {
+  def fmap[A, B](f: A => B)(g: Reader[E, A]): Reader[E, B] =
+    Reader(x => f(g.run(x)))
+}
+\end{lstlisting}
 对于每个类型 \code{e}，你可以定义从 \code{Reader e} 到任何其他函子 \code{f} 的自然变换族。稍后我们会看到，这个族的成员总是与 \code{f e} 的元素一一对应（\hyperref[the-yoneda-lemma]{Yoneda 引理}）。
 
 例如，考虑有一个带有一个元素 \code{()} 的稍显平凡的单位类型 \code{()}。函子 \code{Reader ()} 将任何类型 \code{a} 映射为函数类型 \code{() -> a}。这些只是从集合 \code{a} 中选择单个元素的所有函数。它们与 \code{a} 中的元素一样多。现在我们来考虑从这个函子到 \code{Maybe} 函子的自然变换：
 
-\src{snippet18}
+\begin{lstlisting}[language=Scala]
+def alpha[A]: Reader[Unit, A] => Option[A]
+\end{lstlisting}
 只有两个：\code{dumb} 和 \code{obvious}：
 
-\src{snippet19}
+\begin{lstlisting}[language=Scala]
+def dumb[A]: Reader[Unit, A] => Option[A] = {
+  case Reader(_) => None
+}
+\end{lstlisting}
 和
 
-\src{snippet20}
+\begin{lstlisting}[language=Scala]
+def obvious[A]: Reader[Unit, A] => Option[A] = {
+  case Reader(g) => Some(g())
+}
+\end{lstlisting}
 （你唯一能对 \code{g} 做的就是将它应用到单位值 \code{()} 上。）
 
 而且，正如 Yoneda 引理所预测的那样，它们对应于 \code{Maybe ()} 类型的两个元素，即 \code{Nothing} 和 \code{Just ()}。我们稍后会回到 Yoneda 引理——这只是一个小小的预告。
@@ -193,25 +256,47 @@ Haskell 的参数多态性有一个意想不到的后果：任何类型为
 
 你可能还记得我们之前看过的一个逆变函子的例子：
 
-\src{snippet21}
+\begin{lstlisting}[language=Scala]
+case class Op[R, A](f: A => R)
+\end{lstlisting}
 这个函子在 \code{a} 上是逆变的：
 
-\src{snippet22}
+\begin{lstlisting}[language=Scala]
+implicit def opContravariant[R] = new Contravariant[Op[R, ?]] {
+  def contramap[A, B](f: B => A): Op[R, A] => Op[R, B] = {
+    case Op(g) => Op(g compose f)
+  }
+}
+\end{lstlisting}
 我们可以编写一个从 \code{Op Bool} 到 \code{Op String} 的多态函数：
 
-\src{snippet23}
+\begin{lstlisting}[language=Scala]
+def predToStr[A]: Op[Boolean, A] => Op[String, A] = {
+  case Op(f) => Op(x => if (f(x)) "T" else "F")
+}
+\end{lstlisting}
 但由于这两个函子不是协变的，这不是一个 $\Hask$ 中的自然变换。然而，由于它们都是逆变的，它们满足“相反”的自然性条件：
 
-\src{snippet24}[b]
+\begin{lstlisting}[language=Scala]
+(op.contramap(func) compose predToStr) == (predToStr compose op.contramap(func))
+\end{lstlisting}
 注意到函数 \code{f} 必须朝与使用 \code{fmap} 相反的方向，因为 \code{contramap} 的签名是：
 
-\src{snippet25}
+\begin{lstlisting}[language=Scala]
+def contramap[A, B](f: B => A): Op[Boolean, A] => Op[Boolean, B] = {
+  case Op(g) => Op(g compose f)
+}
+\end{lstlisting}
 是否有不是函子的类型构造器，无论是协变的还是逆变的？这里有一个例子：
 
-\src{snippet26}
+\begin{lstlisting}[language=Scala]
+A => A
+\end{lstlisting}
 这不是一个函子，因为相同的类型 \code{a} 同时用于负面（逆变）和正面（协变）的位置。你不能为这个类型实现 \code{fmap} 或 \code{contramap}。因此，签名为
 
-\src{snippet27}
+\begin{lstlisting}[language=Scala]
+(A => A) => F[A]
+\end{lstlisting}
 的函数，其中 \code{f} 是一个任意的函子，不能是自然变换。有趣的是，有一种自然变换的推广，称为双自然变换（dinatural transformations），可以处理这些情况。当我们讨论端（ends）时，我们会涉及到它们。
 
 \section{函子范畴}

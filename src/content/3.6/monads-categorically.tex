@@ -45,10 +45,15 @@ $\eta$ 是恒等函子 $I$ 和 $T$ 之间的自然变换：
 \end{gather*}
 这里 $T$ 作为一个函子，可以应用于态射 $g$。在 Haskell 记号中，这个公式可能更容易识别：
 
-\src{snippet01}
+\begin{lstlisting}[language=Scala]
+(f >=> g) ==
+    (flatten compose fmap[B, T[C]](g) compose f)
+\end{lstlisting}
 或者，在组件中：
 
-\src{snippet02}
+\begin{lstlisting}[language=Scala]
+(f >=> g)(a) == flatten(fmap(g)(f(a)))
+\end{lstlisting}
 在代数解释中，我们只是组合了两个连续的替换。
 
 为了使克莱斯里箭头形成一个范畴，我们希望它们的组合是结合的，并且 $\eta_a$ 是 $a$ 上的恒等克莱斯里箭头。这个要求可以转化为 $\mu$ 和 $\eta$ 的单子定律。但是还有另一种推导这些定律的方法，使它们更像幺半群定律。事实上，$\mu$ 通常被称为“乘法”（multiplication），$\eta$ 被称为“单位”（unit）。
@@ -99,22 +104,33 @@ $\eta$ 是恒等函子 $I$ 和 $T$ 之间的自然变换：
 
 让我们回到幺半群的传统定义。幺半群是一个集合，带有一个二元运算和一个称为单位元的特殊元素。在 Haskell 中，这可以用一个类型类来表达：
 
-\src{snippet03}
+\begin{lstlisting}[language=Scala]
+trait Monoid[M] {
+  def combine(x: M, y: M): M
+  def empty: M
+}
+\end{lstlisting}
 二元运算 \code{mappend} 必须是结合的，并且具有单位性（即乘以单位元 \code{mempty} 不会改变任何元素）。
 
 注意，在 Haskell 中，\code{mappend} 的定义是柯里化的。它可以解释为将 \code{m} 的每个元素映射到一个函数：
 
-\src{snippet04}
+\begin{lstlisting}[language=Scala]
+def combine(x: M): (M => M)
+\end{lstlisting}
 正是这种解释导致了幺半群被定义为一个单对象范畴，其中的态射 \code{(m -> m)} 代表幺半群的元素。但由于柯里化是 Haskell 的内置特性，我们也可以从另一种乘法定义开始：
 
-\src{snippet05}
+\begin{lstlisting}[language=Scala]
+def mu: ((M, M)) => M
+\end{lstlisting}
 在这里，笛卡尔积 \code{(m, m)} 成为待乘元素对的来源。
 
 这个定义暗示了另一种推广的路径：用范畴积（categorical product）替换笛卡尔积。我们可以从一个在全局定义积的范畴开始，选择其中的一个对象 \code{m}，并定义乘法为态射：
 \[\mu \Colon m\times{}m \to m\]
 但是我们有一个问题：在任意范畴中，我们无法窥探对象的内部，所以我们如何选择单位元呢？有一个技巧可以解决这个问题。记得元素选择等价于从单集合到某个集合的函数吗？在 Haskell 中，我们可以将 \code{mempty} 的定义替换为一个函数：
 
-\src{snippet06}
+\begin{lstlisting}[language=Scala]
+def eta: Unit => M
+\end{lstlisting}
 单集合是 $\Set$ 中的终对象，因此将这个定义推广到任何具有终对象的范畴是自然的：
 \[\eta \Colon t \to m\]
 这使我们可以选择单位“元素”而无需讨论元素。
@@ -123,36 +139,71 @@ $\eta$ 是恒等函子 $I$ 和 $T$ 之间的自然变换：
 
 我们从结合性开始。在 Haskell 中，相应的等式定律是：
 
-\src{snippet07}
+\begin{lstlisting}[language=Scala]
+mu (x, mu (y, z)) == mu (mu (x, y), z)
+\end{lstlisting}
 在将其推广到其他范畴之前，我们必须将其重写为函数（态射）的相等性。我们必须将其抽象化，不再关注其对单个变量的作用——换句话说，我们必须使用点自由记法（point-free notation）。知道笛卡尔积是一个双函子，我们可以将左侧写为：
 
-\src{snippet08}
+\begin{lstlisting}[language=Scala]
+mu compose bimap(identity)(mu)
+\end{lstlisting}
 右侧写为：
 
-\src{snippet09}
+\begin{lstlisting}[language=Scala]
+mu compose bimap(mu)(identity)
+\end{lstlisting}
 这几乎是我们想要的。不幸的是，笛卡尔积并不是严格结合的——\code{(x, (y, z))} 不等同于 \code{((x, y), z)}——所以我们不能直接写点自由的：
 
-\src{snippet10}
+\begin{lstlisting}[language=Scala]
+mu.compose(bimap(identity)(mu)) ==
+    mu.compose(bimap(mu)(identity))
+\end{lstlisting}
 另一方面，这两种配对嵌套是同构的。存在一个可逆的函数，称为结合子（associator），可以在它们之间转换：
 
-\src{snippet11}
+\begin{lstlisting}[language=Scala]
+def alpha[A, B, C]: (((A, B), C)) => ((A, (B, C))) = {
+  case ((x, y), z) => (x, (y, z))
+}
+\end{lstlisting}
 借助结合子，我们可以为 \code{mu} 写出点自由的结合律：
 
-\src{snippet12}
+\begin{lstlisting}[language=Scala]
+mu.compose(
+  bimap(identity)(mu) compose alpha) ==
+  mu.compose(bimap(mu)(identity))
+\end{lstlisting}
 我们可以对单位律进行类似的处理，在新记法中，它们的形式为：
 
-\src{snippet13}
+\begin{lstlisting}[language=Scala]
+mu(eta(), x) == x
+mu(x, eta()) == x
+\end{lstlisting}
 它们可以重写为：
 
-\src{snippet14}
+\begin{lstlisting}[language=Scala]
+mu.compose(bimap(eta)(identity[M]))(((), x)) == lambda(((), x))
+
+mu.compose(bimap(identity[M])(eta))((x, ())) == rho((x, ()))
+\end{lstlisting}
 同构 \code{lambda} 和 \code{rho} 分别称为左单位元（left unitor）和右单位元（right unitor）。它们见证了单位 \code{()} 是笛卡尔积的单位元，至多同构：
 
-\src{snippet15}
+\begin{lstlisting}[language=Scala]
+def lambda[A]: ((Unit, A)) => A = {
+  case ((), x) => x
+}
+\end{lstlisting}
 
-\src{snippet16}
+\begin{lstlisting}[language=Scala]
+def rho[A]: ((A, Unit)) => A = {
+  case (x, ()) => x
+}
+\end{lstlisting}
 因此，单位律的点自由版本为：
 
-\src{snippet17}
+\begin{lstlisting}[language=Scala]
+mu.compose(bimap(eta)(identity[M])) == lambda
+mu.compose(bimap(identity[M])(eta)) == rho
+\end{lstlisting}
 我们使用了底层笛卡尔积本身在类型范畴中充当幺半群乘法这一事实，得到了 \code{mu} 和 \code{eta} 的点自由幺半群定律。但请记住，笛卡尔积的结合性和单位律仅在同构意义上成立。
 
 事实证明，这些定律可以推广到任何具有积和终对象的范畴。范畴积确实在同构意义上是结合的，终对象也是单位元，同样在同构意义上。结合子和两个单位元是自然同构。这些定律可以用交换图表示。
@@ -279,22 +330,43 @@ $L \dashv R$，是一个在两个范畴 $\cat{C}$ 和 $\cat{D}$ 之间来回的�
 \[R (L z) = s \Rightarrow (z\times{}s)\]
 我们之前在 Haskell 中见过这个单子：
 
-\src{snippet18}
+\begin{lstlisting}[language=Scala]
+case class State[S, A](run: S => (A, S))
+\end{lstlisting}
 让我们也将伴随关系翻译成 Haskell。左函子是积函子：
 
-\src{snippet19}
+\begin{lstlisting}[language=Scala]
+case class Prod[S, A](run: (A, S))
+\end{lstlisting}
 右函子是读者函子：
 
-\src{snippet20}
+\begin{lstlisting}[language=Scala]
+case class Reader[S, A](run: S => A)
+\end{lstlisting}
 它们形成了伴随关系：
 
-\src{snippet21}
+\begin{lstlisting}[language=Scala]
+implicit def state[S] = new Adjunction[Prod[S, ?], Reader[S, ?]] {
+  def counit[A](a: Prod[S, Reader[S, A]]): A = a match {
+    case Prod((Reader(f), s)) => f(s)
+  }
+
+  def unit[A](a: A): Reader[S, Prod[S, A]] =
+    Reader(s => Prod((a, s)))
+}
+\end{lstlisting}
 你可以轻松地验证读者函子与积函子的组合确实等价于状态函子：
 
-\src{snippet22}
+\begin{lstlisting}[language=Scala]
+case class State[S, A](run: S => (A, S))
+\end{lstlisting}
 如预期的那样，伴随关系的 \code{unit} 等价于状态单子的 \code{return} 函数。余单位元通过求值一个函数作用于其参数来起作用。这可以识别为函数 \code{runState} 的未柯里化版本：
 
-\src{snippet23}
+\begin{lstlisting}[language=Scala]
+def runState[S, A]: State[S, A] => S => (A, S) = {
+  case State(f) => s => f(s)
+}
+\end{lstlisting}
 （未柯里化，因为在 \code{counit} 中它作用于一个对。）
 
 现在我们可以将状态单子的 \code{join} 定义为自然变换 $\mu$ 的一个分量。为此，我们需要将三个自然变换进行横向组合：
@@ -303,10 +375,24 @@ $L \dashv R$，是一个在两个范畴 $\cat{C}$ 和 $\cat{D}$ 之间来回的�
 
 我们首先需要剥离数据构造器 \code{State} 以暴露 \code{State} 函子内部的函数。这是通过 \code{runState} 完成的：
 
-\src{snippet24}
+\begin{lstlisting}[language=Scala]
+def ssa[S, A]: State[S, State[S, A]]
+
+def rss[S, A]: S => (State[S, A], S) =
+  runState[S, State[S, A]](ssa)
+\end{lstlisting}
 然后我们将它与余单位元左组合，后者由 \code{uncurry runState} 定义。最后，我们将其重新包装回 \code{State} 数据构造器中：
 
-\src{snippet25}
+\begin{lstlisting}[language=Scala]
+def join[S, A]: State[S, State[S, A]] => State[S, A] =
+  ssa => {
+    State(
+      Function.uncurried(runState[S, A])
+        .tupled
+        .compose(runState(ssa))
+    )
+  }
+\end{lstlisting}
 这确实是状态单子的 \code{join} 实现。
 
 事实证明，不仅每个伴随关系都产生一个单子，反过来也成立：每个单子都可以分解为两个伴随函子的组合。然而，这种分解不是唯一的。

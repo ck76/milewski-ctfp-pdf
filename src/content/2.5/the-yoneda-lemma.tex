@@ -105,15 +105,34 @@ Yoneda 引理告诉我们，两个同态函子和任意其他函子 $F$ 之间�
 
 我们已经在 Haskell 中以 reader 函子的形式遇到过同态函子：
 
-\src{snippet01}
+\begin{lstlisting}[language=Scala]
+type Reader[A, X] = A => X
+\end{lstlisting}
 reader 函子通过前组合映射态射（这里的函数）：
 
-\src{snippet02}
+\begin{lstlisting}[language=Scala]
+implicit def readerFunctor[A] = new Functor[Reader[A, ?]] {
+  def fmap[X, B](f: X => B)(h: Reader[A, X]): Reader[A, B] =
+    f compose h
+}
+\end{lstlisting}
 Yoneda 引理告诉我们，reader 函子可以自然地映射到任何其他函子。
 
 自然变换是多态函数。因此，给定一个函子 \code{F}，我们可以从 reader 函子映射到它：
 
-\src{snippet03}
+\begin{lstlisting}[language=Scala]
+// In order to make a universal transformation,
+// another type needs to be introduced.
+// To read more about FunctionK (~>):
+// typelevel.org/cats/datatypes/functionk.html
+trait ~>[F[_], G[_]] {
+  def apply[B](fa: F[B]): G[B]
+}
+
+// Kind Projector plugin provides
+// a more concise syntax for type lambdas:
+def alpha[A]: (A => ?) ~> F
+\end{lstlisting}
 和往常一样，\code{forall} 是可选的，但我喜欢明确地写出来，以强调自然变换的参数多态性。
 
 Yoneda 引理告诉我们，这些自然变换与 \code{F a} 的元素是一一对应的：
@@ -125,16 +144,24 @@ Yoneda 引理告诉我们，这些自然变换与 \code{F a} 的元素是一一�
 
 换句话说：给我一个类型为：
 
-\src{snippet04}
+\begin{lstlisting}[language=Scala]
+def alpha[A]: (A => ?) ~> F
+\end{lstlisting}
 的多态函数，我将生成一个 \code{a} 的容器。诀窍是我们在证明 Yoneda 引理时使用的：我们用 \code{id} 调用这个函数来获得 \code{F a} 的一个元素：
 
-\src{snippet05}
+\begin{lstlisting}[language=Scala]
+alpha(identity): F[A]
+\end{lstlisting}
 反之亦然：给定一个类型为 \code{F a} 的值：
 
-\src{snippet06}
+\begin{lstlisting}[language=Scala]
+def fa[A]: F[A]
+\end{lstlisting}
 可以定义一个类型正确的多态函数：
 
-\src{snippet07}
+\begin{lstlisting}[language=Scala]
+alpha(h) == fmap(h)(fa)
+\end{lstlisting}
 你可以轻松地在两种表示之间来回转换。
 
 拥有多种表示的好处是，其中一种可能比另一种更容易组合，或者在某些应用中更高效。
