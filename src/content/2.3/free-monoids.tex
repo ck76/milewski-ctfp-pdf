@@ -26,38 +26,17 @@ Haskell 中的一个两元素集合等价于类型 \code{Bool}，由这个集合
 
 Haskell 中的单子通过类型类定义如下：
 
-\begin{lstlisting}[language=Reason]
-module type Monoid = {
-  type m;
-  
-  let mempty: m;
-  let mappend: (m, m) => m;
-};
-
-\end{lstlisting}
+\src{snippet01}
 这只是说每个 \code{Monoid} 都必须有一个中性元素，称为 \code{mempty}，以及一个二元函数（乘法）称为 \code{mappend}。单位和结合律不能在 Haskell 中表达，必须由程序员在每次实例化单子时验证。
 
 列表的任意类型形成一个单子的事实通过以下实例定义描述：
 
-\begin{lstlisting}[language=Reason]
-module ListMonoid = (T1: {type a;}) : 
-    (Monoid with type m = list(T1.a)) => {
-  type m = list(T1.a);
-
-  let mempty = [];
-  let mappend = (xs, ys) => List.append(xs, ys);
-};
-
-\end{lstlisting}
+\src{snippet02}
 这表明空列表 \code{{[}{]}} 是单位元素，而列表连接 \code{(++)} 是二元操作。
 
 正如我们所见，类型 \code{a} 的列表对应于一个以集合 \code{a} 作为生成元的自由单子。以乘法为运算的自然数集合并不是一个自由单子，因为我们识别了很多积。例如，比较：
 
-\begin{lstlisting}[language=Reason]
-2 * 3 == 6
-List.append([2], [3]) == [2, 3];
-
-\end{lstlisting}
+\src{snippet03}
 那很容易，但问题是，我们能否在范畴理论中进行这种自由构造，在那里我们不允许查看对象的内部？我们将使用我们的常用工具：泛范式（universal construction）。
 
 第二个有趣的问题是，是否可以通过在某些自由单子中识别超过所需最小数量的元素，得到任何单子？我将向你展示这直接来自于泛范式。
@@ -68,23 +47,15 @@ List.append([2], [3]) == [2, 3];
 
 首先让我们将单子看作由单位和乘法定义的集合。我们选择作为态射的那些保持单子结构的函数。这种保持结构的函数称为同态（homomorphism）。一个单子同态必须将两个元素的积映射为这两个元素映射的积：
 
-\begin{lstlisting}[language=Reason]
-let h (a * b) = h a * h b
-\end{lstlisting}
+\src{snippet04}
 并且必须将单位映射为单位。
 
 例如，考虑一个从整数列表到整数的同态。如果我们将 \code{{[}2{]}} 映射为 2，将 \code{{[}3{]}} 映射为 3，我们必须将 \code{{[}2, 3{]}} 映射为 6，因为连接
 
-\begin{lstlisting}[language=Reason]
-List.append([2], [3]) == [2, 3];
-
-\end{lstlisting}
+\src{snippet05}
 变成了乘法
 
-\begin{lstlisting}[language=Reason]
-2 * 3 == 6;
-
-\end{lstlisting}
+\src{snippet06}
 现在让我们忘记单个单子的内部结构，只看它们作为对象以及相应的态射。你会得到一个单子范畴 $\cat{Mon}$。
 
 好了，可能在我们忘记内部结构之前，让我们注意一个重要的属性。$\cat{Mon}$ 的每个对象都可以被平凡地映射到一个集合。它只是其元素的集合。这个集合称为基础集合（underlying set）。事实上，我们不仅可以将 $\cat{Mon}$ 的对象映射到集合，还可以将 $\cat{Mon}$ 的态射（同态）映射为函数。同样，这似乎是琐碎的，但它很快就会变得有用。这个从 $\cat{Mon}$ 到 $\Set$ 的对象和态射映射实际上是一个函子（functor）。由于这个函子“遗忘”了单子结构——一旦我们进入普通集合，我们就不再区分单位元素或关心乘法——它被称为遗忘函子（forgetful functor）。遗忘函子在范畴理论中经常出现。
@@ -99,15 +70,7 @@ List.append([2], [3]) == [2, 3];
 
 我们要匹配的模式由单子 $m$——$\cat{Mon}$ 的一个对象——和 $\Set$ 中的一个函数 $p$ 组成：
 
-\begin{lstlisting}[language=Reason]
-module type FreeMonoidRep = (F: Functor) => {
-  type x;
-  type m;
-  
-  let p: x => F.t(m);
-};
-
-\end{lstlisting}
+\src{snippet07}
 其中 $U$ 是我们的从 $\cat{Mon}$ 到 $\Set$ 的遗忘函子。这是一个奇怪的异质模式——一半在 $\cat{Mon}$ 中，一半在 $\Set$ 中。
 
 这个想法是函数 $p$ 将在 $m$ 的 X 光图像中识别生成元。函数可能在识别集合中的点时表现不佳（它们可能会坍缩它们）。这一切都将通过泛范式解决，泛范式将选择该模式的最佳代表。
@@ -120,27 +83,13 @@ module type FreeMonoidRep = (F: Functor) => {
 \noindent
 我们还必须定义候选者之间的排序。假设我们有另一个候选者：单子 $n$ 及其 X 光图像中的生成元识别函数：
 
-\begin{lstlisting}[language=Reason]
-module type FreeMonoidRep = (F: Functor) => {
-  type x;
-  type n;
-  
-  let q: x => F.t(n);
-};
-
-\end{lstlisting}
+\src{snippet08}
 我们将说 $m$ 比 $n$ 更好，如果存在一个单子态射（这是一个保持结构的同态）：
 
-\begin{lstlisting}[language=Reason]
-let h: m => n
-
-\end{lstlisting}
+\src{snippet09}
 它在 $U$ 下的像（记住，$U$ 是一个函子，所以它将态射映射为函数）通过 $p$ 因式分解：
 
-\begin{lstlisting}[language=Reason]
-let q: compose(uh p)
-
-\end{lstlisting}
+\src{snippet10}
 如果你将 $p$ 视为在 $m$ 中选择生成元，并将 $q$ 视为在 $n$ 中选择“相同”的生成元，那么你可以将 $h$ 视为在两个单子之间映射这些生成元。记住，$h$ 按定义保持单子结构。这意味着一个单子中两个生成元的积将被映射为第二个单子中相应两个生成元的积，依此类推。
 
 \begin{figure}[H]

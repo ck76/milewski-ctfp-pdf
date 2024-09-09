@@ -42,53 +42,22 @@
 
 以下是 Haskell 中对 F-代数的定义：
 
-\begin{lstlisting}[language=Reason]
-module type Algebra =
-  (F: {type f('a);}) => {type algebra('a) = F.f('a) => 'a;};
-
-\end{lstlisting}
+\src{snippet01}
 它将代数与其求值函数等同。
 
 在 monoid 示例中，所讨论的函子为：
 
-\begin{lstlisting}[language=Reason]
-type mon_f('a) =
-  | MEmpty
-  | Mappend(('a, 'a));
-
-\end{lstlisting}
+\src{snippet02}
 这在 Haskell 中表示 $1 + a\times{}a$（请记住 \hyperref[simple-algebraic-data-types]{代数数据结构}）。
 
 一个环将使用以下函子定义：
 
-\begin{lstlisting}[language=Reason]
-type ring_f('a) =
-  | RZero
-  | ROne
-  | RAdd(('a, 'a))
-  | RMul(('a, 'a))
-  | RNeg('a);
-
-\end{lstlisting}
+\src{snippet03}
 这在 Haskell 中表示 $1 + 1 + a\times{}a + a\times{}a + a$。
 
 整数集是环的一个例子。我们可以选择 \code{Integer} 作为载体类型，并定义求值函数为：
 
-\begin{lstlisting}[language=Reason]
-module Ring = {
-  module RingAlg = Algebra({type f('a) = ring_f('a);});
-
-  let eval_z: RingAlg.algebra('a) = (
-    fun
-    | RZero => 0
-    | ROne => 1
-    | RAdd(m, n) => m + n
-    | RMul(m, n) => m * n
-    | RNeg(n) => - n
-  );
-};
-
-\end{lstlisting}
+\src{snippet04}
 基于同一函子 \code{RingF}，还有更多的 F-代数。例如，多项式构成了一个环，方阵也是如此。
 
 如你所见，函子的作用是生成可以使用代数求值器求值的表达式。到目前为止，我们只看到了非常简单的表达式。我们通常对可以使用递归定义的更复杂的表达式感兴趣。
@@ -97,48 +66,21 @@ module Ring = {
 
 生成任意表达式树的一种方法是用递归替换函子定义中的变量 \code{a}。例如，一个环中的任意表达式由这个类树状的数据结构生成：
 
-\begin{lstlisting}[language=Reason]
-type expr =
-  | RZero
-  | ROne
-  | RAdd((expr, expr))
-  | RMul((expr, expr))
-  | RNeg(expr);
-
-\end{lstlisting}
+\src{snippet05}
 我们可以将原始的环求值器替换为其递归版本：
 
-\begin{lstlisting}[language=Reason]
-let rec eval_z: expr => int = (
-  fun
-  | RZero => 0
-  | ROne => 1
-  | RAdd(e1, e2) => eval_z(e1) + eval_z(e2)
-  | RMul(e1, e2) => eval_z(e1) * eval_z(e2)
-  | RNeg(e) => - eval_z(e)
-);
-
-\end{lstlisting}
+\src{snippet06}
 这仍然不太实用，因为我们被迫将所有整数表示为 1 的和，但在紧要关头可以使用。
 
 但是，我们如何使用 F-代数的语言描述表达式树呢？我们必须以某种方式形式化替换我们的函子定义中自由类型变量的过程，递归地用替换结果填充这个类型变量。想象分步进行这个过程。首先，定义一个深度为 1 的树为：
 
-\begin{lstlisting}[language=Reason]
-type ring_f1('a) = ring_f(ring_f('a));
-
-\end{lstlisting}
+\src{snippet07}
 我们将 \code{RingF} 的定义中用 \code{RingF a} 生成的深度为 0 的树填入空缺中。类似地，深度为 2 的树也可以这样得到：
 
-\begin{lstlisting}[language=Reason]
-type ring_f2('a) = ring_f(ring_f(ring_f('a)));
-
-\end{lstlisting}
+\src{snippet08}
 我们还可以写成：
 
-\begin{lstlisting}[language=Reason]
-type ring_f2('a) = ring_f1(ring_f('a));
-
-\end{lstlisting}
+\src{snippet09}
 继续这个过程，我们可以写出一个符号方程：
 
 \begin{align}
@@ -152,48 +94,16 @@ type ring_f2('a) = ring_f1(ring_f('a));
 \[\mathit{Fix}\ f = f\ (\mathit{Fix}\ f)\]
 这个定义背后的直觉是，由于我们已经将 $f$ 应用无穷多次以得到 $\mathit{Fix}\ f$，再应用一次也不会改变任何东西。在 Haskell 中，不动点的定义为：
 
-\begin{lstlisting}[language=Reason]
-module Fix = (F: Functor) => {
-  type fix('a) =
-    | Fix(F.t(fix('a)));
-};
-
-\end{lstlisting}
+\src{snippet10}
 可以说，如果构造器的名称与定义的类型不同，可能会更易读，如：
 
-\begin{lstlisting}[language=Reason]
-module Fix = (F: Functor) => {
-  type fix('a) =
-    | In(F.t(fix('a)));
-};
-
-\end{lstlisting}
+\src{snippet11}
 但我会坚持使用公认的符号。构造器 \code{Fix}（或 \code{In}，如果你喜欢这样）可以看作是一个函数：
 
-\begin{lstlisting}[language=Reason]
-module Fix = (F: Functor) => {
-  type fix('a) =
-    | Fix(F.t(fix('a)));
-
-  let fix: F.t(fix('a)) => fix('a) = (
-    f => Fix(f): F.t(fix('a)) => fix('a)
-  );
-};
-
-\end{lstlisting}
+\src{snippet12}
 还有一个函数可以剥去一个层次的函子应用：
 
-\begin{lstlisting}[language=Reason]
-module Fix = (F: Functor) => {
-  type fix('a) =
-    | Fix(F.t(fix('a)));
-
-  let unfix: fix('a) => F.t(fix('a)) = (
-    (Fix(f)) => f: fix('a) => F.t(fix('a))
-  );
-};
-
-\end{lstlisting}
+\src{snippet13}
 这两个函数是彼此的逆运算。我们稍后会用到这些函数。
 
 \section{F-代数的范畴（Category of F-Algebras）}
@@ -264,20 +174,10 @@ F-代数范畴中的初始对象（如果存在）称为初始代数（initial a
 \[1 + N \to N\]
 左侧定义了一个函子，在 Haskell 中可以写成这样：
 
-\begin{lstlisting}[language=Reason]
-type nat_f('a) =
-  | ZeroF
-  | SuccF('a);
-
-\end{lstlisting}
+\src{snippet14}
 这个函子的固定点（即它生成的初始代数）可以在 Haskell 中编码为：
 
-\begin{lstlisting}[language=Reason]
-type nat =
-  | Zero
-  | Succ(nat);
-
-\end{lstlisting}
+\src{snippet15}
 自然数要么是零，要么是另一个数字的后继数。这就是所谓的 Peano 表示法。
 
 \section{Catamorphisms}
@@ -311,42 +211,13 @@ Lambek 定理告诉我们，构造器 \code{Fix} 是同构。我们称其逆运�
 
 既然我们可以对任何代数 \code{alg} 执行此操作，那么定义一个高阶函数是有意义的，该函数以代数为参数并为我们提供我们称之为 \code{m} 的函数。这个高阶函数称为 catamorphism：
 
-\begin{lstlisting}[language=Reason]
-module Cata = (F: Functor) => {
-  type fix('a) =
-    | Fix(F.t(fix('a)));
-
-  let fix: F.t(fix('a)) => fix('a) = (
-    f => Fix(f): F.t(fix('a)) => fix('a)
-  );
-  let unfix: fix('a) => F.t(fix('a)) = (
-    (Fix(f)) => f: fix('a) => F.t(fix('a))
-  );
-
-  let rec cata: (F.t('a) => 'a, fix('a)) => 'a = (
-    (alg, fixf) => alg(F.fmap(cata(alg), unfix(fixf))):
-      (F.t('a) => 'a, fix('a)) => 'a
-  );
-};
-
-\end{lstlisting}
+\src{snippet16}
 让我们看看一个例子。采用定义自然数的函子：
 
-\begin{lstlisting}[language=Reason]
-type nat_f('a) =
-  | ZeroF
-  | SuccF('a);
-
-\end{lstlisting}
+\src{snippet17}
 让我们选择 \code{(Int, Int)} 作为载体类型，并定义我们的代数为：
 
-\begin{lstlisting}[language=Reason]
-let rec fib =
-  fun
-  | ZeroF => (1, 1)
-  | SuccF(m, n) => (n, m + n);
-
-\end{lstlisting}
+\src{snippet18}
 你很容易说服自己，这个代数的 catamorphism，\code{cata fib}，计算斐波那契数。
 
 一般来说，\code{NatF} 的代数定义了递推关系：当前元素的值以之前的元素为依据。然后，catamorphism 计算该序列的第 n 个元素。
@@ -355,56 +226,28 @@ let rec fib =
 
 \code{e} 的列表是以下函子的初始代数：
 
-\begin{lstlisting}[language=Reason]
-type list_f('e, 'a) =
-  | NilF
-  | ConsF(('e, 'a));
-
-\end{lstlisting}
+\src{snippet19}
 实际上，将变量 \code{a} 替换为递归的结果，我们称之为 \code{List e}，我们得到：
 
-\begin{lstlisting}[language=Reason]
-type list'('e) =
-  | Nil
-  | Cons(('e, list'('e)));
-
-\end{lstlisting}
+\src{snippet20}
 列表函子的代数为一个特定的载体类型选择定义一个函数，该函数对两个构造器进行模式匹配。它对 \code{NilF} 的值告诉我们如何计算空列表，对 \code{ConsF} 的值告诉我们如何将当前元素与先前累积的值组合。
 
 例如，下面是一个可以用于计算列表长度的代数（载体类型为 \code{Int}）：
 
-\begin{lstlisting}[language=Reason]
-let len_alg =
-  fun
-  | ConsF(e, n) => n + 1
-  | NilF => 0;
-
-\end{lstlisting}
+\src{snippet21}
 实际上，catamorphism \code{cata lenAlg} 计算列表的长度。请注意，求值器是（1）一个接受列表元素和累加器并返回新累加器的函数与（2）一个起始值，这里为零的组合。值的类型和累加器的类型由载体类型给出。
 
 将其与传统的 Haskell 定义进行比较：
 
-\begin{lstlisting}[language=Reason]
-let length = xs => List.fold_right((e, n) => n + 1, xs, 0);
-
-\end{lstlisting}
+\src{snippet22}
 \code{foldr} 的两个参数正好是代数的两个组成部分。
 
 让我们尝试另一个例子：
 
-\begin{lstlisting}[language=Reason]
-let sum_alg =
-  fun
-  | ConsF(e, s) => e +. s
-  | NilF => 0.0;
-
-\end{lstlisting}
+\src{snippet23}
 再次比较：
 
-\begin{lstlisting}[language=Reason]
-let sum = xs => List.fold_right((e, s) => e +. s, xs, 0.0);
-
-\end{lstlisting}
+\src{snippet24}
 正如你所见，\code{foldr} 只是一个对列表的 catamorphism 的便利特化。
 
 \section{F-Coalgebras}
@@ -425,124 +268,45 @@ let sum = xs => List.fold_right((e, s) => e +. s, xs, 0.0);
 
 就像 catamorphism 可以用于求值初始代数一样，anamorphism 可以用于余求值终端余代数：
 
-\begin{lstlisting}[language=Reason]
-module Ana = (F: Functor) => {
-  type fix('a) =
-    | Fix(F.t(fix('a)));
-
-  let rec ana: ('a => F.t('a), 'a) => fix('a) = (
-    (coalg, a) => Fix(F.fmap(ana(coalg), coalg(a))):
-      ('a => F.t('a), 'a) => fix('a)
-  );
-};
-
-\end{lstlisting}
+\src{snippet25}
 余代数的一个典型例子基于一个固定点为元素类型 \code{e} 的无限流（stream）的函子。这个函子为：
 
-\begin{lstlisting}[language=Reason]
-type stream_f('e, 'a) =
-  | StreamF(('e, 'a));
-
-module Stream_Functor = (E: {type e;}) : 
-       (Functor with type t('a) = stream_f(E.e, 'a)) => {
-  type t('a) = stream_f(E.e, 'a);
-
-  let fmap = f =>
-    fun
-    | StreamF(e, a) => StreamF(e, f(a));
-};
-
-\end{lstlisting}
+\src{snippet26}
 其固定点为：
 
-\begin{lstlisting}[language=Reason]
-type stream('e) =
-  | Stream(('e, stream('e)));
-
-\end{lstlisting}
+\src{snippet27}
 \code{StreamF e} 的余代数是一个函数，它接收类型为 \code{a} 的种子并生成一个对（\code{StreamF} 是对的别名），包括一个元素和下一个种子。
 
 你可以轻松生成简单的余代数来产生无限序列，例如平方数列表或倒数。
 
 一个更有趣的例子是一个余代数，它产生一个素数列表。技巧是使用无限列表作为载体。我们的起始种子将是列表 \code{{[}2..{]}}。下一个种子将是此列表的尾部，所有 2 的倍数都被移除。这是以 3 开始的奇数列表。在下一步中，我们将取此列表的尾部并移除所有 3 的倍数，依此类推。你可能认出这是埃拉托色尼筛法的雏形。这个余代数由以下函数实现：
 
-\begin{lstlisting}[language=Reason]
-/* OCaml library `gen` provides useful helpers for
-   potentially infinite iterators. You can install it
-   with `opam install gen`. To use it in the toplevel,
-   you need to `#require "gen"` */
-let era: Gen.t(int) => stream_f(int, Gen.t(int)) = (ilist => {
-    let notdiv = (p, n) => n mod p !== 0;
-    let p = Gen.get_exn(ilist);
-    StreamF(p, Gen.filter(notdiv(p), ilist));
-});
-\end{lstlisting}
+\src{snippet28}
 这个余代数的 anamorphism 生成素数列表：
 
-\begin{lstlisting}[language=Reason]
-module Stream_Int = Stream_Functor({type e = int;});
-
-module Ana_Stream = Ana(Stream_Int);
-
-/* The fixpoint translated to ReasonML is eager in its evaluation.
-   Hence, executing the following function will cause overflow.
-   So, wrapping it inside a lazy */
-let primes = lazy(Ana_Stream.ana(era, Gen.init(i => i + 2)));
-
-\end{lstlisting}
+\src{snippet29}
 流是无限列表，因此应该可以将其转换为 Haskell 列表。为此，我们可以使用相同的函子 \code{StreamF} 形成一个代数，并可以在其上运行一个 catamorphism。例如，这是一个将流转换为列表的 catamorphism：
 
-\begin{lstlisting}[language=Reason]
-module List_C = (E: {type e;}) => {
-  module Stream_F: Functor with type t('a) = stream_f(E.e, 'a) =
-    Stream_Functor(E);
-
-  module Cata_Stream = Cata(Stream_F);
-
-  let to_list_c: Cata_Stream.fix(list(E.e)) => list(E.e) = (
-    s_fix => Cata_Stream.cata((StreamF(e, a)) => [e, ...a], s_fix):
-      Cata_Stream.fix(list(E.e)) => list(E.e)
-  );
-};
-
-\end{lstlisting}
+\src{snippet30}
 在这里，同一个不动点同时是同一端函子的初始代数和终端余代数。在任意范畴中情况并非总是如此。通常，端函子可能有很多（或没有）不动点。初始代数是所谓的最小不动点，终端余代数是最大的固定点。然而，在 Haskell 中，两者由相同的公式定义，并且它们重合。
 
 列表的 anamorphism 称为 unfold。为了创建有限列表，该函子被修改为生成一个 \code{Maybe} 对：
 
-\begin{lstlisting}[language=Reason]
-/* Gen.t is used to represent infinite data structures 
-   like haskell's lazy list */
-let unfold: ('b => option(('a, 'b)), 'b) => Gen.t('a);
-
-\end{lstlisting}
+\src{snippet31}
 \code{Nothing} 的值将终止列表的生成。
 
 与镜头（lens）相关的余代数是一个有趣的例子。镜头可以表示为一个 getter 和 setter 的对：
 
-\begin{lstlisting}[language=Reason]
-let set: ('a, 's) => 'a;
-let get: 'a => 's;
-
-\end{lstlisting}
+\src{snippet32}
 这里，\code{a} 通常是某种具有类型为 \code{s} 的字段的产品数据类型。getter 获取该字段的值，setter 用一个新值替换此字段。这两个函数可以组合成一个：
 
-\begin{lstlisting}[language=Reason]
-(a, (s, s => a));
-\end{lstlisting}
+\src{snippet33}
 我们可以进一步重写此函数为：
 
-\begin{lstlisting}[language=Reason]
-'a => store('s, 'a);
-\end{lstlisting}
+\src{snippet34}
 其中我们定义了一个函子：
 
-\begin{lstlisting}[language=Reason]
-/* Store is the comonad version of State */
-type store('s, 'a) =
-  | Store('s => 'a, 's);
-
-\end{lstlisting}
+\src{snippet35}
 请注意，这不是由乘积和余积构造的简单代数函子。它涉及一个指数 $a^s$。
 
 镜头是这个函子的余代数，载体类型为 \code{a}。我们之前看到过 \code{Store s} 也是一个余单子（comonad）。事实证明，一个良好行为的镜头对应于一个与余单子结构兼容的余代数。在下一节中，我们将讨论这一点。

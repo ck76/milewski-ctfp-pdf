@@ -63,27 +63,10 @@
 
 给定这样一个转换器 \code{btoa}，我们可以定义左侧，称其为 \code{fromY}，如下所示：
 
-\begin{lstlisting}[language=Reason]
-module type BtoA = {
-  type a;
-  type b;
-
-  let btoa: b => a;
-};
-
-/* Define the Yoneda embedding */
-module Yoneda_Embedding = (E: BtoA) => {
-  let fromY: 'x. (E.a => 'x, E.b) => 'x = (f, b) => f(E.btoa(b));
-};
-
-\end{lstlisting}
+\src{snippet01}
 相反，给定一个 \code{fromY} 函数，我们可以通过调用 \code{fromY} 和 \code{id} 来恢复转换器：
 
-\begin{lstlisting}[language=Reason]
-module YE = Yoneda_Embedding(BtoAImpl);
-YE.fromY(id) /* output type : BtoA.b => BtoA.a */
-
-\end{lstlisting}
+\src{snippet02}
 这建立了 \code{fromY} 和 \code{btoa} 类型的函数之间的双射。
 
 另一种看待这种同构的方法是，它是从 \code{b} 到 \code{a} 的函数的\acronym{CPS} 编码。参数 \code{a -> x} 是一个延续（continuation）（处理程序）。结果是一个从 \code{b} 到 \code{x} 的函数，当它被调用并传递一个类型为 \code{b} 的值时，将执行与编码函数预组合的延续。
